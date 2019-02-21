@@ -1,0 +1,14 @@
+<form>
+  <label>name</label>
+  <input type="text" name="name" [(ngModel)]="productName">
+  <br>
+  <label>image</label>
+  <input type="file" (change)="addMainImage($event.target.files)">
+  <br>
+  <input type="button" value="create" (click)="productCreate()"><br>
+  <img [src]="imageSrc" #image width="400" height="400" alt="image not loaded">
+  <input type="button" (click)="rotateImage(90)" value="rotate">
+  <br>
+  <label>additional images</label>
+  <input type="file" (change)="addAdditionalImage($event.target.files)">
+</form>
