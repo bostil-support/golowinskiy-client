@@ -1,5 +1,11 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, ViewChildren} from '@angular/core';
 import {HttpService} from '../../services/http.service';
+
+export interface ImageDataInterface {
+  src: string;
+  name: string;
+  blob: Blob;
+}
 
 @Component({
   selector: 'app-product',
@@ -7,76 +13,86 @@ import {HttpService} from '../../services/http.service';
   styleUrls: ['./product.component.css']
 })
 export class ProductComponent implements OnInit {
-  selectedFile: File;
   fileName: string;
   productName: string;
 
   @ViewChild('image') imagePreview: HTMLImageElement;
-  imageSrc: string;
-  imageBlob: Blob;
-  image: HTMLImageElement;
-  angle = 90;
+  mainImageData: ImageDataInterface = {
+    src: '',
+    name: '',
+    blob: null,
+  };
+
+  @ViewChildren('additionalImages') additionalImages: HTMLImageElement[];
+  additionalImagesData: ImageDataInterface[] = [];
 
   constructor(private httpService: HttpService) { }
 
   ngOnInit() {
   }
 
-  async loadFile(files: File[]) {
-    this.selectedFile = files[0];
-    this.fileName = this.selectedFile.name;
+  loadFile(files: File[], callback: (src: string, name: string) => any) {
+    const file = files[0];
     const reader = new FileReader();
-
-    reader.onload = (): string => {
-      return reader.result.toString();
-    };
-    reader.readAsDataURL(files[0]);
-    return await reader.onload;
+    reader.onload = () => callback(reader.result.toString(), file.name);
+    reader.readAsDataURL(file);
   }
 
-  async addMainImage(files: File[]) {
-    const test = this.loadFile(files);
-    console.log(test);
+  addMainImage(files: File[]) {
+    this.loadFile(files, (src, name) => {
+      this.mainImageData.src = src;
+      this.mainImageData.name = name;
+    });
   }
 
   addAdditionalImage(files: File[]) {
-    this.loadFile(files);
+    this.loadFile(files, ((src, name) => this.additionalImagesData.push({
+      src,
+      name,
+      blob: null
+    })));
   }
 
-  redraw(src: string) {
-    console.log(this.angle);
+  redraw(element: ImageDataInterface, angle: number) {
     const image: HTMLImageElement = new Image();
     image.onload = () => {
       const canvas = document.createElement('canvas');
-      if (this.angle % 180 !== 0) {
-        canvas.width = image.naturalHeight;
-        canvas.height = image.naturalWidth;
-      } else {
-        canvas.width = image.naturalWidth;
-        canvas.height = image.naturalHeight;
+      [canvas.width, canvas.height] = [image.width, image.height];
+      if (angle === Math.abs(90)) {
+        [canvas.width, canvas.height] = [canvas.height, canvas.width];
       }
       const context = canvas.getContext('2d');
       context.clearRect(0, 0, canvas.width, canvas.height);
       context.save();
       context.translate(canvas.width / 2, canvas.height / 2);
-      context.rotate(this.angle * Math.PI / 180);
+      context.rotate(angle * Math.PI / 180);
       context.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2);
+      console.log(image.naturalWidth, image.naturalHeight);
       context.restore();
       canvas.toBlob((blob: Blob) => {
-        this.imageBlob = blob;
+        element.blob = blob;
       });
-      this.imageSrc = canvas.toDataURL();
+      element.src = canvas.toDataURL();
+      canvas.parentNode.removeChild(canvas);
     };
-    image.src = src;
+    image.src = element.src;
+  }
+
+  removeAdditionalImage(item: ImageDataInterface) {
+    const index = this.additionalImagesData.indexOf(item);
+    this.additionalImagesData.splice(index, 1);
+  }
+
+  removeMainImage() {
+    this.mainImageData = {
+      src: '',
+      name: '',
+      blob: null,
+    };
   }
 
   productCreate() {
-    this.httpService.imageUpload(this.imageBlob, this.fileName)
+    this.httpService.imageUpload(this.mainImageData)
       .subscribe(() => this.httpService.productCreate(this.fileName, this.productName));
-  }
-
-  rotateImage(angle: number) {
-    this.angle += angle;
-    this.redraw(this.imageSrc);
   }
 }

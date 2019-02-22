@@ -1,14 +1,36 @@
-<form>
-  <label>name</label>
-  <input type="text" name="name" [(ngModel)]="productName">
-  <br>
-  <label>image</label>
-  <input type="file" (change)="addMainImage($event.target.files)">
-  <br>
+<div>
+  <div>
+    <label>name</label>
+    <input type="text" name="name" [(ngModel)]="productName">
+  </div>
+
+  <label>main image</label>
+  <div class="image-container" *ngIf="mainImageData.src; else elseBlock">
+    <div class="image-controls">
+      <i class="material-icons" (click)="removeMainImage()">close</i>
+      <i class="material-icons" (click)="redraw(mainImageData, 90)">rotate_left</i>
+      <i class="material-icons" (click)="redraw(mainImageData, 90)">rotate_right</i>
+    </div>
+    <img [src]="mainImageData.src" #image alt="image not loaded">
+  </div>
+  <ng-template #elseBlock>
+    <input type="file" (change)="addMainImage($event.target.files)">
+  </ng-template>
+
+  <div>
+    <label>additional images</label>
+    <div id="additional-images">
+      <div class="image-container" *ngFor="let item of additionalImagesData">
+        <div class="image-controls">
+          <i class="material-icons" (click)="removeAdditionalImage(item)">close</i>
+          <i class="material-icons" (click)="redraw(item, 90)">rotate_left</i>
+          <i class="material-icons" (click)="redraw(item, 90)">rotate_right</i>
+        </div>
+        <img src="{{item.src}}">
+      </div>
+    </div>
+    <input type="file" (change)="addAdditionalImage($event.target.files)">
+  </div>
+
   <input type="button" value="create" (click)="productCreate()"><br>
-  <img [src]="imageSrc" #image width="400" height="400" alt="image not loaded">
-  <input type="button" (click)="rotateImage(90)" value="rotate">
-  <br>
-  <label>additional images</label>
-  <input type="file" (change)="addAdditionalImage($event.target.files)">
-</form>
+<div>

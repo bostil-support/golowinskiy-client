@@ -5,6 +5,7 @@ import {SignupResult, SuccessLoginResult} from '../results';
 import {tokenGetter} from '../app.module';
 import {from, Observable} from 'rxjs';
 import {mergeMap} from 'rxjs/operators';
+import {ImageDataInterface} from '../components/product/product.component';
 
 @Injectable({
   providedIn: 'root'
@@ -38,11 +39,11 @@ export class HttpService {
     });
   }
 
-  imageUpload(img: Blob, imageName) {
+  imageUpload(image: ImageDataInterface) {
     const formData = new FormData();
     formData.append('AppCode', '19139');
-    formData.append('TImageprev', imageName);
-    formData.append('img', img);
+    formData.append('TImageprev', image.name);
+    formData.append('img', image.blob);
     return this.httpClient.post(HttpService.apiUrl + 'img/upload', formData);
   }
 
