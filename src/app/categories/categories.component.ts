@@ -35,23 +35,20 @@ export class CategoriesComponent implements OnInit {
                 else{
                   advert = null
                 }
-                
+
+                let userId
+                if(window.location.pathname.includes('cabinet')){
+                  userId = this.authService.getUserId()                
+                }
+                else{
+                  userId = null
+                }                
 
                 this.mainService.getShopInfo().subscribe( (res) => {
-                  if(window.location.pathname.includes('cabinet')){
-
-                    this.mainService.getCategories(this.authService.getUserId(), advert).subscribe((res) => {
-                      this.catalog = res
-                      this.showCatalog = true
-                    })
-                  }
-                  else{
-                    this.mainService.getCategories(this.authService.getUserId, advert).subscribe((res) => {
-                      this.catalog = res
-                      this.showCatalog = true
-                    })
-                  }
-
+                  this.mainService.getCategories(userId, advert).subscribe((res) => {
+                    this.catalog = res
+                    this.showCatalog = true
+                  })
                 })
                
   }
