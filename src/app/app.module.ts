@@ -27,7 +27,8 @@ import { ProductsPageComponent } from './main-page/products-page/products-page.c
 import { DetailPageComponent } from './main-page/detail-page/detail-page.component'
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
-import { HttpModule } from '@angular/http'
+import {HttpModule} from '@angular/http';
+import {NgxPaginationModule} from 'ngx-pagination';
 
 @NgModule({
   declarations: [
@@ -39,11 +40,11 @@ import { HttpModule } from '@angular/http'
     CabinetUserComponent,
     DropdownDirective,
     FooterComponent,
-    AuthPageComponent, 
+    AuthPageComponent,
     LoginComponent,
     RegistrationComponent,
     RecoveryComponent,
-    CategoriesComponent, 
+    CategoriesComponent,
     ProductsPageComponent,
     DetailPageComponent
   ],
@@ -54,7 +55,8 @@ import { HttpModule } from '@angular/http'
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    NgxPaginationModule,
   ],
   providers: [
     {

@@ -13,22 +13,22 @@ export class MainService{
 
     private baseUrl = environment.api;
 
-    urlPortal = location.hostname.split('.')[0]   
+    urlPortal = location.hostname.split('.')[0]
 
-    idPortal: string = environment.idPortal  
+    idPortal: string = environment.idPortal
     private cust_id = null
     private mainImage = null
     private mainPictureAccountUser = null
 
     constructor(private http: HttpClient){
-    }  
+    }
 
-    public getPortal(){        
+    public getPortal(){
         return this.urlPortal;
     }
 
     public getIdPortal(){
-        var n = parseInt(this.urlPortal)       
+        var n = parseInt(this.urlPortal)
 
         if(location.hostname.split('.').length == 2 || location.hostname == environment.domain){
             return this.idPortal
@@ -36,7 +36,7 @@ export class MainService{
         }
         else{
             return this.urlPortal
-        }        
+        }
 
     }
 
@@ -48,14 +48,14 @@ export class MainService{
         return this.http.get<{
             cust_id: string,
             mainImage: string,
-            mainPictureAccountUser: string  
+            mainPictureAccountUser: string
         }>(`${environment.api}shopinfo/${this.getIdPortal()}`)
             .pipe(
                 tap(
                    ({cust_id, mainImage, mainPictureAccountUser}) => {
                         this.setCustId(cust_id)
                         this.setFonPictures(mainImage, mainPictureAccountUser)
-                    } 
+                    }
                 )
             )
     }
@@ -78,11 +78,11 @@ export class MainService{
         if(document.getElementById('fon-image')){
             if(window.location.pathname.includes('cabinet')){
                 fonPicture = document.getElementById('fon-image').style.background = `url('${environment.images}${this.mainPictureAccountUser}') no-repeat 50% 50%`
-            } 
+            }
             else{
                 fonPicture = document.getElementById('fon-image').style.background = `url('${environment.images}${this.mainImage}') no-repeat 50% 50%`
-            } 
-        }        
+            }
+        }
         return fonPicture
     }
     getErrorFonPicture(){
@@ -97,7 +97,7 @@ export class MainService{
 
     getCategories(userId, advert){
         return this.http.post(
-            `${environment.api}categories`, { 
+            `${environment.api}categories`, {
                 Cust_ID_Main: this.getCustId(),
                 CID: userId,
                 advert: advert
@@ -105,22 +105,22 @@ export class MainService{
     }
 
     getProducts(id, cust_id, userId):Observable<any>{
-        return this.http.post(`${environment.api}Gallery/`, 
+        return this.http.post(`${environment.api}Gallery/`,
             { Cust_ID: cust_id,
               ID: id,
               CID: userId
             }
         )
     }
-    
+
     getProduct(prc_ID: any, cust_id){
-        return this.http.post(`${environment.api}Img`, 
+        return this.http.post(`${environment.api}Img`,
             {
                 "prc_ID": prc_ID,
                 "cust_ID": cust_id,
                 "appCode": cust_id
             }
-        ) 
+        )
     }
 
     uploadImage(data: any){
@@ -146,5 +146,12 @@ export class MainService{
     addAdditionalImg(data: any, headers){
         return this.http.post(`${environment.api}AdditionalImg`, data, headers)
     }
-    
+
+    saveCategoriesToStorage(categories) {
+      localStorage.setItem('categories', JSON.stringify(categories))
+    }
+
+    loadCategoriesFromStorage() {
+      return JSON.parse(localStorage.getItem('categories')) || [];
+    }
 }

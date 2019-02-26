@@ -4,17 +4,25 @@
     <div class="showMessage" *ngIf="showSpinner">
         <i class="fa fa-spinner fa-spin"></i>
     </div>
-    <div class="showMessageTxt" *ngIf="message.text">        
-        <div 
+    <div class="showMessageTxt" *ngIf="message.text">
+        <div
             class="alert alert-{{message.type}}"
-        >            
+        >
             {{ message.text }}
         </div>
     </div>
-    
+
+    <div class="breadcrumbs_list" >
+      <div class="breadcrumbs_list__item" *ngFor="let item of categories; index as i" (click)="breadcrumbsClick()">
+        {{item.txt}}
+        <i class="fa fa-angle-right"></i>
+      </div>
+    </div>
+
+
     <div class="products_list">
-    
-        <div class="products_list__item" *ngFor="let product of Gallery"
+
+        <div class="products_list__item" *ngFor="let product of Gallery | paginate: {itemsPerPage: itemsPerPage, currentPage: currentPage}"
         [id]="product.prc_ID">
             <div class="products_list__item--main">
                 <img (click)="detail(product)" src="{{ apiRoot + 'Img?AppCode=' + product.appCode + '&ImgFileName=' + product.image_Base }}" alt="">
@@ -28,11 +36,19 @@
                     </div>
                 </div>
             </div>
-        </div>	  
-    
+        </div>
+
+        <pagination-template class="pagination_list" #p="paginationApi" (pageChange)="currentPage = $event" *ngIf="!showSpinner">
+          <div class="pagination_list__item" [class.disabled]="p.isFirstPage()">Предыдущая</div>
+          <div class="pagination_list__item" [class.current] = "p.getCurrent() === page.value" *ngFor="let page of p.pages" (click)="p.setCurrent(page.value)">
+            {{page.label}}
+          </div>
+          <div class="pagination_list__item" [class.disabled]="p.isLastPage()">Следующая</div>
+        </pagination-template>
     </div>
-    
+
+
     <router-outlet></router-outlet>
-    
+
     <app-footer></app-footer>
 </div>

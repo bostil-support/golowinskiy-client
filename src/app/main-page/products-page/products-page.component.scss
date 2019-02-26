@@ -11,9 +11,29 @@
     i{
         font-size: 60px;
         color: #5c646b;
-        animation: fa-spin 2s infinite linear; 
+        animation: fa-spin 2s infinite linear;
     }
 }
+
+.breadcrumbs_list {
+  flex-wrap: wrap;
+  padding-top: 70px;
+  display: flex;
+  flex-direction: row;
+  &__item {
+    padding: 3px;
+    font-size: 13px;
+    background-color: rgba(0,0,0,0.78);
+    color: white;
+    cursor: pointer;
+  }
+  :last-child {
+    i {
+      visibility: hidden;
+    }
+  }
+}
+
 .products_list{
     display: flex;
     justify-content: center;
@@ -25,14 +45,14 @@
     padding: 66px 0 85px;
     &__item{
         width: 220px;
-        margin: 5px 9px; 
+        margin: 5px 9px;
         &--main{
             background: #ffffff;
             height: 180px;
             display: flex;
             justify-content: center;
             align-items: center;
-            border-radius: 3px 3px 0 0; 
+            border-radius: 3px 3px 0 0;
             img{
                 max-width: 100%;
                 height: auto;
@@ -57,7 +77,7 @@
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-top: 6px; 
+                margin-top: 6px;
                 p{
                     font-size: 17px;
                 }
@@ -104,4 +124,22 @@
     z-index: 3;
     width: 40%;
     text-align: center;
+}
+
+.pagination_list {
+  display: flex;
+  flex-direction: row;
+  cursor: pointer;
+  &__item {
+    background-color: rgba(0,0,0,0.78);
+    color: white;
+    padding: 6px;
+    font-size: 15px;
+    &.disabled {
+      color: rgb(156, 156, 156);
+    }
+    &.current {
+      background-color: #179590;
+    }
+  }
 }
