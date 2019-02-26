@@ -23,6 +23,10 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   message: Message
   sub: Subscription
 
+  //pagination
+  currentPage = 1;
+  itemsPerPage = 15;
+
   constructor(private mainService: MainService,
               private route: ActivatedRoute,
               private router: Router) {
@@ -79,5 +83,9 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
 
   breadcrumbsClick() {
     this.router.navigate(['/'])
+  }
+
+  pageChange(event) {
+    console.log(event)
   }
 }

@@ -125,3 +125,21 @@
     width: 40%;
     text-align: center;
 }
+
+.pagination_list {
+  display: flex;
+  flex-direction: row;
+  cursor: pointer;
+  &__item {
+    background-color: rgba(0,0,0,0.78);
+    color: white;
+    padding: 6px;
+    font-size: 15px;
+    &.disabled {
+      color: rgb(156, 156, 156);
+    }
+    &.current {
+      background-color: #179590;
+    }
+  }
+}
