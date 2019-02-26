@@ -1,0 +1,164 @@
+header{
+    background: rgba(24, 150, 145, 0.68);
+}
+.showSpinner{
+    position: fixed;
+    top: 50%;
+    left: 48%;
+    right: 48%;
+    z-index: 2;
+}
+.showSpinner i{
+    font-size: 60px;
+    color: #5c646b;
+}
+section.advertisement{
+    position: relative;
+}
+.showMessage{
+    text-align: center;
+    position: fixed;
+    top: 50%;
+    left: 30%;
+    right: 30%;
+    z-index: 2;
+    width: 40%;
+    @media only screen and (max-width: 1078px) {
+        width: 90%;
+        left: 5%;
+        right: 5%;
+    }
+}
+.showMessage i{
+    color: rgba(24, 150, 145, 1);
+    margin-bottom: 25px;
+    position: relative;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
+.choosed{
+    margin: 35px 0;
+}
+.contact{
+    border: 1px solid rgba(24, 150, 145, 1);
+    background: rgba(24, 150, 145, 0.32);
+}
+.no-padding{
+    padding: 0;
+}
+textarea{
+    resize: none;
+    width: 100%;
+    min-height: 100px;
+    border: 1px solid rgba(24, 150, 145, 1);
+}
+.btn{
+    height: 38px;
+}
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+.upload{
+    border: 1px solid rgba(24, 150, 145, 1);
+    background-color: #ffffff;
+    width: 100px;
+    height: 70px;
+    text-align: center;
+    line-height: 75px;
+    cursor: pointer;
+
+}
+.upload-images {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+}
+.upload-images > div {
+    width: 100px;
+    height: 70px;
+    line-height: 68px;
+    text-align: center;
+    border: 1px solid #189691;
+    position: relative;
+    margin: 5px 20px 5px 0;
+    cursor: pointer;
+}
+.upload-images > div img {
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    max-height: 70px;
+}
+.upload-images > div i.delete {
+    position: absolute;
+    top: 0;
+    right: -20px;
+    cursor: pointer;
+}
+i.arrow{
+    width: 100px;
+    height: 70px;
+    border: 1px solid #189691;
+    cursor: pointer;
+    line-height: 70px;
+    text-align: center;
+    font-size: 27px;
+    color: #189691;
+}
+
+.upload img{
+    max-width: 100%;
+    width: auto !important;
+    height: auto !important;
+    max-height: 70px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+}
+.upload i{
+    font-size: 27px;
+    color: rgba(24, 150, 145, 1);
+}
+.list_photo{
+    max-width: 370px;
+}
+.back a{
+    color: rgba(24, 150, 145, 1);
+}
+
+.other_fields{
+    justify-content: flex-end;
+}
+.other_fields .col-lg-4{
+    margin-right: 35px;
+}
+.other_fields p{
+    font-size: 17px;
+    font-style: italic;
+    font-weight: 600;
+    margin-right: 28px;
+}
+

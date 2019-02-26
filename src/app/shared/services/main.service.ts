@@ -131,6 +131,18 @@ export class MainService{
         return this.http.post(`${environment.api}Img`, data, headers)
     }
 
+    deleteProduct(data: any){
+        return this.http.delete(`${environment.api}Img`, data)
+    }
+
+    editProduct(data: any){
+        return this.http.put(`${environment.api}product`, data)
+    }
+
+    editAdditionalImg(data: any){
+        return this.http.put(`${environment.api}AdditionalImg/api/AdditionalImg`, data)
+    }
+
     addAdditionalImg(data: any, headers){
         return this.http.post(`${environment.api}AdditionalImg`, data, headers)
     }
