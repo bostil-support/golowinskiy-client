@@ -2,17 +2,17 @@
 
     <app-header></app-header>
 
-    <div id="inner">        
+    <div id="inner">
 
-        <app-categories></app-categories> 
-        
+        <app-categories (lastChildAction)="onCategoriesClick($event)"></app-categories>
+
         <router-outlet></router-outlet>
     </div>
 
     <div class="data" id="doc_time" [@hideClock]="clickClock">
 
     </div>
-    
+
     <app-footer></app-footer>
 </div>
 

@@ -1,50 +1,51 @@
 <section class="advertisement">
     <div class="container">
-  
+
       <div class="showSpinner" *ngIf="showSpinner">
           <i class="fa fa-spinner fa-spin"></i>
       </div>
-  
+
       <h3 class="text-center mt-4 mb-4">Разместить объявление</h3>
       <div class="row justify-content-md-center">
           <div class="col-lg-8 col-xs-12 back text-right mt-4 mb-2">
               <a routerLink="/">ВЕРНУТЬСЯ к КАТАЛОГУ</a>
-          </div>  
+          </div>
       </div>
       <div class="row justify-content-md-center">
           <div class="col-lg-8 col-xs-12 back text-right mb-4">
               <a routerLink="/cabinet">ВЕРНУТЬСЯ в ЛИЧНЫЙ КАБИНЕТ</a>
-          </div>  
+          </div>
       </div>
-  
+
       <div class="row mb-3 justify-content-md-center">
           <div class="col-lg-8 col-xs-12 text-right">
               <div class="contact pt-2 pb-2 pr-2">
                   <h5>Контактная информация</h5>
                   <div class="row">
                       <div class="col-lg-12 col-xs-12">
-                          
-                      </div>                
+
+                      </div>
                   </div>
                   <div class="row">
                       <div class="col-lg-12 col-xs-12">
-                          
-                      </div>                
+
+                      </div>
                   </div>
                   <div class="row">
                       <div class="col-lg-12 col-xs-12">
-                          
-                      </div>                
+
+                      </div>
                   </div>
               </div>
           </div>
-      </div>      
-  
-      <app-categories></app-categories>
-  
+      </div>
+
+      <app-categories (lastChildAction)="categorySelect($event)"></app-categories>
+
       <div class="row justify-content-md-center choosed">
           <div class="col-lg-8 col-xs-12 no-padding">
               Вы выбрали раздел
+            <app-breadcrumbs [categories]="categories"></app-breadcrumbs>
           </div>
       </div>
       <div class="row justify-content-md-center choosed">
@@ -52,134 +53,134 @@
 
           </div>
       </div>
-  
-      <div class="showMessage" *ngIf="message.text">        
-          <div 
+
+      <div class="showMessage" *ngIf="message.text">
+          <div
               class="alert alert-{{message.type}}"
-          >            
+          >
               {{ message.text }}
           </div>
       </div>
-  
-      <div class="form">    
-  
-          <form [formGroup]="form" (ngSubmit)="onSubmit()"> 
-  
-              <div 
+
+      <div class="form">
+
+          <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+              <div
                   class="form-group"
                   style="display: none;"
-                  
+
               >
                   <div class="row justify-content-md-center">
                       <div class="col-lg-4">
-                          <label>Наименование категории</label> 
+                          <label>Наименование категории</label>
                       </div>
                       <div class="col-lg-4">
-                          <input 
-                              type="text"                                 
-                              id="Categories"  
-                              formControlName="Categories" 
+                          <input
+                              type="text"
+                              id="Categories"
+                              formControlName="Categories"
                               [(ngModel)] = "itemName"
-                          > 
+                          >
                       </div>
                   </div>
               </div>
-  
-              <div 
+
+              <div
                   class="form-group"
-                  [ngClass]="{'has-error': form.get('TName').invalid &&  form.get('TName').touched}"       
+                  [ngClass]="{'has-error': form.get('TName').invalid &&  form.get('TName').touched}"
               >
                   <div class="row justify-content-md-center">
                       <div class="col-lg-4">
-                          <label>Наименование товара, услуги *</label> 
+                          <label>Наименование товара, услуги *</label>
                       </div>
                       <div class="col-lg-4">
-                          <input 
-                              type="text"                                 
-                              id="TName"  
-                              formControlName="TName"              
+                          <input
+                              type="text"
+                              id="TName"
+                              formControlName="TName"
                           >
-                          <span 
+                          <span
                               class="form-help-text"
                               *ngIf="form.get('TName').invalid &&  form.get('TName').touched"
                           >
                               <span *ngIf="form.get('TName')['errors']['required']">
                                   Заполните наименование товара, услуги
-                              </span>                        
-                          </span> 
+                              </span>
+                          </span>
                       </div>
                   </div>
               </div>
-              
-              <div  
-                  class="form-group"                 
+
+              <div
+                  class="form-group"
               >
                   <div class="row justify-content-md-center">
                       <div class="col-lg-4">
-                          <label>Описание товара, услуги</label> 
+                          <label>Описание товара, услуги</label>
                       </div>
                       <div class="col-lg-4">
-                          <textarea 
-                              type="textarea" 
-                              id="TDescription"  
-                              formControlName="TDescription"                
-                          > 
-                          </textarea>                       
+                          <textarea
+                              type="textarea"
+                              id="TDescription"
+                              formControlName="TDescription"
+                          >
+                          </textarea>
                       </div>
-                  </div>                                   
+                  </div>
               </div>
-  
-              <div  
-                  class="form-group"                 
+
+              <div
+                  class="form-group"
               >
                   <div class="row justify-content-md-center">
                       <div class="col-lg-4">
-                          <label>Цена</label> 
+                          <label>Цена</label>
                       </div>
                       <div class="col-lg-4">
-                          <input 
-                              type="text"                                
-                              id="TCost"  
-                              formControlName="TCost"              
-                          >                        
+                          <input
+                              type="text"
+                              id="TCost"
+                              formControlName="TCost"
+                          >
                       </div>
-                  </div>                                  
-              </div> 
-  
-              <div  
+                  </div>
+              </div>
+
+              <div
                   class="mb-3"
               >
                   <div class="row justify-content-md-center">
                       <div class="col-lg-4">
-                          <label>Основная фотография</label> 
+                          <label>Основная фотография</label>
                       </div>
                       <div class="col-lg-4">
                           <input
-                              style="display: none;" 
-                              type="file" 
-                              id="TImageprev" 
-                              formControlName="TImageprev" 
-                              (change)="onFileSelected($event)" 
+                              style="display: none;"
+                              type="file"
+                              id="TImageprev"
+                              formControlName="TImageprev"
+                              (change)="onFileSelected($event)"
                               #fileInput
                               capture="camera"
                           >
                           <div class="upload btn-file" (click)="fileInput.click()">
-                              <img id="img" 
-                                  [src]="srcImg" 
+                              <img id="img"
+                                  [src]="srcImg"
                                   style="width:100px; height:70px" alt=""
                               >
-                              <i *ngIf="uploadImg" class="fa fa-upload arrow" aria-hidden="true"></i>                                                        
+                              <i *ngIf="uploadImg" class="fa fa-upload arrow" aria-hidden="true"></i>
                           </div>
                       </div>
-                  </div>                                            
+                  </div>
               </div>
-              
-              <div  
-                  class="mb-3"   
+
+              <div
+                  class="mb-3"
               >
                   <div class="row justify-content-md-center">
                       <div class="col-lg-4 col-xs-12">
-                          <label>Доп. фотографии</label> 
+                          <label>Доп. фотографии</label>
                       </div>
                       <div class="col-lg-4 col-xs-12">
                           <div class="upload-images">
@@ -201,141 +202,141 @@
                                       #filesInput
                                       capture="camera"
                                   >
-                                  <img (click)="filesInput.click()"               
-                                      alt=""                                    
+                                  <img (click)="filesInput.click()"
+                                      alt=""
                                       [src]="url"
                                   >
                                   <i class="fa fa-times delete" (click)="deleteImages(url, i)" aria-hidden="true"></i>
-                              </div> 
+                              </div>
                               <i class="fa fa-upload arrow" aria-hidden="true"
                                   (click)="filesInputAdd.click()"
-                                  [ngClass]="{'disabled': isDisabled}" 
-                              ></i>                             
-                          </div>   
-                      </div>  
-                  </div>                                            
+                                  [ngClass]="{'disabled': isDisabled}"
+                              ></i>
+                          </div>
+                      </div>
+                  </div>
               </div>
               <div class="row justify-content-md-center">
-                  <div class="col col-lg-4 mb-3 hover_btn" 
+                  <div class="col col-lg-4 mb-3 hover_btn"
                   (mouseenter)="mouseOverButton()" (mouseleave)="mouseLeaveButton()">
                       <button
                           name="submitButton" #submitButton
                           class="btn btn-block btn-primary"
-                          type="submit"  
-                          [disabled]="form.invalid"                                
+                          type="submit"
+                          [disabled]="form.invalid"
                       >
                           Разместить объявление
-                      </button> 
-                      <div class="validators" *ngIf="showValidators"                                         
+                      </button>
+                      <div class="validators" *ngIf="showValidators"
                       >
                           *Вы не выбрали раздел каталога или наименование товара
-                      </div>                               
-                  </div>               
+                      </div>
+                  </div>
               </div>
-  
+
               <div class="row other_fields">
                   <div class="col-lg-4">
                       <p>Необязательные поля</p>
                   </div>
               </div>
-  
-              <div  
-                  class="form-group" 
+
+              <div
+                  class="form-group"
               >
-  
+
                   <div class="row justify-content-md-center">
                       <div class="col-lg-4">
-                          <label>Ссылка на видео</label> 
+                          <label>Ссылка на видео</label>
                       </div>
                       <div class="col-lg-4">
-                          <input 
-                              type="text" 
-                              id="youtube"  
-                              formControlName="youtube"              
-                          >                         
-                      </div>
-                  </div>
-                                          
-              </div> 
-  
-              <div  
-                  class="form-group" 
-              >
-  
-                  <div class="row justify-content-md-center">
-                      <div class="col-lg-4">
-                          <label>Тип изделия</label> 
-                      </div>
-                      <div class="col-lg-4">
-                          <input 
-                              type="text"                                 
-                              id="TypeProd"  
-                              formControlName="TypeProd"               
-                          >                         
-                      </div>
-                  </div>
-                                          
-              </div> 
-  
-              <div  
-                  class="form-group"  
-              >
-  
-                  <div class="row justify-content-md-center">
-                      <div class="col-lg-4">
-                          <label>Конечная цена изделия в рублях</label> 
-                      </div>
-                      <div class="col-lg-4">
-                          <input 
-                              type="text"                                 
-                              id="PrcNt"  
-                              formControlName="PrcNt"                 
-                          >                          
-                      </div>
-                  </div>
-                                          
-              </div>
-              
-              <div  
-                  class="form-group"    
-              >
-                  <div class="row justify-content-md-center">
-                      <div class="col-lg-4">
-                          <label>Артикул товара</label> 
-                      </div>
-                      <div class="col-lg-4">
-                          <input 
-                              type="text"                                 
-                              id="Article" 
-                              formControlName="Article"             
+                          <input
+                              type="text"
+                              id="youtube"
+                              formControlName="youtube"
                           >
                       </div>
                   </div>
-                                  
-              </div>               
-                  
-              
-              <div  
+
+              </div>
+
+              <div
                   class="form-group"
               >
-  
+
                   <div class="row justify-content-md-center">
                       <div class="col-lg-4">
-                          <label>Механизм трансформации</label> 
+                          <label>Тип изделия</label>
                       </div>
                       <div class="col-lg-4">
-                          <input 
-                              type="text"                                 
-                              id="TransformMech"  
-                              formControlName="TransformMech"              
-                          > 
+                          <input
+                              type="text"
+                              id="TypeProd"
+                              formControlName="TypeProd"
+                          >
                       </div>
-                  </div>                                            
+                  </div>
+
               </div>
-  
+
+              <div
+                  class="form-group"
+              >
+
+                  <div class="row justify-content-md-center">
+                      <div class="col-lg-4">
+                          <label>Конечная цена изделия в рублях</label>
+                      </div>
+                      <div class="col-lg-4">
+                          <input
+                              type="text"
+                              id="PrcNt"
+                              formControlName="PrcNt"
+                          >
+                      </div>
+                  </div>
+
+              </div>
+
+              <div
+                  class="form-group"
+              >
+                  <div class="row justify-content-md-center">
+                      <div class="col-lg-4">
+                          <label>Артикул товара</label>
+                      </div>
+                      <div class="col-lg-4">
+                          <input
+                              type="text"
+                              id="Article"
+                              formControlName="Article"
+                          >
+                      </div>
+                  </div>
+
+              </div>
+
+
+              <div
+                  class="form-group"
+              >
+
+                  <div class="row justify-content-md-center">
+                      <div class="col-lg-4">
+                          <label>Механизм трансформации</label>
+                      </div>
+                      <div class="col-lg-4">
+                          <input
+                              type="text"
+                              id="TransformMech"
+                              formControlName="TransformMech"
+                          >
+                      </div>
+                  </div>
+              </div>
+
           </form>
-          
+
       </div>
-             
+
     </div>
   </section>

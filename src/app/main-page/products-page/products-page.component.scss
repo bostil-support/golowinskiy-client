@@ -15,26 +15,9 @@
     }
 }
 
-.breadcrumbs_list {
-  flex-wrap: wrap;
+.breadcrumbs_container {
   padding-top: 70px;
   padding-left: 15px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: row;
-  max-width: 1200px;
-  &__item {
-    padding: 6px;
-    font-size: 13px;
-    background-color: rgba(0,0,0,0.78);
-    color: white;
-    cursor: pointer;
-  }
-  :last-child {
-    i {
-      visibility: hidden;
-    }
-  }
 }
 
 .products_list{

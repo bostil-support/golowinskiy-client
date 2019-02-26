@@ -7,13 +7,14 @@ import { environment } from 'src/environments/environment';
 import { Message } from 'src/app/shared/models/message.model';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { MainService } from '../shared/services/main.service';
+import {CatalogItem} from '../categories/categories.component';
 
 @Component({
   selector: 'app-advertisement-page',
   templateUrl: './advertisement-page.component.html',
   styleUrls: ['./advertisement-page.component.scss']
 })
-export class AdvertisementPageComponent implements OnInit {  
+export class AdvertisementPageComponent implements OnInit {
 
   apiRoot
   userId
@@ -39,15 +40,16 @@ export class AdvertisementPageComponent implements OnInit {
   showValidators = false
   showSpinner = true
   uploadImg = true
-  isDisabled = true 
+  isDisabled = true
 
 
   idCategorie
-  itemName = ''  
+  itemName = ''
+  categories: CatalogItem[];
 
   @ViewChild('submitButton') submitButton: ElementRef
 
-  constructor( 
+  constructor(
     private router: Router,
     private authService: AuthService,
     private mainService: MainService
@@ -58,8 +60,8 @@ export class AdvertisementPageComponent implements OnInit {
     window.setTimeout(() => {
       this.message.text = ''
       if(this.message.type == 'success'){
-        this.router.navigate(['/addProduct'])       
-      }      
+        this.router.navigate(['/addProduct'])
+      }
     }, 2000)
   }
 
@@ -78,22 +80,22 @@ export class AdvertisementPageComponent implements OnInit {
       'Categories': new FormControl(null, [Validators.required]),
       'youtube': new FormControl(null)
     })
-    this.message = new Message('danger', '')   
+    this.message = new Message('danger', '')
     this.mainService.getShopInfo().subscribe(
-      (res) => {
+      () => {
         this.showSpinner = false
       }
-    ) 
+    )
   }
 
   Validators(el){
     this.itemName = el.txt
   }
-  
+
   onFileSelected(event){
-    this.selectedFile = <File>event.target.files[0]     
-    var reader = new FileReader()      
-    reader.onload = (event: any) => {      
+    this.selectedFile = <File>event.target.files[0]
+    var reader = new FileReader()
+    reader.onload = (event: any) => {
       this.srcImg = event.target.result
       this.uploadImg = false
     }
@@ -103,36 +105,36 @@ export class AdvertisementPageComponent implements OnInit {
 
   uploadImages(){
     this.formDataImages = new FormData()
-    this.mainService.getShopInfo().subscribe(res => { 
+    this.mainService.getShopInfo().subscribe(res => {
       this.formDataImages.append('AppCode', res.cust_id)
       this.formDataImages.append('Img', this.selectedFiles)
-      this.formDataImages.append('TImageprev', this.imageName) 
+      this.formDataImages.append('TImageprev', this.imageName)
       this.mainService.uploadImage(this.formDataImages).subscribe()
     })
   }
 
   onFilesMultipleSelectedAdd(event){
     this.selectedFiles = <File>event.target.files[0]
-    var reader = new FileReader()                
-    reader.onload = (event: any) => { 
-      this.urls[this.urls.length] = event.target.result     
-    }   
-    reader.readAsDataURL(this.selectedFiles);    
+    var reader = new FileReader()
+    reader.onload = (event: any) => {
+      this.urls[this.urls.length] = event.target.result
+    }
+    reader.readAsDataURL(this.selectedFiles);
     this.imageIndex = this.urls.length
     this.imageName = this.selectedFiles.name.split('.')[0] + this.urls.length + '.' + this.selectedFiles.name.split('.')[1]
     this.uploadImages()
     this.imageIndexList.push(this.imageIndex)
-    this.filesImg.push(this.imageName)    
+    this.filesImg.push(this.imageName)
   }
 
-  onFilesMultipleSelected(event){ 
+  onFilesMultipleSelected(event){
 
     this.selectedFiles = <File>event.target.files[0]
     this.files = event.target.files
     if (this.files) {
       for (let file of this.files) {
         let reader = new FileReader()
-        reader.onload = (e: any) => {          
+        reader.onload = (e: any) => {
           this.urls.push(e.target.result)
         }
         reader.readAsDataURL(file)
@@ -140,18 +142,13 @@ export class AdvertisementPageComponent implements OnInit {
         this.uploadImages()
         this.filesImg.push(this.imageName)
       }
-    }  
+    }
   }
 
   mouseOverButton(){
-    if(this.form.invalid){
-      this.showValidators = true
-    }
-    else{
-      this.showValidators = false
-    }
+    this.showValidators = this.form.invalid;
   }
-  mouseLeaveButton(){    
+  mouseLeaveButton(){
     this.showValidators = false
   }
 
@@ -180,24 +177,24 @@ export class AdvertisementPageComponent implements OnInit {
     this.showSpinner = false
     this.showMessage('Объявление было успешно размещено', 'success')
     this.srcImg = ''
-    this.urls = []   
+    this.urls = []
     this.srcImg = ''
-    this.reset()      
+    this.reset()
     this.itemName = Ctlg_Name
     this.isDisabled = true
     this.filesImg = []
   }
-  
-  onSubmit(){ 
+
+  onSubmit(){
     const headers = new Headers({
       'Content-Type': 'application/json; charset=utf8',
       'Authorization': 'Bearer ' + localStorage.getItem('token')
     })
     this.showSpinner = true
     this.submitButton.nativeElement.disabled = true
-    const formData = this.form.value    
-    this.mainService.getShopInfo().subscribe(res => { 
-      this.cust_id = res.cust_id    
+    const formData = this.form.value
+    this.mainService.getShopInfo().subscribe(res => {
+      this.cust_id = res.cust_id
       if(this.selectedFile == null){
         this.data_form = {
           "Catalog": res.cust_id,      //nomer catalog
@@ -207,10 +204,10 @@ export class AdvertisementPageComponent implements OnInit {
           "TName": formData.TName, //input form
           "TDescription": formData.TDescription, //input form
           "TCost": formData.TCost, //input form
-          "Appcode": res.cust_id,  
+          "Appcode": res.cust_id,
           "TypeProd": formData.TypeProd, //input form
           "PrcNt": formData.PrcNt, //input form
-          "TransformMech": formData.TransformMech,  //input form    
+          "TransformMech": formData.TransformMech,  //input form
           "CID": this.userId, // userId for auth,
           "video": formData.youtube
         }
@@ -224,30 +221,30 @@ export class AdvertisementPageComponent implements OnInit {
           "TName": formData.TName, //input form
           "TDescription": formData.TDescription, //input form
           "TCost": formData.TCost, //input form
-          "TImageprev": this.selectedFile.name, // input form   
-          "Appcode": res.cust_id,  
+          "TImageprev": this.selectedFile.name, // input form
+          "Appcode": res.cust_id,
           "TypeProd": formData.TypeProd, //input form
           "PrcNt": formData.PrcNt, //input form
-          "TransformMech": formData.TransformMech,  //input form    
+          "TransformMech": formData.TransformMech,  //input form
           "CID": this.userId, // userId for auth
           "video": formData.youtube
         }
         this.dataForm = new FormData()
         this.dataForm.append('AppCode', res.cust_id)
         this.dataForm.append('Img', this.selectedFile)
-        this.dataForm.append('TImageprev', this.selectedFile.name)         
-      }        
-      this.mainService.getUserInfo(headers).subscribe(        
-        (res: any) => {               
-          this.Validators(this.data_form.Ctlg_Name)                    
-          if(res.isCanPromo == true){                
+        this.dataForm.append('TImageprev', this.selectedFile.name)
+      }
+      this.mainService.getUserInfo(headers).subscribe(
+        (res: any) => {
+          this.Validators(this.data_form.Ctlg_Name)
+          if(res.isCanPromo == true){
             if(this.selectedFile == null){
-              this.mainService.addProduct(this.data_form, headers)                  
+              this.mainService.addProduct(this.data_form, headers)
               .subscribe(
-                (res: any) => { 
-                  if(res.result == "1"){ 
+                (res: any) => {
+                  if(res.result == "1"){
                     if(this.filesImg.length != 0){
-                      for (let i in this.filesImg) { 
+                      for (let i in this.filesImg) {
                         this.dataAddImg = {
                           "catalog": this.cust_id,
                           "id": this.idCategorie,
@@ -257,36 +254,36 @@ export class AdvertisementPageComponent implements OnInit {
                           "appcode": this.cust_id,
                           "cid": this.userId
                         }
-                        this.mainService.addAdditionalImg(this.dataAddImg, headers)                          
+                        this.mainService.addAdditionalImg(this.dataAddImg, headers)
                         .subscribe(
                           (res) => {
                             this.successAddedProduct(this.data_form.Ctlg_Name)
                         })
-                      }                        
+                      }
                     }
                     else{
                       this.successAddedProduct(this.data_form.Ctlg_Name)
                     }
                   }
-                  else{ 
-                    this.showMessage( 'Объявление не было размещено', 'danger'); 
-                  }                  
+                  else{
+                    this.showMessage( 'Объявление не было размещено', 'danger');
+                  }
                 },
                 (error) => {
                   this.showSpinner = false
-                  this.showMessage( 'Объявление не было размещено', 'danger')  
+                  this.showMessage( 'Объявление не было размещено', 'danger')
                 }
-              ) 
+              )
             }
             else{
               this.mainService.uploadImage(this.dataForm)
               .subscribe(
-                (res: any) => { 
-                  if(res.result == true){ 
-                    this.mainService.addProduct(this.data_form, headers)                      
+                (res: any) => {
+                  if(res.result == true){
+                    this.mainService.addProduct(this.data_form, headers)
                     .subscribe(
-                      (res: any) => {         
-                        if(res.result == "1"){         
+                      (res: any) => {
+                        if(res.result == "1"){
                           if(this.filesImg.length != 0){
                             for (let i in this.filesImg) {
                               this.dataAddImg = {
@@ -297,10 +294,10 @@ export class AdvertisementPageComponent implements OnInit {
                                 "tImage": this.filesImg[i],
                                 "appcode": this.cust_id,
                                 "cid": this.userId
-                              }    
-                              this.mainService.addAdditionalImg(this.dataAddImg, headers) 
+                              }
+                              this.mainService.addAdditionalImg(this.dataAddImg, headers)
                               .subscribe(
-                                (res) => {       
+                                (res) => {
                                   this.successAddedProduct(this.data_form.Ctlg_Name)
                               })
                             }
@@ -310,36 +307,42 @@ export class AdvertisementPageComponent implements OnInit {
                           }
                         }
                         else{
-                          this.showMessage( 'Объявление не было размещено', 'danger'); 
-                        }                  
+                          this.showMessage( 'Объявление не было размещено', 'danger');
+                        }
                       },
                       (error) => {
-                        this.showSpinner = false;        
-                        this.showMessage( 'Объявление не было размещено', 'danger'); 
+                        this.showSpinner = false;
+                        this.showMessage( 'Объявление не было размещено', 'danger');
                       }
-                    )                   
+                    )
                   }
                   else{
-                    this.showMessage( 'Объявление не было размещено', 'danger'); 
+                    this.showMessage( 'Объявление не было размещено', 'danger');
                   }
                 },
                 (error) => {
                   this.showSpinner = false;
-                  this.showMessage( 'Объявление не было размещено', 'danger'); 
+                  this.showMessage( 'Объявление не было размещено', 'danger');
                 }
-              ) 
-            }           
+              )
+            }
           }
           else{
             this.showSpinner = false;
-            this.showMessage( 'Объявление не было размещено', 'danger'); 
+            this.showMessage( 'Объявление не было размещено', 'danger');
           }
         },
         (error) => {
           this.showSpinner = false
-          this.showMessage( 'Объявление не было размещено', 'danger') 
+          this.showMessage( 'Объявление не было размещено', 'danger')
         }
       )
     })
-  } 
+  }
+
+  categorySelect(items: CatalogItem[]) {
+    this.categories = items;
+    let item = items[items.length - 1];
+    this.itemName = item.txt;
+  }
 }

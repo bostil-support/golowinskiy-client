@@ -12,11 +12,8 @@
         </div>
     </div>
 
-    <div class="breadcrumbs_list" >
-      <div class="breadcrumbs_list__item" *ngFor="let item of categories; index as i" (click)="breadcrumbsClick()">
-        {{item.txt}}
-        <i class="fa fa-angle-right"></i>
-      </div>
+    <div class="breadcrumbs_container" *ngIf="!showSpinner">
+      <app-breadcrumbs (click)="breadcrumbsClick()" [categories]="categories"></app-breadcrumbs>
     </div>
 
 

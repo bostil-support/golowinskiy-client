@@ -4,6 +4,7 @@ import { Observable } from "rxjs";
 import { tap } from "rxjs/operators";
 
 import { environment } from "src/environments/environment";
+import {CatalogItem} from '../../categories/categories.component';
 
 
 @Injectable({
@@ -96,7 +97,7 @@ export class MainService{
     }
 
     getCategories(userId, advert){
-        return this.http.post(
+        return this.http.post<CatalogItem[]>(
             `${environment.api}categories`, {
                 Cust_ID_Main: this.getCustId(),
                 CID: userId,

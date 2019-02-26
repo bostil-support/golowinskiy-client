@@ -1,9 +1,22 @@
-import { Component, OnInit, EventEmitter, Output } from '@angular/core'
-import { HttpClient } from '@angular/common/http'
-import { Router } from '@angular/router';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Router} from '@angular/router'
 
-import { AuthService } from '../shared/services/auth.service';
-import { MainService } from '../shared/services/main.service';
+import {AuthService} from '../shared/services/auth.service'
+import {MainService} from '../shared/services/main.service'
+
+export interface CatalogItem {
+  cust_id: number
+  id: number
+  isshow: "1"
+  listInnerCat: CatalogItem[]
+  parent_id: number
+  picture: string
+  txt: string
+}
+
+interface SelectedItem {
+  [key: string]: CatalogItem
+}
 
 @Component({
   selector: 'app-categories',
@@ -11,105 +24,75 @@ import { MainService } from '../shared/services/main.service';
   styleUrls: ['./categories.component.scss']
 })
 export class CategoriesComponent implements OnInit {
-  catalog
-  selected = {}
+  catalog: CatalogItem[]
+  selected: SelectedItem = {}
 
-  showCatalog = false
-  clickCount
-  clickCnt: string = null
+  @Input() showCatalog = false
 
-  items = []
-
-  selectedRows = []
-
+  @Output() lastChildAction = new EventEmitter<CatalogItem[]>()
 
   constructor(private router: Router,
               private authService: AuthService,
               private mainService: MainService) {
 
-                let advert = '1'
-
-                if(window.location.pathname.includes('addProduct')){
-                  advert = '1'
-                }
-                else{
-                  advert = null
-                }
-
-                let userId
-                if(window.location.pathname.includes('cabinet')){
-                  userId = this.authService.getUserId()
-                }
-                else{
-                  userId = null
-                }
+                let advert = window.location.pathname.includes('addProduct')? '1': null
+                let userId = window.location.pathname.includes('cabinet')? this.authService.getUserId(): null
 
                 this.mainService.getShopInfo().subscribe( (res) => {
                   this.mainService.getCategories(userId, advert).subscribe((res) => {
                     this.catalog = res
                     this.showCatalog = true
 
-                    const categories = this.mainService.loadCategoriesFromStorage();
-                    let index = 1;
+                    const categories = this.mainService.loadCategoriesFromStorage()
+                    let index = 1
                     for(const x of categories) {
-                      this.selected['lavel' + index] = x;
-                      index++;
+                      this.selected['lavel' + index] = x
+                      index++
                     }
-
-                    console.log(this.isActive(this.selected['lavel1'], res[0]));
                   })
                 })
 
   }
 
-  select(type, item, $event, index) {
+  select(type: string, item: CatalogItem, $event) {
     this.selected[type] = (this.selected[type] === item ? null : item)
     $event ? $event.stopPropagation() : null
 
+    // action on last child
     if(item.listInnerCat.length == 0){
       this.showCatalog = false
 
-      if(window.location.pathname.includes('addProduct')){
+      // convert item object to array
+      let items: CatalogItem[] = []
+      for(const x in this.selected) {
+        items.push(this.selected[x])
+        if (type === x) {
+          break
+        }
       }
-      else{
-        this.router.navigate([`${window.location.pathname}/categories/${item.id}/products`])
-      }
+      this.mainService.saveCategoriesToStorage(items)
+      this.lastChildAction.emit(items)
     }
-
-    this.items = []
-    for(const x in this.selected) {
-      this.items.push(this.selected[x])
-      if (type === x) {
-        break;
-      }
-    }
-    this.mainService.saveCategoriesToStorage(this.items)
   }
 
-  isActiveMod(type, item) {
-    return this.selected[type] === item
-  }
-
-  isActive(type, item) {
-    let typeMod = {};
+  isActive(type: string, item: CatalogItem) {
+    let typeMod = {}
     for(let typeElement in this.selected[type]) {
       if (typeElement != 'listInnerCat') {
-        typeMod[typeElement] = this.selected[type][typeElement];
+        typeMod[typeElement] = this.selected[type][typeElement]
       }
     }
-    let itemMod = {};
+    let itemMod = {}
     for(let itemElement in item) {
       if (itemElement != 'listInnerCat') {
-        itemMod[itemElement] = item[itemElement];
+        itemMod[itemElement] = item[itemElement]
       }
     }
-    return JSON.stringify(typeMod) === JSON.stringify(itemMod);
+    return JSON.stringify(typeMod) === JSON.stringify(itemMod)
   }
 
 
   ngOnInit() {
 
   }
-
-
 }
