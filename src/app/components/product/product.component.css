@@ -1,0 +1,38 @@
+img {
+  object-fit: scale-down;
+  max-width: 300px;
+  max-height: 300px;
+}
+
+#additional-images {
+  display: grid;
+  flex-grow: 1;
+  padding: 1rem;
+  overflow: auto;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-rows: repeat(auto-fit, minmax(300px, max-content));
+}
+
+.image-container {
+  display: flex;
+  margin: 20px;
+}
+
+.image-controls {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.image-controls i {
+  cursor: default;
+}
+
+.image-container i:hover {
+  box-shadow: 0 0 3px;
+  border-radius: 20px;
+}
+
+.image-container i:active {
+  background-color: darkgrey;
+}
