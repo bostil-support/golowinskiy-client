@@ -37,16 +37,15 @@
                 </div>
             </div>
         </div>
-
-        <pagination-template class="pagination_list" #p="paginationApi" (pageChange)="currentPage = $event" *ngIf="!showSpinner">
-          <div class="pagination_list__item" [class.disabled]="p.isFirstPage()">Предыдущая</div>
-          <div class="pagination_list__item" [class.current] = "p.getCurrent() === page.value" *ngFor="let page of p.pages" (click)="p.setCurrent(page.value)">
-            {{page.label}}
-          </div>
-          <div class="pagination_list__item" [class.disabled]="p.isLastPage()">Следующая</div>
-        </pagination-template>
     </div>
 
+    <pagination-template class="pagination_list" #p="paginationApi" (pageChange)="currentPage = $event" *ngIf="!showSpinner">
+      <div class="pagination_list__item" [class.disabled]="p.isFirstPage()">Предыдущая</div>
+      <div class="pagination_list__item" [class.current] = "p.getCurrent() === page.value" *ngFor="let page of p.pages" (click)="p.setCurrent(page.value)">
+        {{page.label}}
+      </div>
+      <div class="pagination_list__item" [class.disabled]="p.isLastPage()">Следующая</div>
+    </pagination-template>
 
     <router-outlet></router-outlet>
 

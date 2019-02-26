@@ -18,10 +18,13 @@
 .breadcrumbs_list {
   flex-wrap: wrap;
   padding-top: 70px;
+  padding-left: 15px;
+  margin: 0 auto;
   display: flex;
   flex-direction: row;
+  max-width: 1200px;
   &__item {
-    padding: 3px;
+    padding: 6px;
     font-size: 13px;
     background-color: rgba(0,0,0,0.78);
     color: white;
@@ -130,6 +133,8 @@
   display: flex;
   flex-direction: row;
   cursor: pointer;
+  padding-bottom: 80px;
+  justify-content: center;
   &__item {
     background-color: rgba(0,0,0,0.78);
     color: white;
