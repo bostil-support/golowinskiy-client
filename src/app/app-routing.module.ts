@@ -37,7 +37,7 @@ const routes: Routes = [
         { path: ':idProduct', component: DetailPageComponent }
     ]}, 
     { path: 'addProduct', component: AdvertisementPageComponent, canActivate: [AuthGuard] },
-    { path: 'editProduct', component: EditAdvertisementPageComponent, canActivate: [AuthGuard] }
+    { path: 'edit', component: EditAdvertisementPageComponent, canActivate: [AuthGuard] }
 ]
 
 @NgModule({

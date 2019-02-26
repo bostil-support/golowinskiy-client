@@ -56,7 +56,6 @@ export class CategoriesComponent implements OnInit {
                       index++;
                     }
 
-                    console.log(this.isActive(this.selected['lavel1'], res[0]));
                   })
                 })
 
