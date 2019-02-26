@@ -10,6 +10,7 @@ import { AppComponent } from './app.component'
 
 import { MainPageComponent } from './main-page/main-page.component'
 import { AdvertisementPageComponent } from './advertisement-page/advertisement-page.component'
+import { EditAdvertisementPageComponent } from './edit-advertisement-page/edit-advertisement-page.component'
 
 import { HeaderComponent } from './main-page/header/header.component'
 import { CabinetUserComponent } from './main-page/header/cabinet-user/cabinet-user.component'
@@ -34,6 +35,7 @@ import {NgxPaginationModule} from 'ngx-pagination';
     AppComponent,
     MainPageComponent,
     AdvertisementPageComponent,
+    EditAdvertisementPageComponent,
     HeaderComponent,
     CabinetUserComponent,
     DropdownDirective,
