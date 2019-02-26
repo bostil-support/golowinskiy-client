@@ -4,16 +4,24 @@
     <div class="showMessage" *ngIf="showSpinner">
         <i class="fa fa-spinner fa-spin"></i>
     </div>
-    <div class="showMessageTxt" *ngIf="message.text">        
-        <div 
+    <div class="showMessageTxt" *ngIf="message.text">
+        <div
             class="alert alert-{{message.type}}"
-        >            
+        >
             {{ message.text }}
         </div>
     </div>
-    
+
+    <div class="breadcrumbs_list" >
+      <div class="breadcrumbs_list__item" *ngFor="let item of categories; index as i" (click)="breadcrumbsClick()">
+        {{item.txt}}
+        <i class="fa fa-angle-right"></i>
+      </div>
+    </div>
+
+
     <div class="products_list">
-    
+
         <div class="products_list__item" *ngFor="let product of Gallery"
         [id]="product.prc_ID">
             <div class="products_list__item--main">
@@ -28,11 +36,11 @@
                     </div>
                 </div>
             </div>
-        </div>	  
-    
+        </div>
+
     </div>
-    
+
     <router-outlet></router-outlet>
-    
+
     <app-footer></app-footer>
 </div>

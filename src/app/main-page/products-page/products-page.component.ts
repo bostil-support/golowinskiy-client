@@ -18,6 +18,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   apiRoot
   showSpinner = true
   showBasket = false
+  categories = []
 
   message: Message
   sub: Subscription
@@ -31,7 +32,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
 
     this.message = new Message('danger', '')
 
-    this.apiRoot = environment.api      
+    this.apiRoot = environment.api
 
     this.sub = this.mainService.getShopInfo()
       .subscribe(
@@ -46,23 +47,24 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
             this.showBasket = true
           }
           this.mainService.getProducts(this.route.snapshot.params['id'], res.cust_id, cid).subscribe((res) => {
-            this.Gallery = res      
+            this.Gallery = res
             this.showSpinner = false
           })
           this.mainService.getFonPictures()
         },
         (error) => {
           this.mainService.getErrorFonPicture()
-        }          
+        }
       )
-    
+
+    this.categories = this.mainService.loadCategoriesFromStorage()
   }
 
   ngOnDestroy(){
     if(this.sub){
       this.sub.unsubscribe()
     }
-  }  
+  }
 
   private showMessage( text: string, type:string = 'danger'){
     this.message = new Message(type, text);
@@ -75,4 +77,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
       this.router.navigate([`/${window.location.pathname}/${el.prc_ID}`])
   }
 
+  breadcrumbsClick() {
+    this.router.navigate(['/'])
+  }
 }
