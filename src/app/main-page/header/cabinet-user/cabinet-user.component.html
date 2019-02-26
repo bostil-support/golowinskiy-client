@@ -1,0 +1,15 @@
+<div class="cabinet-user" *ngIf="this.authService.Account && showUser">
+  <div class="dropdown" wfmDropdown>
+    <div class="cabinet-user__item dropdown-toggle" role="button" id="dropdownMenu" data-toggle="dropdown">
+      <span class="name">
+          Здравствуйте, {{ this.authService.Account.fio }}
+      </span>
+    </div>
+    <div class="cabinet-user__item dropdown-menu" aria-labelledby="dropdownMenu">
+      <span class="dropdown-item" (click)="onLogout()">
+        <i class="fa fa-power-off icon"></i>
+        Выйти
+      </span>
+    </div> 
+  </div>
+</div>

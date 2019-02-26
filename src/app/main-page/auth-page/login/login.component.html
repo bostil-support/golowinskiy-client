@@ -1,0 +1,66 @@
+<h2>Вход для зарегистрированных пользователей</h2>
+<div class="showSpinner" *ngIf="showSpinner">
+  <i class="fa fa-spinner fa-spin"></i>
+</div>
+<div class="showMessage" *ngIf="message.text">            
+    <div class="alert alert-{{message.type}}">            
+        {{ message.text }}
+    </div>
+</div>    
+<form [formGroup]="form" (ngSubmit)="onSubmit()">    
+    <div  
+        class="form-group"
+        [ngClass]="{'has-error': form.get('email').invalid &&  form.get('email').touched}"
+    >
+        <input 
+            type="text" 
+            placeholder="Ваш e-mail"
+            id="email"
+            formControlName="email"
+            [(ngModel)]="authService.user.UserName"
+        >
+        <span 
+            class="form-help-text"
+            *ngIf="form.get('email').invalid &&  form.get('email').touched"
+        >
+            <span *ngIf="form.get('email')['errors']['required']">
+                Заполните Email 
+            </span>                        
+        </span>
+    </div>
+    <div  
+        class="form-group"
+        [ngClass]="{'has-error': form.get('password').invalid &&  form.get('password').touched}"
+    >
+        <input 
+            type="text" 
+            placeholder="Пароль"
+            id="password"
+            formControlName="password"
+            [(ngModel)]="authService.user.Password"
+        >
+        <span 
+            class="form-help-text"
+            *ngIf="form.get('password').invalid && form.get('password').touched"
+        >
+            <span *ngIf="form.get('password')['errors']['required']">
+                Заполните пароль
+            </span>                        
+        </span>
+    </div>                
+    <div class="form-group">
+        <button 
+            class="btn btn-block btn-primary"
+            type="submit"
+            [disabled]="form.invalid || form.disabled"
+        >
+            Войти 
+        </button>
+    </div>
+    <div class="form-group">
+        <a routerLink="/auth/recovery" [queryParams]="{route: params.route}">Забыли пароль</a>
+    </div> 
+    <div class="form-group">
+        <a routerLink="/auth/registration" [queryParams]="{route: params.route}">Зарегистрироваться</a>
+    </div>    
+</form>   

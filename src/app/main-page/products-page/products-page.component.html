@@ -1,0 +1,38 @@
+<div id="fon-image">
+    <app-header></app-header>
+
+    <div class="showMessage" *ngIf="showSpinner">
+        <i class="fa fa-spinner fa-spin"></i>
+    </div>
+    <div class="showMessageTxt" *ngIf="message.text">        
+        <div 
+            class="alert alert-{{message.type}}"
+        >            
+            {{ message.text }}
+        </div>
+    </div>
+    
+    <div class="products_list">
+    
+        <div class="products_list__item" *ngFor="let product of Gallery"
+        [id]="product.prc_ID">
+            <div class="products_list__item--main">
+                <img (click)="detail(product)" src="{{ apiRoot + 'Img?AppCode=' + product.appCode + '&ImgFileName=' + product.image_Base }}" alt="">
+            </div>
+            <div class="products_list__item--footer">
+                <h4 (click)="detail(product)">{{ product.tName }}</h4>
+                <div class="price">
+                    <p *ngIf="product.prc_Br">{{ product.prc_Br }}</p>
+                    <div *ngIf="showBasket" (click)="addToCart(product)" class="add_cart">
+                        <span>В корзину</span>
+                    </div>
+                </div>
+            </div>
+        </div>	  
+    
+    </div>
+    
+    <router-outlet></router-outlet>
+    
+    <app-footer></app-footer>
+</div>

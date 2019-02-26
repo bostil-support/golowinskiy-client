@@ -1,0 +1,100 @@
+<header>
+  <div class="header_list">
+
+    <!-- begin show only for mobile fersion-->
+    <div  class="header_list__item header_list__item--menu" (click)="openMenu()">
+        <i class="fa fa-bars" aria-hidden="true"></i> 
+    </div>    
+    <!-- end -->
+
+    <div class="header_list__item">
+
+      <a routerLink="/">
+        <div class="header_list__item--logo">
+          <img src="assets/images/logo.png">
+  
+          <!-- begin only show for desktop fersion-->
+            <span>Портал Головинского района</span>
+          <!-- end -->
+  
+        </div>
+      </a>
+
+      <div class="header_list__item--welcom">
+
+        <!-- begin show for desktop fersion-->
+          <h2>Добро пожаловать!</h2>
+        <!-- end -->
+
+        <!-- begin show only for mobile fersion-->
+          <h4>Добро пожаловать в</h4>
+          <span>Портал Головинского района</span>
+        <!-- end -->
+      </div>
+    </div>
+
+    <div class="header_list__item">
+      <!-- begin show for desktop fersion-->
+        <a *ngIf="hideOnMainPage" routerLink="/" >
+          <div class="header_list__item--back">       
+            <span>Вернуться к каталогу</span>            
+          </div>
+        </a>
+        <a *ngIf="hideCabinet" routerLink="/cabinet" >
+          <div class="header_list__item--cabinet">            
+            <i class="fa fa-user" aria-hidden="true"></i>
+            <span>Личный кабинет</span>            
+          </div>
+        </a>
+        <app-cabinet-user></app-cabinet-user>
+      <!-- end -->
+      <!-- begin show for desktop fersion-->
+        <a routerLink="/addProduct">
+          <div class="header_list__item--advertisement">          
+            <button>Подать объявление</button>          
+          </div>
+        </a>
+      <!-- end -->
+      <a *ngIf="showBasket">
+        <div class="header_list__item--basket">
+          <div class="basket">
+            <img src="assets/images/cart.png">
+            <!-- begin show only for mobile fersion-->
+              <div></div>
+            <!-- end -->
+          </div>
+          <!-- begin show for desktop fersion-->
+          <div class="order">
+            <p>Сумма товаров: <span>0 руб.</span></p>
+            <p>Количество товаров: <span>0 шт.</span></p>
+          </div>
+          <!-- end -->
+        </div>
+      </a>
+
+    </div>
+  </div>
+</header>
+
+<ul class="menu_list" *ngIf="showMenu">
+  <li class="menu_list__item--close">
+    <i (click)="closeMenu()" class="fa fa-times" aria-hidden="true"></i>
+  </li>
+  <li class="menu_list__item menu_list__item--cabinet" *ngIf="hideCabinet" routerLink="/cabinet">
+    <i class="fa fa-user" aria-hidden="true"></i>
+    <span>Личный кабинет</span>   
+  </li>
+  <li routerLink="/addProduct" class="menu_list__item">
+    <span>Подать объявление</span>
+  </li>
+  <li class="menu_list__item" *ngIf="hideOnMainPage" (click)="back()">
+    <span>Вернуться к каталогу</span>
+  </li>  
+  <li class="menu_list__item menu_list__item--user" *ngIf="this.authService.isAuthenticated()">
+    <div class="name">Здравствуйте, {{ this.authService.Account.fio }}</div>
+    <div class="exit" (click)="onLogout()">
+      <i class="fa fa-power-off icon"></i>
+      <span>Выйти</span>
+    </div>
+  </li>
+</ul> 

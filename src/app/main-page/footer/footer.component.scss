@@ -1,0 +1,32 @@
+*{
+	margin: 0;
+	padding: 0;
+}
+footer{
+    background: #127387;
+    opacity: 0.9;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    .footer_list{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;	
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 9px 15px 8px;        
+        @media screen and (max-width: 430px) {
+            padding: 8px 10px;
+        }
+        &__item{
+            color: #ffffff;
+            font-size: 16px;
+            &--right{
+                color: #ffffff;
+                text-align: right;
+                font-size: 16px;
+            }
+        }
+    }
+}

@@ -1,0 +1,115 @@
+<div *ngIf="showSpinner" class="showSpinner">
+  <i class="fa fa-spinner" aria-hidden="true"></i>
+</div>
+
+<div class="showMessageTxt" *ngIf="message.text">        
+  <div
+      class="alert alert-{{message.type}}"
+  >            
+      {{ message.text }}
+  </div>
+</div>
+
+
+<div class="detail_product">
+  <div (click)="close(element)" class="close">
+    <i class="fa fa-times" aria-hidden="true"></i>
+  </div>
+  <div class="detail_product__item detail_product__item--left">
+    <div class="detail_product__item--images">
+      <div class="arrows prew"
+      [attr.data-next]="prevElementId" 
+      (click)="routePrewProduct(element)">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+      </div>
+      <div class="image">
+        <img [src]="apiRoot + 'Img?AppCode=' + appCode + '&ImgFileName=' + elementImage_Base">
+      </div>
+      <div class="arrows next"             
+          [attr.data-next]="nextElementId" 
+          (click)="routeNextProduct(element)">
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </div>
+    </div>
+
+    <!-- begin show only for mobile fersion-->
+      <div *ngIf="showProduct && element.additionalImages" class="detail_product__item--additional_images">
+        <div *ngIf="showAdditionalImages" class="arrows prew">
+          <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        </div>
+        <div class="images">
+          <img  
+            *ngFor="let item of additionalImages"
+            (mouseenter)="mouseOverImg(item)" (mouseleave)="mouseLeaveImg(element)"
+            [src]="apiRoot + 'Img?AppCode=' + appCode + '&ImgFileName=' + item.t_image"
+          >
+        </div>
+        <div *ngIf="showAdditionalImages" class="arrows next">
+          <i class="fa fa-chevron-right" aria-hidden="true"></i>
+        </div>
+      </div>
+    <!-- end -->
+
+    <div class="detail_product__item--main_information">
+      <div class="text">
+        <h4 *ngIf="element.tName">{{ element.tName }}</h4>
+        <p *ngIf="element.prc_Br">{{ element.prc_Br }}</p>
+      </div>
+
+      <div *ngIf="showEdit" class="edit" (click)="editProduct(element)">
+        <span>Редактировать</span>
+      </div>
+
+      <div *ngIf="showBasket" class="basket"
+      (click)="addToCart(element)">
+        <img src="assets/images/white-cart.png">
+        <span>В корзину</span>
+
+      </div>
+    </div>
+  </div>
+  
+  <div class="detail_product__item detail_product__item--right">
+    <h4 *ngIf="element">{{ element.tName }}</h4>
+    <p *ngIf="element.catalog">{{ element.catalog }}</p>
+    <!-- begin show only for desktop fersion-->
+      <div *ngIf="showProduct && element.additionalImages" class="additional_images">
+        <div *ngIf="showAdditionalImages" class="arrows prew">
+          <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        </div>
+        <div class="images">
+          <img 
+            *ngFor="let item of additionalImages"
+            (mouseenter)="mouseOverImg(item)" (mouseleave)="mouseLeaveImg(element)"
+            [src]="apiRoot + 'Img?AppCode=' + appCode + '&ImgFileName=' + item.t_image"
+          >
+        </div>
+        <div *ngIf="showAdditionalImages" class="arrows next">
+          <i class="fa fa-chevron-right" aria-hidden="true"></i>
+        </div>
+      </div>
+    <!-- end -->
+    <div class="description" id="show_description">
+      <p *ngIf="element.tDescription" 
+        [innerHtml]="element.tDescription"
+      >{{ element.tDescription }}</p>
+      <h6>Контакты</h6>
+      <div class="phone">
+        <i class="fa fa-phone" aria-hidden="true"></i>
+        <span>8-916-1616146</span>
+      </div>
+      <div class="email">
+        <i class="fa fa-envelope-o" aria-hidden="true"></i>
+        <span>golovinskiy-rf@mail.ru</span>
+      </div>
+    </div>
+    <!-- begin show only for mobile fersion-->
+      <p *ngIf="showDescription" (click)="showDetail(element)" class="detail">Смотреть полное описание</p>
+    <!-- end -->
+    <div class="application">
+      <img src="assets/images/app1.png">
+      <img src="assets/images/app2.png">
+    </div>
+  </div>
+
+</div>

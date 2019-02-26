@@ -1,0 +1,151 @@
+/* You can add global styles to this file, and also import other style files */
+@import "constants.scss";
+@font-face {
+  font-family: 'calibril';
+  src: url('/assets/fonts/calibril.ttf');
+}
+
+*{
+	margin: 0;
+  padding: 0;
+  outline: none;
+  list-style-type: none;
+}
+body{
+  font-family: 'forum' !important;
+  height: 100%;
+}
+
+/*begin login, registration, recovery component*/
+.modal_window{
+    position: absolute;
+    z-index: 3;
+    left: 20%;
+    right: 20%;
+    top: 15%; 
+    width: 60%;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;  
+    padding: 4%;
+    @media only screen and (max-width: 992px) {
+      width: 100%;
+      left: 0;
+      right: 0;
+    }
+    @media only screen and (max-width: 768px) {
+      padding: 6%;
+    }
+    @media only screen and (max-width: 480px) {
+      padding: 7%;
+    }
+    > i{
+      top: 1%;
+      right: 1%;
+      position: absolute;
+      color: #ffffff;
+      font-size: 30px;
+      cursor: pointer;  
+    }
+    .modal_inner{
+      background-color: #ffffff;
+      padding: 25px 40px;
+      border-radius: 10px;
+      @media only screen and (max-width: 768px) {
+        padding: 25px 20px;
+      }
+      h2{
+        color: rgba(24, 150, 145, 1);
+        font-size: 22px;
+        text-align: center;
+        margin-bottom: 25px;
+      }
+      .form-group{
+        input{
+          width: 100%;
+          height: 40px;
+          border: 1px solid rgba(24, 150, 145, 1);
+          padding-left: 10px;
+        }
+        a{
+          color: rgba(24, 150, 145, 1) !important;
+        }
+      }
+      .btn-primary{
+        background-color: rgba(24, 150, 145, 1) !important;
+        border-color: rgba(24, 150, 145, 1) !important;
+        :disabled {
+          background-color: rgb(5, 202, 195) !important;
+          border-color: rgb(5, 202, 195) !important;
+        }
+      } 
+    }
+    .showMessage{
+      text-align: center;
+    }
+    .showSpinner{
+      text-align: center;
+      > i{
+        color: rgba(24, 150, 145, 1);
+        margin-bottom: 25px;
+        font-size: 33px;
+      }
+    }
+  }
+  /*end login, registration, recovery components*/
+
+
+#fon-image{
+  //background: url('../../assets/images/fon.png') no-repeat 50% 50%;
+  background-size: cover !important;
+  position: relative;
+  min-height: calc(100vh);
+  .data{
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+    color: white;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 15px 15px;
+    text-align: left;
+    font-size: 41px;
+    line-height: 1;
+    @media only screen and (max-width: 768px) {
+      font-size: 30px;
+    }
+    p{
+      margin: 0;
+    }
+    .data-time{
+      font-size: 80px;
+      font-family: 'calibril';
+      @media only screen and (max-width: 768px) {
+        font-size: 65px;
+      }
+    }
+  }
+}
+
+  h2{
+    color: rgba(24, 150, 145, 1);
+    font-size: 22px;
+    text-align: center;
+    margin-bottom: 25px;
+  }
+  .form-group{
+    input{
+      width: 100%;
+      height: 40px;
+      border: 1px solid rgba(24, 150, 145, 1);
+      padding-left: 10px;
+    }
+    a{
+      color: rgba(24, 150, 145, 1) !important;
+    }
+  }
+  .btn-primary{
+    background-color: rgba(24, 150, 145, 1) !important;
+    border-color: rgba(24, 150, 145, 1) !important;
+    :disabled {
+      background-color: rgb(5, 202, 195) !important;
+      border-color: rgb(5, 202, 195) !important;
+    }
+  } 
