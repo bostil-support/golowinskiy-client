@@ -62,7 +62,7 @@ export class DetailPageComponent implements OnInit {
         this.Gallery = res      
       }) 
 
-      this.mainService.getProduct(this.route.snapshot.params.idProduct, res.cust_id).subscribe( 
+      this.mainService.getProduct(this.route.snapshot.params.idProduct, res.cust_id, res.cust_id).subscribe( 
         (res: any) => {
           this.element = res
           this.elementImage_Base = res.t_imageprev
@@ -137,7 +137,7 @@ export class DetailPageComponent implements OnInit {
 
     this.elCurrentId = this.nextElementId
 
-    this.mainService.getProduct(this.nextElementId, this.appCode).subscribe(
+    this.mainService.getProduct(this.nextElementId, this.appCode, this.appCode).subscribe(
       (res: any) => {
           this.element = res
           this.elementImage_Base = res.t_imageprev
@@ -174,7 +174,7 @@ export class DetailPageComponent implements OnInit {
     }
     this.elCurrentId = this.prevElementId 
 
-    this.mainService.getProduct(this.prevElementId, this.appCode).subscribe(
+    this.mainService.getProduct(this.prevElementId, this.appCode, this.appCode).subscribe(
       (res: any) => {
           this.element = res
           this.elementImage_Base = res.t_imageprev

@@ -105,7 +105,7 @@ export class EditAdvertisementPageComponent implements OnInit {
 
     this.mainService.getShopInfo().subscribe(res => {
       this.AppCode = res.cust_id
-      this.mainService.getProduct(this.route.snapshot.params['idProduct'], localStorage.getItem('userId'))
+      this.mainService.getProduct(this.route.snapshot.params['idProduct'], localStorage.getItem('userId'), res.cust_id)
       .subscribe( (res: any) => {  
         this.srcImg = `${environment.api}Img?AppCode=${this.AppCode}&ImgFileName=${res.t_imageprev}`
         this.srcImgName = res.t_imageprev  

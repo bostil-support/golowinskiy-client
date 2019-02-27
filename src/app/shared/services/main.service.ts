@@ -114,12 +114,12 @@ export class MainService{
         )
     }
 
-    getProduct(prc_ID: any, cust_id){
+    getProduct(prc_ID: any, cust_id, appCode){
         return this.http.post(`${environment.api}Img`,
             {
                 "prc_ID": prc_ID,
                 "cust_ID": cust_id,
-                "appCode": cust_id
+                "appCode": appCode
             }
         )
     }
@@ -129,7 +129,7 @@ export class MainService{
     }
 
     addProduct(data: any, headers){
-        return this.http.post(`${environment.api}Img`, data, headers)
+        return this.http.post(`${environment.api}product`, data, headers)
     }
 
     deleteProduct(data: any){

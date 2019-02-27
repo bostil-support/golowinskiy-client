@@ -200,7 +200,7 @@ export class AdvertisementPageComponent implements OnInit {
       // todo rework
       this.data_form = {
         "Catalog": res.cust_id,      //nomer catalog
-        "Id": null,         // post categories/
+        "Id": this.idCategorie,         // post categories/
         "Ctlg_Name": formData.Categories,     //input form
         "TArticle": formData.Article, //input form
         "TName": formData.TName, //input form
@@ -332,5 +332,6 @@ export class AdvertisementPageComponent implements OnInit {
     this.categories = items;
     let item = items[items.length - 1];
     this.itemName = item.txt;
+    this.idCategorie = item.id;
   }
 }
