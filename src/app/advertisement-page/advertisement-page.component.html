@@ -40,12 +40,12 @@
           </div>
       </div>
 
-      <app-categories (lastChildAction)="categorySelect($event)"></app-categories>
+      <app-categories (lastChildAction)="categorySelect($event)" [showCatalog]="showCatalog"></app-categories>
 
       <div class="row justify-content-md-center choosed">
           <div class="col-lg-8 col-xs-12 no-padding">
               Вы выбрали раздел
-            <app-breadcrumbs [categories]="categories"></app-breadcrumbs>
+            <app-breadcrumbs [categories]="categories" (click)="breadcrumbsClick()"></app-breadcrumbs>
           </div>
       </div>
       <div class="row justify-content-md-center choosed">
@@ -160,16 +160,17 @@
                               type="file"
                               id="TImageprev"
                               formControlName="TImageprev"
-                              (change)="onFileSelected($event)"
+                              (change)="mainFileSelected($event)"
                               #fileInput
                               capture="camera"
                           >
                           <div class="upload btn-file" (click)="fileInput.click()">
                               <img id="img"
-                                  [src]="srcImg"
+                                  [src]="mainImageData.src"
                                   style="width:100px; height:70px" alt=""
                               >
-                              <i *ngIf="uploadImg" class="fa fa-upload arrow" aria-hidden="true"></i>
+                              <i *ngIf="!mainImageData.blob" class="fa fa-upload arrow" aria-hidden="true"></i>
+                              <i *ngIf="mainImageData.blob" class="fa fa-rotate-right" (click)="redraw(mainImageData, 90)"></i>
                           </div>
                       </div>
                   </div>
@@ -188,25 +189,26 @@
                                   style="display: none;"
                                   type="file"
                                   name="onFilesMultipleSelectedAdd"
-                                  (change)="onFilesMultipleSelectedAdd($event)"
+                                  (change)="additionalImagesAdd($event)"
                                   #filesInputAdd
                                   capture="camera"
                                   [disabled]="isDisabled"
                               >
-                              <div *ngFor="let url of urls let i = index">
+                              <div *ngFor="let image of additionalImagesData let i = index">
                                    <input
                                       style="display: none;"
                                       type="file"
                                       name="onFilesMultipleSelected"
-                                      (change)="onFilesMultipleSelected($event, i)"
+                                      (change)="additionalImagesChange($event, i)"
                                       #filesInput
                                       capture="camera"
                                   >
                                   <img (click)="filesInput.click()"
                                       alt=""
-                                      [src]="url"
+                                      [src]="image.src"
                                   >
-                                  <i class="fa fa-times delete" (click)="deleteImages(url, i)" aria-hidden="true"></i>
+                                  <i class="fa fa-times delete" (click)="removeAdditionalImage(i)" aria-hidden="true"></i>
+                                  <i class="fa fa-times fa-repeat" (click)="redraw(image, 90)" aria-hidden="true"></i>
                               </div>
                               <i class="fa fa-upload arrow" aria-hidden="true"
                                   (click)="filesInputAdd.click()"

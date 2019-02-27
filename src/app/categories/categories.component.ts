@@ -26,8 +26,9 @@ interface SelectedItem {
 export class CategoriesComponent implements OnInit {
   catalog: CatalogItem[]
   selected: SelectedItem = {}
+  loaded = false
 
-  @Input() showCatalog = false
+  @Input() showCatalog = true
 
   @Output() lastChildAction = new EventEmitter<CatalogItem[]>()
 
@@ -41,7 +42,7 @@ export class CategoriesComponent implements OnInit {
                 this.mainService.getShopInfo().subscribe( (res) => {
                   this.mainService.getCategories(userId, advert).subscribe((res) => {
                     this.catalog = res
-                    this.showCatalog = true
+                    // this.showCatalog = true
 
                     const categories = this.mainService.loadCategoriesFromStorage()
                     let index = 1
@@ -49,6 +50,7 @@ export class CategoriesComponent implements OnInit {
                       this.selected['lavel' + index] = x
                       index++
                     }
+                    this.loaded = true
                   })
                 })
 
@@ -60,7 +62,7 @@ export class CategoriesComponent implements OnInit {
 
     // action on last child
     if(item.listInnerCat.length == 0){
-      this.showCatalog = false
+      // this.showCatalog = false
 
       // convert item object to array
       let items: CatalogItem[] = []

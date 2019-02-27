@@ -1,14 +1,14 @@
 <div style="padding-top: 70px;">
-  <ul *ngIf="showCatalog" class="nav flex-column flex-nowrap text-truncate left-menu">
+  <ul *ngIf="loaded && showCatalog" class="nav flex-column flex-nowrap text-truncate left-menu">
     <h5>Выберите раздел каталога</h5>
     <ul id="first-menu">
       <li class="nav-item" *ngFor="let l1 of catalog let x = index" (click)="select('lavel1', l1, $event, x);" [ngClass]="{active: isActive('lavel1', l1)}">
         <a>{{l1.txt}}</a>
-        
+
         <ul style="display:none;">
           <li class="nav-item" *ngFor="let l2 of l1.listInnerCat let y = index" (click)="select('lavel2', l2, $event, y);" [ngClass]="{active: isActive('lavel2', l2)}">
             <a>{{l2.txt}}</a>
-            
+
             <ul style="display:none;">
               <li class="nav-item" *ngFor="let l3 of l2.listInnerCat let z = index" (click)="select('lavel3', l3, $event, z);" [ngClass]="{active: isActive('lavel3', l3)}">
                 <a>{{l3.txt}}</a>
@@ -31,7 +31,7 @@
 
           </li>
         </ul>
-        
+
       </li>
     </ul>
   </ul>

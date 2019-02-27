@@ -16,7 +16,9 @@ import { Product } from '../../shared/interfaces';
 export class DetailPageComponent implements OnInit {
 
   apiRoot
-  element
+  element = {
+    additionalImages: []
+  }
   appCode
   showDescription = true
   showProduct = false
@@ -41,7 +43,7 @@ export class DetailPageComponent implements OnInit {
 
   constructor(private mainService: MainService,
     private route: ActivatedRoute,
-    private router: Router) {}              
+    private router: Router) {}
 
   ngOnInit() {
     this.apiRoot = environment.api
@@ -63,16 +65,16 @@ export class DetailPageComponent implements OnInit {
       this.appCode = res.cust_id
 
       this.mainService.getProducts(this.route.snapshot.params['id'], res.cust_id, cid).subscribe((res) => {
-        this.allGallery = res    
-        if(this.route.snapshot.params['idProduct'] == this.allGallery[0].prc_ID){      
+        this.allGallery = res
+        if(this.route.snapshot.params['idProduct'] == this.allGallery[0].prc_ID){
           this.showPrevElementId = false
         }
         else{
           this.showPrevElementId = true
         }
 
-        
-        
+
+
         if(this.route.snapshot.params['idProduct'] == this.allGallery[this.allGallery.length-1].prc_ID){
           this.showNextElementId = false
           console.log(this.route.snapshot.params['idProduct'], this.allGallery[this.allGallery.length-1].prc_ID)
@@ -81,9 +83,9 @@ export class DetailPageComponent implements OnInit {
           console.log(this.route.snapshot.params['idProduct'], this.allGallery[this.allGallery.length-1].prc_ID)
           this.showNextElementId = true
         }
-      }) 
+      })
 
-      this.mainService.getProduct(this.route.snapshot.params.idProduct, res.cust_id, res.cust_id).subscribe( 
+      this.mainService.getProduct(this.route.snapshot.params.idProduct, res.cust_id, res.cust_id).subscribe(
         (res: any) => {
           this.element = res
           this.elementImage_Base = res.t_imageprev
@@ -96,11 +98,11 @@ export class DetailPageComponent implements OnInit {
             this.showAdditionalImages = false
             this.additionalImages = this.element.additionalImages
           }
-          this.showSpinner = false 
-        })    
+          this.showSpinner = false
+        })
       })
 
-    
+
 
   }
 
@@ -117,17 +119,17 @@ export class DetailPageComponent implements OnInit {
     }
     else{
       this.router.navigate([`/categories/${el.id}/products`])
-    }    
+    }
   }
 
   showDetail(el){
     let a = document.getElementById('show_description')
     a.className = 'description show'
-    this.showDescription = false    
+    this.showDescription = false
   }
 
   editProduct(el){
-    this.router.navigate(['/cabinet/categories', el.id, 'products', el.prc_ID, 'edit'])    
+    this.router.navigate(['/cabinet/categories', el.id, 'products', el.prc_ID, 'edit'])
   }
 
   deleteProduct(el: Product){
@@ -153,21 +155,21 @@ export class DetailPageComponent implements OnInit {
 
     this.showPrevElementId = true
 
-    this.showSpinner = true    
+    this.showSpinner = true
     if(this.elCurrentId == undefined){
       this.elCurrentId = el.prc_ID
     }
 
-    for(var i=0; i<this.allGallery.length-1; i++){ 
+    for(var i=0; i<this.allGallery.length-1; i++){
       if(this.elCurrentId == this.allGallery[i].prc_ID){
-        this.nextElementId = this.allGallery[i+1].prc_ID 
+        this.nextElementId = this.allGallery[i+1].prc_ID
         if(window.location.href.includes('cabinet')){
-          this.router.navigate(['/cabinet', 'categories', this.allGallery[i+1].id, 'products', this.allGallery[i+1].prc_ID])                    
-        }  
-        else{
-          this.router.navigate(['/categories', this.allGallery[i+1].id, 'products', this.allGallery[i+1].prc_ID])                    
+          this.router.navigate(['/cabinet', 'categories', this.allGallery[i+1].id, 'products', this.allGallery[i+1].prc_ID])
         }
-      }  
+        else{
+          this.router.navigate(['/categories', this.allGallery[i+1].id, 'products', this.allGallery[i+1].prc_ID])
+        }
+      }
     }
 
     this.elCurrentId = this.nextElementId
@@ -184,7 +186,7 @@ export class DetailPageComponent implements OnInit {
             this.showAdditionalImages = false
             this.additionalImages = this.element.additionalImages
           }
-          this.showSpinner = false 
+          this.showSpinner = false
       }
     )
 
@@ -193,25 +195,25 @@ export class DetailPageComponent implements OnInit {
   routePrewProduct(el){
 
     this.showNextElementId = true
-    this.showSpinner = true 
+    this.showSpinner = true
 
     if(this.elCurrentId == undefined){
       this.elCurrentId = el.prc_ID
-    }  
+    }
     for(var i=0; i<this.allGallery.length; i++){
-      if(this.elCurrentId == this.allGallery[i].prc_ID){       
-       
+      if(this.elCurrentId == this.allGallery[i].prc_ID){
+
         this.prevElementId = this.allGallery[i-1].prc_ID
         if(window.location.href.includes('cabinet')){
-          this.router.navigate(['/cabinet', 'categories', this.allGallery[i-1].id, 'products', this.allGallery[i-1].prc_ID]);                    
-        }  
+          this.router.navigate(['/cabinet', 'categories', this.allGallery[i-1].id, 'products', this.allGallery[i-1].prc_ID]);
+        }
         else{
-          this.router.navigate(['/categories', this.allGallery[i-1].id, 'products', this.allGallery[i-1].prc_ID]);                    
-        }        
-        
-      }            
+          this.router.navigate(['/categories', this.allGallery[i-1].id, 'products', this.allGallery[i-1].prc_ID]);
+        }
+
+      }
     }
-    this.elCurrentId = this.prevElementId 
+    this.elCurrentId = this.prevElementId
 
     this.mainService.getProduct(this.prevElementId, this.appCode, this.appCode).subscribe(
       (res: any) => {
@@ -225,7 +227,7 @@ export class DetailPageComponent implements OnInit {
             this.showAdditionalImages = false
             this.additionalImages = this.element.additionalImages
           }
-          this.showSpinner = false 
+          this.showSpinner = false
       }
     )
 

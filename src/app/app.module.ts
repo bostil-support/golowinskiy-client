@@ -53,7 +53,6 @@ import {BreadcrumbsComponent} from './breadcrumbs/breadcrumbs.component';
     HttpClientModule,
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,

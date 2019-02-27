@@ -1,11 +1,11 @@
-import { Injectable, EventEmitter } from "@angular/core";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { Observable } from "rxjs";
-import { tap } from "rxjs/operators";
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {concat, from, Observable} from 'rxjs';
+import {mergeMap, tap} from 'rxjs/operators';
 
-import { environment } from "src/environments/environment";
-import { CatalogItem } from '../../categories/categories.component';
-import { Product } from "../interfaces";
+import {environment} from 'src/environments/environment';
+import {CatalogItem} from '../../categories/categories.component';
+import {AdditionalImagesData, AdditionalImagesRequest, Product} from '../interfaces';
 
 
 @Injectable({
@@ -129,6 +129,12 @@ export class MainService{
         return this.http.post(`${environment.api}img/upload/`, data)
     }
 
+    uploadImageGroup(data: FormData[]) {
+        return from(data).pipe(
+          mergeMap(item => this.uploadImage(item))
+        )
+    }
+
     addProduct(data: any, headers){
         return this.http.post(`${environment.api}product`, data, headers)
     }
@@ -153,6 +159,20 @@ export class MainService{
 
     addAdditionalImg(data: any, headers){
         return this.http.post(`${environment.api}AdditionalImg`, data, headers)
+    }
+
+    additionalImagesGroup(data: AdditionalImagesData[]) {
+      return from(data).pipe(
+        mergeMap(item =>
+          concat(this.uploadImage(item.imageData),
+            this.additionalImageUpload(item.request)
+          )
+        )
+      )
+    }
+
+    additionalImageUpload(additionalData: AdditionalImagesRequest) {
+      return this.http.post(`${environment.api}AdditionalImg `, additionalData);
     }
 
     saveCategoriesToStorage(categories) {

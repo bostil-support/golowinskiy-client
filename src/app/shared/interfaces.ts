@@ -7,6 +7,22 @@ export interface User{
     password: string
 }
 
+export interface AdditionalImagesRequest {
+  catalog: string,
+  id: string,
+  prc_ID: string,
+  imageOrder: number,
+  tImage: Blob | string,
+  appcode: string,
+  cid: string
+}
+
+export interface AdditionalImagesData {
+  request: AdditionalImagesRequest,
+  imageData: FormData,
+}
+
+
 export interface Product{
     prc_ID: number,
     cust_ID: number,

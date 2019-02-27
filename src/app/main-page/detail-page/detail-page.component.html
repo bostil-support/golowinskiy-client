@@ -2,10 +2,10 @@
   <i class="fa fa-spinner" aria-hidden="true"></i>
 </div>
 
-<div class="showMessageTxt" *ngIf="message.text">        
+<div class="showMessageTxt" *ngIf="message.text">
   <div
       class="alert alert-{{message.type}}"
-  >            
+  >
       {{ message.text }}
   </div>
 </div>
@@ -18,15 +18,15 @@
   <div class="detail_product__item detail_product__item--left">
     <div class="detail_product__item--images">
       <div class="arrows prew"
-      [attr.data-next]="prevElementId" 
+      [attr.data-next]="prevElementId"
       (click)="routePrewProduct(element)">
         <i *ngIf="showPrevElementId" class="fa fa-chevron-left" aria-hidden="true"></i>
       </div>
       <div class="image">
         <img [src]="apiRoot + 'Img?AppCode=' + appCode + '&ImgFileName=' + elementImage_Base">
       </div>
-      <div class="arrows next"             
-          [attr.data-next]="nextElementId" 
+      <div class="arrows next"
+          [attr.data-next]="nextElementId"
           (click)="routeNextProduct(element)">
         <i *ngIf="showNextElementId" class="fa fa-chevron-right" aria-hidden="true"></i>
       </div>
@@ -38,7 +38,7 @@
           <i class="fa fa-chevron-left" aria-hidden="true"></i>
         </div>
         <div class="images">
-          <img  
+          <img
             *ngFor="let item of additionalImages"
             (mouseenter)="mouseOverImg(item)" (mouseleave)="mouseLeaveImg(element)"
             [src]="apiRoot + 'Img?AppCode=' + appCode + '&ImgFileName=' + item.t_image"
@@ -72,7 +72,7 @@
       </div>
     </div>
   </div>
-  
+
   <div class="detail_product__item detail_product__item--right">
     <h4 *ngIf="element">{{ element.tName }}</h4>
     <p *ngIf="element.catalog">{{ element.catalog }}</p>
@@ -82,7 +82,7 @@
           <i class="fa fa-chevron-left" aria-hidden="true"></i>
         </div>
         <div class="images">
-          <img 
+          <img
             *ngFor="let item of additionalImages"
             (mouseenter)="mouseOverImg(item)" (mouseleave)="mouseLeaveImg(element)"
             [src]="apiRoot + 'Img?AppCode=' + appCode + '&ImgFileName=' + item.t_image"
@@ -94,7 +94,7 @@
       </div>
     <!-- end -->
     <div class="description" id="show_description">
-      <p *ngIf="element.tDescription" 
+      <p *ngIf="element.tDescription"
         [innerHtml]="element.tDescription"
       >{{ element.tDescription }}</p>
       <h6>Контакты</h6>

@@ -1,13 +1,21 @@
-import { Component, OnInit, HostListener, ViewChild, ElementRef } from '@angular/core';
-import { Http, Response, Headers, RequestOptions } from '@angular/http';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Headers} from '@angular/http';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {Router} from '@angular/router';
 
-import { environment } from 'src/environments/environment';
-import { Message } from 'src/app/shared/models/message.model';
-import { AuthService } from 'src/app/shared/services/auth.service';
-import { MainService } from '../shared/services/main.service';
+import {environment} from 'src/environments/environment';
+import {Message} from 'src/app/shared/models/message.model';
+import {AuthService} from 'src/app/shared/services/auth.service';
+import {MainService} from '../shared/services/main.service';
 import {CatalogItem} from '../categories/categories.component';
+import {AdditionalImagesData, AdditionalImagesRequest} from '../shared/interfaces';
+import {Observable} from 'rxjs';
+
+export interface ImageDataInterface {
+  src: string;
+  name: string;
+  blob: Blob;
+}
 
 @Component({
   selector: 'app-advertisement-page',
@@ -21,31 +29,27 @@ export class AdvertisementPageComponent implements OnInit {
   cust_id
 
   form: FormGroup
-  dataForm: any
   data_form: any
   formDataImages: any
-  srcImg = ''
-  selectedFile: File = null
-  selectedFiles: File = null
-  files: any
-  urls = []
-  dataAddImg
-  filesImg = []
-  imageIndexList = []
-  imageIndex: any
-  imageName: string
 
   message: Message
 
   showValidators = false
   showSpinner = true
-  uploadImg = true
   isDisabled = true
 
-
-  idCategorie
+  idCategory
   itemName = ''
-  categories: CatalogItem[];
+  categories: CatalogItem[]
+  showCatalog = true
+
+  // new images code
+  mainImageData: ImageDataInterface = {
+    src: '',
+    name: '',
+    blob: null
+  }
+  additionalImagesData: ImageDataInterface[] = []
 
   @ViewChild('submitButton') submitButton: ElementRef
 
@@ -82,67 +86,84 @@ export class AdvertisementPageComponent implements OnInit {
     })
     this.message = new Message('danger', '')
     this.mainService.getShopInfo().subscribe(
-      () => {
+      (res) => {
+        this.cust_id = res.cust_id;
         this.showSpinner = false
+        this.userId = this.authService.getUserId()
       }
     )
+  }
+
+  loadFile(files: File, callback: (src: string, name: string) => any) {
+    const file = files;
+    const reader = new FileReader();
+    reader.onload = () => callback(reader.result.toString(), file.name);
+    reader.readAsDataURL(file);
+  }
+
+  redraw(element: ImageDataInterface, angle: number) {
+    const image: HTMLImageElement = new Image();
+    image.onload = () => {
+      const canvas = document.createElement('canvas');
+      [canvas.width, canvas.height] = [image.width, image.height];
+      if (angle === Math.abs(90)) {
+        [canvas.width, canvas.height] = [canvas.height, canvas.width];
+      }
+      const context = canvas.getContext('2d');
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.save();
+      context.translate(canvas.width / 2, canvas.height / 2);
+      context.rotate(angle * Math.PI / 180);
+      context.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2);
+      context.restore();
+      canvas.toBlob((blob: Blob) => {
+        element.blob = blob;
+      });
+      element.src = canvas.toDataURL();
+    };
+    image.src = element.src;
+  }
+
+  removeAdditionalImage(index: number) {
+    this.additionalImagesData.splice(index, 1);
   }
 
   Validators(el){
     this.itemName = el.txt
   }
 
-  onFileSelected(event){
-    this.selectedFile = <File>event.target.files[0]
-    var reader = new FileReader()
-    reader.onload = (event: any) => {
-      this.srcImg = event.target.result
-      this.uploadImg = false
-    }
-    reader.readAsDataURL(this.selectedFile)
-    this.isDisabled = false
-  }
-
-  uploadImages(){
-    this.formDataImages = new FormData()
-    this.mainService.getShopInfo().subscribe(res => {
-      this.formDataImages.append('AppCode', res.cust_id)
-      this.formDataImages.append('Img', this.selectedFiles)
-      this.formDataImages.append('TImageprev', this.imageName)
-      this.mainService.uploadImage(this.formDataImages).subscribe()
+  mainFileSelected(event){
+    const file = <File>event.target.files[0]
+    // this.selectedFile = <File>event.target.files[0]
+    this.loadFile(file, (src, name) => {
+      this.mainImageData.src = src
+      this.mainImageData.name = name
+      this.redraw(this.mainImageData, 0)
+      this.isDisabled = false
     })
   }
 
-  onFilesMultipleSelectedAdd(event){
-    this.selectedFiles = <File>event.target.files[0]
-    var reader = new FileReader()
-    reader.onload = (event: any) => {
-      this.urls[this.urls.length] = event.target.result
-    }
-    reader.readAsDataURL(this.selectedFiles);
-    this.imageIndex = this.urls.length
-    this.imageName = this.selectedFiles.name.split('.')[0] + this.urls.length + '.' + this.selectedFiles.name.split('.')[1]
-    this.uploadImages()
-    this.imageIndexList.push(this.imageIndex)
-    this.filesImg.push(this.imageName)
+  additionalImagesAdd(event){
+    const file = <File>event.target.files[0]
+    this.loadFile(file, (src, name) => {
+      const item: ImageDataInterface = {
+        src,
+        name,
+        blob: null
+      }
+      this.additionalImagesData.push(item)
+      this.redraw(item, 0)
+    })
   }
 
-  onFilesMultipleSelected(event){
-
-    this.selectedFiles = <File>event.target.files[0]
-    this.files = event.target.files
-    if (this.files) {
-      for (let file of this.files) {
-        let reader = new FileReader()
-        reader.onload = (e: any) => {
-          this.urls.push(e.target.result)
-        }
-        reader.readAsDataURL(file)
-        this.imageName = this.selectedFiles.name.split('.')[0] + this.urls.length + '.' + this.selectedFiles.name.split('.')[1]
-        this.uploadImages()
-        this.filesImg.push(this.imageName)
-      }
-    }
+  additionalImagesChange(event, index){
+    const file = <File>event.target.files[0]
+    this.loadFile(file, (src, name) => {
+      const item = this.additionalImagesData[index]
+      item.src = src
+      item.name = name
+      this.redraw(item, 0)
+    })
   }
 
   mouseOverButton(){
@@ -168,24 +189,21 @@ export class AdvertisementPageComponent implements OnInit {
     })
   }
 
-  reset() {
-    this.createForm()
-  }
-
   successAddedProduct(Ctlg_Name){
-    this.uploadImg = true
     this.showSpinner = false
     this.showMessage('Объявление было успешно размещено', 'success')
-    this.srcImg = ''
-    this.urls = []
-    this.srcImg = ''
-    this.reset()
+    this.createForm()
     this.itemName = Ctlg_Name
     this.isDisabled = true
-    this.filesImg = []
+    this.mainImageData = {
+      src: '',
+      name: '',
+      blob: null
+    }
+    this.additionalImagesData = []
   }
 
-  onSubmit(){
+  onSubmit() {
     const headers = new Headers({
       'Content-Type': 'application/json; charset=utf8',
       'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -194,144 +212,96 @@ export class AdvertisementPageComponent implements OnInit {
     this.submitButton.nativeElement.disabled = true
     const formData = this.form.value
 
-    this.mainService.getShopInfo().subscribe(res => {
-      this.cust_id = res.cust_id
+    this.data_form = {
+      "Catalog": this.cust_id,      //nomer catalog
+      "Id": this.idCategory,         // post categories/
+      "Ctlg_Name": formData.Categories,     //input form
+      "TArticle": formData.Article, //input form
+      "TName": formData.TName, //input form
+      "TDescription": formData.TDescription, //input form
+      "TCost": formData.TCost, //input form
+      "Appcode": this.cust_id,
+      "TypeProd": formData.TypeProd, //input form
+      "PrcNt": formData.PrcNt, //input form
+      "TransformMech": formData.TransformMech,  //input form
+      "CID": this.userId, // userId for auth,
+      "video": formData.youtube
+    }
+    if (this.mainImageData.blob) {
+      this.data_form['TImageprev'] = this.mainImageData.name
+    }
+    this.mainService.getUserInfo(headers).subscribe((res: any) => {
+      this.Validators(this.data_form.Ctlg_Name)
+      if (res.isCanPromo == true) {
+        this.showSpinner = true;
 
-      // todo rework
-      this.data_form = {
-        "Catalog": res.cust_id,      //nomer catalog
-        "Id": this.idCategorie,         // post categories/
-        "Ctlg_Name": formData.Categories,     //input form
-        "TArticle": formData.Article, //input form
-        "TName": formData.TName, //input form
-        "TDescription": formData.TDescription, //input form
-        "TCost": formData.TCost, //input form
-        "Appcode": res.cust_id,
-        "TypeProd": formData.TypeProd, //input form
-        "PrcNt": formData.PrcNt, //input form
-        "TransformMech": formData.TransformMech,  //input form
-        "CID": this.userId, // userId for auth,
-        "video": formData.youtube
-      }
-      if (this.selectedFile !== null) {
-        this.data_form['TImageprev'] = this.selectedFile.name
-        this.dataForm = new FormData()
-        this.dataForm.append('AppCode', res.cust_id)
-        this.dataForm.append('Img', this.selectedFile)
-        this.dataForm.append('TImageprev', this.selectedFile.name)
-      }
-
-      this.mainService.getUserInfo(headers).subscribe(
-        (res: any) => {
-          console.log(res)
-          this.Validators(this.data_form.Ctlg_Name)
-          if(res.isCanPromo == true){
-            if(this.selectedFile == null){
-              this.mainService.addProduct(this.data_form, headers)
-              .subscribe(
-                (res: any) => {
-                  if(res.result == "1"){
-                    if(this.filesImg.length != 0){
-                      for (let i in this.filesImg) {
-                        this.dataAddImg = {
-                          "catalog": this.cust_id,
-                          "id": this.idCategorie,
-                          "prc_ID": res.prc_id,
-                          "imageOrder": i,
-                          "tImage": this.filesImg[i],
-                          "appcode": this.cust_id,
-                          "cid": this.userId
-                        }
-                        this.mainService.addAdditionalImg(this.dataAddImg, headers)
-                        .subscribe(
-                          (res) => {
-                            this.successAddedProduct(this.data_form.Ctlg_Name)
-                        })
-                      }
-                    }
-                    else{
-                      this.successAddedProduct(this.data_form.Ctlg_Name)
-                    }
-                  }
-                  else{
-                    this.showMessage( 'Объявление не было размещено', 'danger');
-                  }
-                },
-                (error) => {
-                  this.showSpinner = false
-                  this.showMessage( 'Объявление не было размещено', 'danger')
-                }
-              )
-            }
-            else{
-              this.mainService.uploadImage(this.dataForm)
-              .subscribe(
-                (res: any) => {
-                  if(res.result == true){
-                    this.mainService.addProduct(this.data_form, headers)
-                    .subscribe(
-                      (res: any) => {
-                        if(res.result == "1"){
-                          if(this.filesImg.length != 0){
-                            for (let i in this.filesImg) {
-                              this.dataAddImg = {
-                                "catalog": this.cust_id,
-                                "id": this.idCategorie,
-                                "prc_ID": res.prc_id,
-                                "imageOrder": i,
-                                "tImage": this.filesImg[i],
-                                "appcode": this.cust_id,
-                                "cid": this.userId
-                              }
-                              this.mainService.addAdditionalImg(this.dataAddImg, headers)
-                              .subscribe(
-                                (res) => {
-                                  this.successAddedProduct(this.data_form.Ctlg_Name)
-                              })
-                            }
-                          }
-                          else{
-                            this.successAddedProduct(this.data_form.Ctlg_Name)
-                          }
-                        }
-                        else{
-                          this.showMessage( 'Объявление не было размещено', 'danger');
-                        }
-                      },
-                      (error) => {
-                        this.showSpinner = false;
-                        this.showMessage( 'Объявление не было размещено', 'danger');
-                      }
-                    )
-                  }
-                  else{
-                    this.showMessage( 'Объявление не было размещено', 'danger');
-                  }
-                },
-                (error) => {
-                  this.showSpinner = false;
-                  this.showMessage( 'Объявление не было размещено', 'danger');
-                }
-              )
-            }
-          }
-          else{
-            this.showSpinner = false;
-            this.showMessage( 'Объявление не было размещено', 'danger');
-          }
-        },
-        (error) => {
-          this.showSpinner = false
-          this.showMessage( 'Объявление не было размещено', 'danger')
+        let imgObserv = new Observable()
+        if (this.mainImageData.blob) {
+          const formData = new FormData()
+          formData.append('AppCode', this.cust_id)
+          formData.append('Img', this.mainImageData.blob)
+          formData.append('TImageprev', this.mainImageData.name)
+          imgObserv = this.mainService.uploadImage(formData)
         }
-      )
+
+        imgObserv.subscribe(() => {
+            this.mainService.addProduct(this.data_form, headers)
+              .subscribe(
+                (res: any) => {
+                  const images: FormData[] = []
+                  const additional: AdditionalImagesRequest[] = []
+                  const data: AdditionalImagesData[] = []
+                  for (let i = 0; i < this.additionalImagesData.length; i++) {
+                    let name = this.additionalImagesData[i].name;
+                    name = name.replace(/(\.[\w\d_-]+)$/i, `${i}'$1`)
+                    const formData = new FormData();
+                    images.push(formData)
+                    additional.push({
+                        catalog: this.cust_id,
+                        id: this.idCategory,
+                        prc_ID: res.prc_id,
+                        imageOrder: i,
+                        tImage: name,
+                        appcode: this.cust_id,
+                        cid: this.userId
+                      })
+                    data.push({
+                      imageData: formData,
+                      request: {
+                        catalog: this.cust_id,
+                        id: this.idCategory,
+                        prc_ID: res.prc_id,
+                        imageOrder: i,
+                        tImage: name,
+                        appcode: this.cust_id,
+                        cid: this.userId
+                      }
+                    })
+                    formData.append('AppCode', this.cust_id)
+                    formData.append('Img', this.additionalImagesData[i].blob)
+                    formData.append('TImageprev', name)
+                  }
+                    this.mainService.additionalImagesGroup(data)
+                      .subscribe(() => this.successAddedProduct(this.data_form.Ctlg_Name))
+                })
+          },
+          () => {
+            this.showSpinner = false
+            this.showMessage('Объявление не было размещено', 'danger')
+          })
+      }
     })
   }
 
   categorySelect(items: CatalogItem[]) {
-    this.categories = items;
-    let item = items[items.length - 1];
-    this.itemName = item.txt;
-    this.idCategorie = item.id;
+    this.categories = items
+    let item = items[items.length - 1]
+    this.itemName = item.txt
+    this.idCategory = item.id
+    this.showCatalog = false
+  }
+
+  breadcrumbsClick() {
+    this.showCatalog = true
   }
 }
