@@ -20,7 +20,7 @@
       <div class="arrows prew"
       [attr.data-next]="prevElementId" 
       (click)="routePrewProduct(element)">
-        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        <i *ngIf="showPrevElementId" class="fa fa-chevron-left" aria-hidden="true"></i>
       </div>
       <div class="image">
         <img [src]="apiRoot + 'Img?AppCode=' + appCode + '&ImgFileName=' + elementImage_Base">
@@ -28,7 +28,7 @@
       <div class="arrows next"             
           [attr.data-next]="nextElementId" 
           (click)="routeNextProduct(element)">
-        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+        <i *ngIf="showNextElementId" class="fa fa-chevron-right" aria-hidden="true"></i>
       </div>
     </div>
 

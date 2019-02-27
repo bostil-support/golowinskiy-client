@@ -29,12 +29,15 @@ export class DetailPageComponent implements OnInit {
   elCurrentId: string
   nextElementId
   prevElementId
-  Gallery = []
+  allGallery = []
 
   elementImage_Base
 
   message: Message
   sub: Subscription
+
+  showPrevElementId = false
+  showNextElementId = false
 
   constructor(private mainService: MainService,
     private route: ActivatedRoute,
@@ -60,7 +63,24 @@ export class DetailPageComponent implements OnInit {
       this.appCode = res.cust_id
 
       this.mainService.getProducts(this.route.snapshot.params['id'], res.cust_id, cid).subscribe((res) => {
-        this.Gallery = res      
+        this.allGallery = res    
+        if(this.route.snapshot.params['idProduct'] == this.allGallery[0].prc_ID){      
+          this.showPrevElementId = false
+        }
+        else{
+          this.showPrevElementId = true
+        }
+
+        
+        
+        if(this.route.snapshot.params['idProduct'] == this.allGallery[this.allGallery.length-1].prc_ID){
+          this.showNextElementId = false
+          console.log(this.route.snapshot.params['idProduct'], this.allGallery[this.allGallery.length-1].prc_ID)
+        }
+        else{
+          console.log(this.route.snapshot.params['idProduct'], this.allGallery[this.allGallery.length-1].prc_ID)
+          this.showNextElementId = true
+        }
       }) 
 
       this.mainService.getProduct(this.route.snapshot.params.idProduct, res.cust_id, res.cust_id).subscribe( 
@@ -80,6 +100,7 @@ export class DetailPageComponent implements OnInit {
         })    
       })
 
+    
 
   }
 
@@ -92,10 +113,10 @@ export class DetailPageComponent implements OnInit {
 
   close(el){
     if(window.location.pathname.includes('cabinet')){
-      this.router.navigate([`/cabinet/categories/${this.route.snapshot.params['id']}/products`])
+      this.router.navigate([`/cabinet/categories/${el.id}/products`])
     }
     else{
-      this.router.navigate([`/categories/${this.route.snapshot.params['id']}/products`])
+      this.router.navigate([`/categories/${el.id}/products`])
     }    
   }
 
@@ -130,19 +151,21 @@ export class DetailPageComponent implements OnInit {
 
   routeNextProduct(el){
 
+    this.showPrevElementId = true
+
     this.showSpinner = true    
     if(this.elCurrentId == undefined){
       this.elCurrentId = el.prc_ID
     }
 
-    for(var i=0; i<this.Gallery.length-1; i++){ 
-      if(this.elCurrentId == this.Gallery[i].prc_ID){
-        this.nextElementId = this.Gallery[i+1].prc_ID 
+    for(var i=0; i<this.allGallery.length-1; i++){ 
+      if(this.elCurrentId == this.allGallery[i].prc_ID){
+        this.nextElementId = this.allGallery[i+1].prc_ID 
         if(window.location.href.includes('cabinet')){
-          this.router.navigate(['/cabinet', 'categories', this.Gallery[i+1].id, 'products', this.Gallery[i+1].prc_ID])                    
+          this.router.navigate(['/cabinet', 'categories', this.allGallery[i+1].id, 'products', this.allGallery[i+1].prc_ID])                    
         }  
         else{
-          this.router.navigate(['/categories', this.Gallery[i+1].id, 'products', this.Gallery[i+1].prc_ID])                    
+          this.router.navigate(['/categories', this.allGallery[i+1].id, 'products', this.allGallery[i+1].prc_ID])                    
         }
       }  
     }
@@ -168,18 +191,22 @@ export class DetailPageComponent implements OnInit {
   }
 
   routePrewProduct(el){
+
+    this.showNextElementId = true
+    this.showSpinner = true 
+
     if(this.elCurrentId == undefined){
       this.elCurrentId = el.prc_ID
     }  
-    for(var i=0; i<this.Gallery.length; i++){
-      if(this.elCurrentId == this.Gallery[i].prc_ID){       
+    for(var i=0; i<this.allGallery.length; i++){
+      if(this.elCurrentId == this.allGallery[i].prc_ID){       
        
-        this.prevElementId = this.Gallery[i-1].prc_ID
+        this.prevElementId = this.allGallery[i-1].prc_ID
         if(window.location.href.includes('cabinet')){
-          this.router.navigate(['/cabinet', 'categories', this.Gallery[i-1].id, 'products', this.Gallery[i-1].prc_ID]);                    
+          this.router.navigate(['/cabinet', 'categories', this.allGallery[i-1].id, 'products', this.allGallery[i-1].prc_ID]);                    
         }  
         else{
-          this.router.navigate(['/categories', this.Gallery[i-1].id, 'products', this.Gallery[i-1].prc_ID]);                    
+          this.router.navigate(['/categories', this.allGallery[i-1].id, 'products', this.allGallery[i-1].prc_ID]);                    
         }        
         
       }            
