@@ -85,7 +85,7 @@ export class CategoriesComponent implements OnInit {
     let itemMod = {}
     for(let itemElement in item) {
       if (itemElement != 'listInnerCat') {
-        itemMod[itemElement] = item[itemElement]
+        itemMod[itemElement] = item[itemElement];
       }
     }
     return JSON.stringify(typeMod) === JSON.stringify(itemMod)

@@ -193,49 +193,37 @@ export class AdvertisementPageComponent implements OnInit {
     this.showSpinner = true
     this.submitButton.nativeElement.disabled = true
     const formData = this.form.value
+
     this.mainService.getShopInfo().subscribe(res => {
       this.cust_id = res.cust_id
-      if(this.selectedFile == null){
-        this.data_form = {
-          "Catalog": res.cust_id,      //nomer catalog
-          "Id": null,         // post categories/
-          "Ctlg_Name": formData.Categories,     //input form
-          "TArticle": formData.Article, //input form
-          "TName": formData.TName, //input form
-          "TDescription": formData.TDescription, //input form
-          "TCost": formData.TCost, //input form
-          "Appcode": res.cust_id,
-          "TypeProd": formData.TypeProd, //input form
-          "PrcNt": formData.PrcNt, //input form
-          "TransformMech": formData.TransformMech,  //input form
-          "CID": this.userId, // userId for auth,
-          "video": formData.youtube
-        }
+
+      // todo rework
+      this.data_form = {
+        "Catalog": res.cust_id,      //nomer catalog
+        "Id": null,         // post categories/
+        "Ctlg_Name": formData.Categories,     //input form
+        "TArticle": formData.Article, //input form
+        "TName": formData.TName, //input form
+        "TDescription": formData.TDescription, //input form
+        "TCost": formData.TCost, //input form
+        "Appcode": res.cust_id,
+        "TypeProd": formData.TypeProd, //input form
+        "PrcNt": formData.PrcNt, //input form
+        "TransformMech": formData.TransformMech,  //input form
+        "CID": this.userId, // userId for auth,
+        "video": formData.youtube
       }
-      else{
-        this.data_form = {
-          "Catalog": res.cust_id,      //nomer catalog
-          "Id": null,         // post categories/
-          "Ctlg_Name": formData.Categories,     //input form
-          "TArticle": formData.Article, //input form
-          "TName": formData.TName, //input form
-          "TDescription": formData.TDescription, //input form
-          "TCost": formData.TCost, //input form
-          "TImageprev": this.selectedFile.name, // input form
-          "Appcode": res.cust_id,
-          "TypeProd": formData.TypeProd, //input form
-          "PrcNt": formData.PrcNt, //input form
-          "TransformMech": formData.TransformMech,  //input form
-          "CID": this.userId, // userId for auth
-          "video": formData.youtube
-        }
+      if (this.selectedFile !== null) {
+        this.data_form['TImageprev'] = this.selectedFile.name
         this.dataForm = new FormData()
         this.dataForm.append('AppCode', res.cust_id)
         this.dataForm.append('Img', this.selectedFile)
         this.dataForm.append('TImageprev', this.selectedFile.name)
       }
+
       this.mainService.getUserInfo(headers).subscribe(
         (res: any) => {
+          console.log(res)
           this.Validators(this.data_form.Ctlg_Name)
           if(res.isCanPromo == true){
             if(this.selectedFile == null){
