@@ -207,24 +207,24 @@ export class EditAdvertisementPageComponent implements OnInit {
     }
     else{
       this.mainService.getShopInfo().subscribe(res => {
-        this.mainService.deleteProduct(
-            {
-              "Cust_ID": this.user.userId,
-              "Prc_ID": this.route.snapshot.params['idProduct'],
-              "ImageOrder": this.urlsImages[i].imageOrder,
-              "AppCode": res.cust_id,
-              "Cid": localStorage.getItem('userId')
-            }
-          )
-        .subscribe(
-          (res: any) => { 
-            if(res.result == true){
-              this.urlsImages.splice(this.urlsImages.indexOf(this.urlsImages[i]), 1); 
-              this.urls.splice(this.urls.indexOf(url), 1); 
-              this.showSpinner = false;  
+        // this.mainService.deleteProduct(
+        //     {
+        //       "Cust_ID": this.user.userId,
+        //       "Prc_ID": this.route.snapshot.params['idProduct'],
+        //       "ImageOrder": this.urlsImages[i].imageOrder,
+        //       "AppCode": res.cust_id,
+        //       "Cid": localStorage.getItem('userId')
+        //     }
+        //   )
+        // .subscribe(
+        //   (res: any) => { 
+        //     if(res.result == true){
+        //       this.urlsImages.splice(this.urlsImages.indexOf(this.urlsImages[i]), 1); 
+        //       this.urls.splice(this.urls.indexOf(url), 1); 
+        //       this.showSpinner = false;  
     
-            }
-          }) 
+        //     }
+        //   }) 
       }) 
     }   
   }

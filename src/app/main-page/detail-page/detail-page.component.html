@@ -60,6 +60,10 @@
         <span>Редактировать</span>
       </div>
 
+      <div *ngIf="showEdit" class="delete" (click)="deleteProduct(element)">
+        <span>Удалить</span>
+      </div>
+
       <div *ngIf="showBasket" class="basket"
       (click)="addToCart(element)">
         <img src="assets/images/white-cart.png">

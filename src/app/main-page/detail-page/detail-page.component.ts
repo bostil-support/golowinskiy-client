@@ -6,6 +6,7 @@ import { MainService } from '../../shared/services/main.service';
 import { Http, RequestOptions } from '@angular/http';
 import { Message } from '../../shared/models/message.model';
 import { Subscription } from 'rxjs';
+import { Product } from '../../shared/interfaces';
 
 @Component({
   selector: 'app-detail-page',
@@ -91,10 +92,10 @@ export class DetailPageComponent implements OnInit {
 
   close(el){
     if(window.location.pathname.includes('cabinet')){
-      this.router.navigate([`/cabinet/categories/${el.id}/products`])
+      this.router.navigate([`/cabinet/categories/${this.route.snapshot.params['id']}/products`])
     }
     else{
-      this.router.navigate([`/categories/${el.id}/products`])
+      this.router.navigate([`/categories/${this.route.snapshot.params['id']}/products`])
     }    
   }
 
@@ -106,6 +107,17 @@ export class DetailPageComponent implements OnInit {
 
   editProduct(el){
     this.router.navigate(['/cabinet/categories', el.id, 'products', el.prc_ID, 'edit'])    
+  }
+
+  deleteProduct(el: Product){
+    this.showSpinner = true
+    this.mainService.deleteProduct(el).subscribe(
+      (res) => {
+        this.showSpinner = false
+        this.showMessage('Товар был успешно удален', 'success')
+        this.router.navigate(['/'])
+      }
+    )
   }
 
   mouseOverImg(el){

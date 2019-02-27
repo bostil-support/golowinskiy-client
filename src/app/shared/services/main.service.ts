@@ -1,10 +1,11 @@
 import { Injectable, EventEmitter } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { tap } from "rxjs/operators";
 
 import { environment } from "src/environments/environment";
-import {CatalogItem} from '../../categories/categories.component';
+import { CatalogItem } from '../../categories/categories.component';
+import { Product } from "../interfaces";
 
 
 @Injectable({
@@ -132,8 +133,14 @@ export class MainService{
         return this.http.post(`${environment.api}product`, data, headers)
     }
 
-    deleteProduct(data: any){
-        return this.http.delete(`${environment.api}Img`, data)
+    deleteProduct(data: Product){
+        let options = {
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json',
+              }),
+            body: data
+        }
+        return this.http.delete(`${environment.api}Img`, options)
     }
 
     editProduct(data: any){
