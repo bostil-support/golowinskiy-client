@@ -29,7 +29,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
 
   constructor(
     public router: Router,
-    private mainService: MainService,
+    public mainService: MainService,
     private clockService: ClockService
   ) { }
 
