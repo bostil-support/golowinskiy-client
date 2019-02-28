@@ -17,7 +17,5 @@ export class AppComponent implements OnInit{
     if(token !== null){
       this.authService.setToken(token)
     }
-
-    this.mainService.saveCategoriesToStorage(null);
   }
 }

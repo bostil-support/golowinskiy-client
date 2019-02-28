@@ -4,7 +4,10 @@
 
     <div id="inner">
 
-        <app-categories (lastChildAction)="onCategoriesClick($event)"></app-categories>
+        <app-categories
+          (lastChildAction)="onCategoriesClick($event)"
+          [initialCategories]="mainService.loadCategoriesFromStorage()"
+        ></app-categories>
 
         <router-outlet></router-outlet>
     </div>

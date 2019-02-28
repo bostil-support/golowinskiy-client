@@ -33,6 +33,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.categories = this.mainService.loadCategoriesFromStorage()
 
     this.message = new Message('danger', '')
 

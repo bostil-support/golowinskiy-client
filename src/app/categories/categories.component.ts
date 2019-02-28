@@ -29,6 +29,7 @@ export class CategoriesComponent implements OnInit {
   loaded = false
 
   @Input() showCatalog = true
+  @Input() initialCategories = []
 
   @Output() lastChildAction = new EventEmitter<CatalogItem[]>()
 
@@ -42,18 +43,19 @@ export class CategoriesComponent implements OnInit {
                 this.mainService.getShopInfo().subscribe( (res) => {
                   this.mainService.getCategories(userId, advert).subscribe((res) => {
                     this.catalog = res
-                    // this.showCatalog = true
-
-                    const categories = this.mainService.loadCategoriesFromStorage()
-                    let index = 1
-                    for(const x of categories) {
-                      this.selected['lavel' + index] = x
-                      index++
-                    }
                     this.loaded = true
                   })
                 })
 
+  }
+
+  ngOnInit() {
+    const categories = this.initialCategories
+    let index = 1
+    for(const x of categories) {
+      this.selected['lavel' + index] = x
+      index++
+    }
   }
 
   select(type: string, item: CatalogItem, $event) {
@@ -91,10 +93,5 @@ export class CategoriesComponent implements OnInit {
       }
     }
     return JSON.stringify(typeMod) === JSON.stringify(itemMod)
-  }
-
-
-  ngOnInit() {
-
   }
 }
