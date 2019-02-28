@@ -43,6 +43,11 @@ export class AdvertisementPageComponent implements OnInit {
   categories: CategoryItem[]
   showCatalog = true
 
+  fio
+  userName
+  phone
+
+
   // new images code
   mainImageData: ImageDataInterface = {
     src: '',
@@ -85,6 +90,9 @@ export class AdvertisementPageComponent implements OnInit {
       'youtube': new FormControl(null)
     })
     this.message = new Message('danger', '')
+    this.fio = localStorage.getItem('fio')
+    this.userName = localStorage.getItem('userName')
+    this.phone = localStorage.getItem('phone')
     this.mainService.getShopInfo().subscribe(
       (res) => {
         this.cust_id = res.cust_id;

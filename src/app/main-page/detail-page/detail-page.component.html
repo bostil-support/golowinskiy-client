@@ -56,12 +56,14 @@
         <p *ngIf="element.prc_Br">{{ element.prc_Br }}</p>
       </div>
 
-      <div *ngIf="showEdit" class="edit" (click)="editProduct(element)">
-        <span>Редактировать</span>
-      </div>
-
-      <div *ngIf="showEdit" class="delete" (click)="deleteProduct(element)">
-        <span>Удалить</span>
+      <div class="change"> 
+        <div *ngIf="showEdit" class="edit" (click)="editProduct(element)">
+          <span>Редактировать</span>
+        </div>
+  
+        <div *ngIf="showEdit" class="delete" (click)="deleteProduct(element)">
+          <span>Удалить</span>
+        </div>
       </div>
 
       <div *ngIf="showBasket" class="basket"

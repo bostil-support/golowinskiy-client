@@ -16,7 +16,7 @@
 }
 
 .breadcrumbs_container {
-  padding-top: 70px;
+  padding-top: 90px;
   padding-left: 15px;
 }
 
@@ -28,7 +28,7 @@
     flex: 1 0 auto;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 66px 0 85px;
+    padding: 15px 0;
     &__item{
         width: 220px;
         margin: 5px 9px;
@@ -119,15 +119,19 @@
   padding-bottom: 80px;
   justify-content: center;
   &__item {
-    background-color: rgba(0,0,0,0.78);
+    background-color: #127688;
     color: white;
     padding: 6px;
     font-size: 15px;
+    margin: 0 1px;
+    padding: 4px 6px 6px;
+    min-width: 26px;
+    text-align: center;
     &.disabled {
       color: rgb(156, 156, 156);
     }
     &.current {
-      background-color: #179590;
+      background-color: #23bab5;
     }
   }
 }
