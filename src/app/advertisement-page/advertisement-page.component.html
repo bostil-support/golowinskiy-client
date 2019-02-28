@@ -21,19 +21,19 @@
           <div class="col-lg-8 col-xs-12 text-right">
               <div class="contact pt-2 pb-2 pr-2">
                   <h5>Контактная информация</h5>
-                  <div class="row">
+                  <div *ngIf="fio" class="row">
                       <div class="col-lg-12 col-xs-12">
-
+                        {{ fio }}
                       </div>
                   </div>
-                  <div class="row">
+                  <div *ngIf="userName" class="row">
                       <div class="col-lg-12 col-xs-12">
-
+                        {{ userName }}
                       </div>
                   </div>
-                  <div class="row">
+                  <div *ngIf="phone" class="row">
                       <div class="col-lg-12 col-xs-12">
-
+                        {{ phone }}
                       </div>
                   </div>
               </div>
