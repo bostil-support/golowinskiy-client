@@ -6,7 +6,7 @@
 
         <app-categories
           (lastChildAction)="onCategoriesClick($event)"
-          [initialCategories]="mainService.loadCategoriesFromStorage()"
+          [initialCategories]="storageService.getCategories()"
         ></app-categories>
 
         <router-outlet></router-outlet>

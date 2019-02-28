@@ -1,11 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute, NavigationEnd, NavigationStart, ResolveStart, Router} from '@angular/router';
 
-import { environment } from "../../../environments/environment"
-import { MainService } from '../../shared/services/main.service';
-import { Http } from '@angular/http';
-import { Message } from 'src/app/shared/models/message.model';
-import { Subscription } from 'rxjs';
+import {environment} from '../../../environments/environment';
+import {MainService} from '../../shared/services/main.service';
+import {Message} from 'src/app/shared/models/message.model';
+import {Subscription} from 'rxjs';
+import {StorageService} from '../../shared/services/storage.service';
 
 @Component({
   selector: 'app-products-page',
@@ -27,9 +27,12 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   currentPage = 1;
   itemsPerPage = 15;
 
-  constructor(private mainService: MainService,
-              private route: ActivatedRoute,
-              private router: Router) {
+  constructor(
+    private mainService: MainService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private storageService: StorageService
+  ) {
   }
 
   ngOnInit() {
@@ -83,10 +86,8 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   }
 
   breadcrumbsClick() {
+    this.storageService.setCategories(this.categories)
+    this.storageService.breadcrumbFlag = true
     this.router.navigate(['/'])
-  }
-
-  pageChange(event) {
-    console.log(event)
   }
 }

@@ -4,7 +4,8 @@ import {Subscription} from 'rxjs';
 import {MainService} from '../shared/services/main.service';
 import {ClockService} from '../shared/services/clock.service';
 import {Router} from '@angular/router';
-import {CatalogItem} from '../categories/categories.component';
+import {CategoryItem} from '../categories/categories.component';
+import {StorageService} from '../shared/services/storage.service';
 
 @Component({
   selector: 'main-page.component',
@@ -30,10 +31,12 @@ export class MainPageComponent implements OnInit, OnDestroy {
   constructor(
     public router: Router,
     public mainService: MainService,
-    private clockService: ClockService
+    private clockService: ClockService,
+    public storageService: StorageService
   ) { }
 
   ngOnInit() {
+
 
     this.sub = this.mainService.getShopInfo()
       .subscribe(
@@ -62,8 +65,9 @@ export class MainPageComponent implements OnInit, OnDestroy {
     }
   }
 
-  onCategoriesClick(items: CatalogItem[]) {
-    const item = items.pop();
+  onCategoriesClick(items: CategoryItem[]) {this.storageService.setCategories(items)
+    const item = items.pop()
+    this.mainService.saveCategoriesToStorage(items)
     this.router.navigate([`${window.location.pathname}/categories/${item.id}/products`])
   }
 }

@@ -7,7 +7,7 @@ import {environment} from 'src/environments/environment';
 import {Message} from 'src/app/shared/models/message.model';
 import {AuthService} from 'src/app/shared/services/auth.service';
 import {MainService} from '../shared/services/main.service';
-import {CatalogItem} from '../categories/categories.component';
+import {CategoryItem} from '../categories/categories.component';
 import {AdditionalImagesData, AdditionalImagesRequest} from '../shared/interfaces';
 import {Observable} from 'rxjs';
 
@@ -40,7 +40,7 @@ export class AdvertisementPageComponent implements OnInit {
 
   idCategory
   itemName = ''
-  categories: CatalogItem[]
+  categories: CategoryItem[]
   showCatalog = true
 
   // new images code
@@ -248,23 +248,11 @@ export class AdvertisementPageComponent implements OnInit {
             this.mainService.addProduct(this.data_form, headers)
               .subscribe(
                 (res: any) => {
-                  const images: FormData[] = []
-                  const additional: AdditionalImagesRequest[] = []
                   const data: AdditionalImagesData[] = []
                   for (let i = 0; i < this.additionalImagesData.length; i++) {
                     let name = this.additionalImagesData[i].name;
                     name = name.replace(/(\.[\w\d_-]+)$/i, `${i}'$1`)
                     const formData = new FormData();
-                    images.push(formData)
-                    additional.push({
-                        catalog: this.cust_id,
-                        id: this.idCategory,
-                        prc_ID: res.prc_id,
-                        imageOrder: i,
-                        tImage: name,
-                        appcode: this.cust_id,
-                        cid: this.userId
-                      })
                     data.push({
                       imageData: formData,
                       request: {
@@ -293,7 +281,7 @@ export class AdvertisementPageComponent implements OnInit {
     })
   }
 
-  categorySelect(items: CatalogItem[]) {
+  categorySelect(items: CategoryItem[]) {
     this.categories = items
     let item = items[items.length - 1]
     this.itemName = item.txt
@@ -302,6 +290,9 @@ export class AdvertisementPageComponent implements OnInit {
   }
 
   breadcrumbsClick() {
+    this.categories = []
+    this.itemName = ''
+    this.idCategory = ''
     this.showCatalog = true
   }
 }
