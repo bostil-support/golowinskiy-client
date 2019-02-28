@@ -2,6 +2,8 @@ import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {NgxPaginationModule} from 'ngx-pagination';
 
 import {TokenInterceptor} from './shared/classes/token.interceptor';
 
@@ -26,9 +28,8 @@ import {CategoriesComponent} from './categories/categories.component';
 import {ProductsPageComponent} from './main-page/products-page/products-page.component';
 import {DetailPageComponent} from './main-page/detail-page/detail-page.component';
 
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {NgxPaginationModule} from 'ngx-pagination';
 import {BreadcrumbsComponent} from './breadcrumbs/breadcrumbs.component';
+import { OrderComponent } from './main-page/order/order.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +48,8 @@ import {BreadcrumbsComponent} from './breadcrumbs/breadcrumbs.component';
     CategoriesComponent,
     ProductsPageComponent,
     DetailPageComponent,
-    BreadcrumbsComponent
+    BreadcrumbsComponent,
+    OrderComponent
   ],
   imports: [
     HttpClientModule,

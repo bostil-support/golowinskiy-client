@@ -7,6 +7,7 @@ import { Http, RequestOptions } from '@angular/http';
 import { Message } from '../../shared/models/message.model';
 import { Subscription } from 'rxjs';
 import { Product } from '../../shared/interfaces';
+import { OrderService } from '../../shared/services/order.service';
 
 @Component({
   selector: 'app-detail-page',
@@ -41,9 +42,29 @@ export class DetailPageComponent implements OnInit {
   showPrevElementId = false
   showNextElementId = false
 
+  clickCount;
+  clickSum;
+  custID
+  ctlg_No: string;
+  ctlg_Name: string;
+  sup_ID: string;
+  prc_ID: string;  
+
+  sumOrder;
+  kolOrder;
+  price: number;
+  count: number;
+  articul: any;
+  quantity;
+  prc_Br;
+  tName;
+  kolItems;
+  ord_Id: string;
+
   constructor(private mainService: MainService,
     private route: ActivatedRoute,
-    private router: Router) {}
+    private router: Router,
+    private orderService: OrderService) {}
 
   ngOnInit() {
     this.apiRoot = environment.api
@@ -226,6 +247,71 @@ export class DetailPageComponent implements OnInit {
           this.showSpinner = false
       }
     )
+
+  }
+
+  addToCart(el){
+
+    this.showSpinner = true;
+
+    for(var i = 0;i < this.allGallery.length; i++){
+      if(el.id == this.allGallery[i].id){
+        if(this.allGallery[i].strike){
+          this.allGallery[i].strike = false;
+        }
+        else{
+          this.allGallery[i].strike = true;
+        }
+        break;
+      }
+    }
+
+    this.orderService.addToOrder(el);
+    this.orderService.doClick();  
+
+    this.mainService.getShopInfo().subscribe(res => {
+
+      this.mainService.getProduct(el.prc_ID, res.cust_id, res.cust_id)  
+      .subscribe(
+        (res: any) => {
+          this.ctlg_No = res.ctlg_No;  
+          this.ctlg_Name = res.ctlg_Name;  
+          this.sup_ID = res.sup_ID;
+          this.tName = res.tName;
+          this.prc_Br = this.prc_Br;
+
+          if(window.localStorage.getItem('kolItems')){
+            this.kolItems = window.localStorage.getItem('kolItems');
+          }
+          else{
+            this.kolItems = 1;
+          }
+
+          let data = {
+            "OrdTtl_Id" : window.localStorage.getItem('ord_Id'),
+            "OI_No" : +this.kolItems,
+            "Ctlg_No": this.ctlg_No,
+            "Qty": this.quantity,
+            "Ctlg_Name": this.ctlg_Name,
+            "Sup_ID": this.sup_ID,
+            "Descr": this.tName
+          }
+
+          this.mainService.addToCart(data)  
+          .subscribe(
+            (res: any) => {
+              this.showSpinner = false;
+              
+              if(res.result == true){  
+      
+                this.showMessage(`${res.message}`, 'success');
+                this.showProduct = false;   
+              }
+          })      
+        
+      })
+    })
+
 
   }
 

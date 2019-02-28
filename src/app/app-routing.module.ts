@@ -15,6 +15,7 @@ import { RecoveryComponent } from "./main-page/auth-page/recovery/recovery.compo
 
 import { ProductsPageComponent } from "./main-page/products-page/products-page.component"
 import { DetailPageComponent } from "./main-page/detail-page/detail-page.component"
+import { OrderComponent } from "./main-page/order/order.component"
 
 const routes: Routes = [
     {path: '', component: MainPageComponent, children: [
@@ -22,6 +23,7 @@ const routes: Routes = [
             { path: 'login', component: LoginComponent },
             { path: 'registration', component: RegistrationComponent },
             { path: 'recovery', component: RecoveryComponent },
+            {path: 'order', component: OrderComponent}
         ]}
     ]},
     { path: 'categories/:id/products', component: ProductsPageComponent, children: [
@@ -29,6 +31,7 @@ const routes: Routes = [
             { path: 'login', component: LoginComponent },
             { path: 'registration', component: RegistrationComponent },
             { path: 'recovery', component: RecoveryComponent },
+            {path: 'order', component: OrderComponent}
         ]},
         { path: ':idProduct', component: DetailPageComponent }
     ]},

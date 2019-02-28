@@ -182,4 +182,16 @@ export class MainService{
     loadCategoriesFromStorage() {
       return JSON.parse(localStorage.getItem('categories')) || [];
     }
+
+    changeQty(data: {}){
+        return this.http.post(`${environment.api}order/changeqty/ `, data);
+    }
+
+    saveOrder(data: {}, headers){
+        return this.http.post(`${environment.api}order/save/ `, data, headers);
+    }
+
+    addToCart(data){
+        return this.http.post(`${environment.api}addtocart `, data);
+    }
 }

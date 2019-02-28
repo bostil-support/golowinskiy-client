@@ -1,0 +1,136 @@
+<div *ngIf="showProductOrder" class="product_order modal_w">
+    <i (click)="clickCloseProductOrder()" class="fa fa-times" aria-hidden="true"></i>            
+    <div class="modal-inner">
+        <h2>Корзина</h2>
+        
+        <div class="showMessage" *ngIf="message.text">
+            <i class="fa fa-spinner fa-spin"></i>
+            <div 
+                class="alert alert-{{message.type}}"
+            >            
+                {{ message.text }}
+            </div>
+        </div>   
+        <form >
+            
+            <div class="item_list">
+                <div class="container">
+                    <div class="item_list_title row no-margin">
+                        <div class="name text-left col-lg-6 col-md-4 col-sm-4 col-4">Название</div>
+                        <div class="count text-center col-lg-3 col-md-4 col-sm-4 col-4 no-padding">Количество</div>
+                        <div class="cost text-right col-lg-3 col-md-4 col-sm-4 col-4">Цена</div>
+                    </div>     
+                </div>     
+
+                <div class="container order_item">                              
+                    <div class="item_list">                                 
+                        <div *ngFor="let c of cart let x = index"                                   
+                            >   
+                            <div *ngIf="c!=null"> 
+                                <div *ngIf="c.count>0" class="item row">
+                                    <div class="name text-left col-xs-12 col-sm-12 col-md-12 col-lg-6">
+                                    {{ c.name }}
+                                    </div>
+                                    <div class="count text-center col-xs-12 col-sm-12 col-md-12 col-lg-3 no-padding">
+                                    <div class="count_content">
+                                        
+                                        <a (click)="addToCartMinus(c, x)" [attr.data-product]="c.art">
+                                        <span class="fa fa-minus"></span>
+                                        </a>
+                                        
+                                        <input type="text" size="1" [value]="c.count" class="text-center" data-product=""/>
+                                        
+                                        <a (click)="addToCartPlus(c)" [attr.data-product]="c.art">
+                                        <span class="fa fa-plus"></span>
+                                        </a>
+                                    </div>
+                                    </div>                              
+                                    <div class="cost text-right col-xs-12 col-sm-12 col-md-12 col-lg-3">
+                                    {{ c.price }} руб.
+                                    </div>
+                                </div> 
+                            </div> 
+                        </div>
+                    </div>
+                </div>  
+                <div class="product_order_summa text-right col-lg-12">Общая сумма заказа: {{ sumOrder }} руб.
+                </div>                                                                
+                
+            </div> 
+                                    
+            <div class="product_back_order text-center col-lg-12">
+                <a routerLink="/">
+                    ВЕРНУТЬСЯ к КАТАЛОГУ
+                </a>
+            </div> 
+                    
+            <div class="form-group">
+                <button 
+                    class="btn btn-block btn-primary"
+                    type="submit"
+                    (click)="addToOrder()"
+                >
+                    Заказать 
+                </button>
+            </div> 
+        </form>  
+    </div>            
+</div>
+
+<div *ngIf="showOrder" class="productOrder modal_w">
+
+    <i (click)="clickCloseProductOrder()" class="fa fa-times" aria-hidden="true"></i>            
+    <div class="modal-inner">
+        <h2>Заказ</h2>
+        <div class="showSpinner" *ngIf="showSpinner">
+            <i class="fa fa-spinner fa-spin"></i>
+        </div>
+        <div class="showMessage" *ngIf="message.text">
+            <div 
+                class="alert alert-{{message.type}}"
+            >            
+                {{ message.text }}
+            </div>
+        </div>
+        <div class="form">    
+            <form [formGroup]="form">
+                <!-- <form novalidate> -->
+                
+                <div  
+                    class="form-group"                              
+                >
+                    <input 
+                        type="text" 
+                        placeholder="Адрес получения Вами заказа"
+                        id="Addr"
+                        formControlName="Addr"
+                    >
+                </div>
+
+                <div  
+                    class="form-group"                              
+                >
+                    <input 
+                        type="text" 
+                        placeholder="Примечание к заказу"
+                        id="Note"
+                        formControlName="Note"
+                    >
+                </div>
+                
+                        
+                <div class="form-group">
+                    <button 
+                        class="btn btn-block btn-primary"
+                        type="submit"
+                        (click)="addToOrderSave()"
+                    >
+                        Оформить заказ 
+                    </button>
+                </div> 
+        
+                <!-- </form> -->
+            </form>
+        </div>
+    </div>            
+</div>  
