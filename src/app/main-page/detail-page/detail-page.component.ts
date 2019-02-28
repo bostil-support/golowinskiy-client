@@ -73,14 +73,10 @@ export class DetailPageComponent implements OnInit {
           this.showPrevElementId = true
         }
 
-
-
         if(this.route.snapshot.params['idProduct'] == this.allGallery[this.allGallery.length-1].prc_ID){
-          this.showNextElementId = false
-          console.log(this.route.snapshot.params['idProduct'], this.allGallery[this.allGallery.length-1].prc_ID)
+          this.showNextElementId = false          
         }
-        else{
-          console.log(this.route.snapshot.params['idProduct'], this.allGallery[this.allGallery.length-1].prc_ID)
+        else{          
           this.showNextElementId = true
         }
       })

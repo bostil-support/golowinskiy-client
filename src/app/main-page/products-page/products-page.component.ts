@@ -86,6 +86,5 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   }
 
   pageChange(event) {
-    console.log(event)
   }
 }
