@@ -1,13 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 
-import { environment } from "../../../environments/environment"
-import { MainService } from '../../shared/services/main.service';
-import { Http, RequestOptions } from '@angular/http';
-import { Message } from '../../shared/models/message.model';
-import { Subscription } from 'rxjs';
-import { Product } from '../../shared/interfaces';
-import { OrderService } from '../../shared/services/order.service';
+import {environment} from '../../../environments/environment';
+import {MainService} from '../../shared/services/main.service';
+import {Message} from '../../shared/models/message.model';
+import {Subscription} from 'rxjs';
+import {Product} from '../../shared/interfaces';
+import {OrderService} from '../../shared/services/order.service';
+import {AuthService} from '../../shared/services/auth.service';
 
 @Component({
   selector: 'app-detail-page',
@@ -48,14 +48,14 @@ export class DetailPageComponent implements OnInit {
   ctlg_No: string;
   ctlg_Name: string;
   sup_ID: string;
-  prc_ID: string;  
+  prc_ID: string;
 
   sumOrder;
   kolOrder;
   price: number;
   count: number;
   articul: any;
-  quantity;
+  quantity = 1;
   prc_Br;
   tName;
   kolItems;
@@ -64,7 +64,8 @@ export class DetailPageComponent implements OnInit {
   constructor(private mainService: MainService,
     private route: ActivatedRoute,
     private router: Router,
-    private orderService: OrderService) {}
+    public orderService: OrderService,
+              private authService: AuthService) {}
 
   ngOnInit() {
     this.apiRoot = environment.api
@@ -95,9 +96,9 @@ export class DetailPageComponent implements OnInit {
         }
 
         if(this.route.snapshot.params['idProduct'] == this.allGallery[this.allGallery.length-1].prc_ID){
-          this.showNextElementId = false          
+          this.showNextElementId = false
         }
-        else{          
+        else{
           this.showNextElementId = true
         }
       })
@@ -267,18 +268,18 @@ export class DetailPageComponent implements OnInit {
     }
 
     this.orderService.addToOrder(el);
-    this.orderService.doClick();  
+    this.orderService.doClick();
 
     this.mainService.getShopInfo().subscribe(res => {
 
-      this.mainService.getProduct(el.prc_ID, res.cust_id, res.cust_id)  
+      this.mainService.getProduct(el.prc_ID, res.cust_id, res.cust_id)
       .subscribe(
         (res: any) => {
-          this.ctlg_No = res.ctlg_No;  
-          this.ctlg_Name = res.ctlg_Name;  
+          this.ctlg_No = res.ctlg_No;
+          this.ctlg_Name = res.ctlg_Name;
           this.sup_ID = res.sup_ID;
           this.tName = res.tName;
-          this.prc_Br = this.prc_Br;
+          this.prc_Br = res.prc_Br;
 
           if(window.localStorage.getItem('kolItems')){
             this.kolItems = window.localStorage.getItem('kolItems');
@@ -287,28 +288,33 @@ export class DetailPageComponent implements OnInit {
             this.kolItems = 1;
           }
 
-          let data = {
-            "OrdTtl_Id" : window.localStorage.getItem('ord_Id'),
-            "OI_No" : +this.kolItems,
-            "Ctlg_No": this.ctlg_No,
-            "Qty": this.quantity,
-            "Ctlg_Name": this.ctlg_Name,
-            "Sup_ID": this.sup_ID,
-            "Descr": this.tName
+          let registerData = {
+            Cust_ID: this.authService.getUserId(),
+            Cur_Code: 810
           }
 
-          this.mainService.addToCart(data)  
-          .subscribe(
-            (res: any) => {
-              this.showSpinner = false;
-              
-              if(res.result == true){  
-      
-                this.showMessage(`${res.message}`, 'success');
-                this.showProduct = false;   
-              }
-          })      
-        
+          this.mainService.registorOrder(registerData).subscribe((res: any) => {
+            let data = {
+              "OrdTtl_Id" : res.ord_No,
+              "OI_No" : +this.kolItems,
+              "Ctlg_No": this.ctlg_No,
+              "Qty": this.quantity,
+              "Ctlg_Name": this.ctlg_Name,
+              "Sup_ID": this.sup_ID,
+              "Descr": this.tName,
+            }
+            this.mainService.addToCart(data)
+              .subscribe(
+                (res: any) => {
+                  this.showSpinner = false;
+
+                  if (res.result == true) {
+
+                    this.showMessage(`${res.message}`, 'success');
+                    this.showProduct = false;
+                  }
+                })
+          })
       })
     })
 

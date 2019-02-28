@@ -1,13 +1,12 @@
-import { Component, OnInit, ElementRef, ContentChild, Output, Input } from '@angular/core';
-import { Router, NavigationStart, NavigationEnd, RoutesRecognized } from '@angular/router';
-import { Http, Headers, Jsonp } from '@angular/http';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import {Component, ElementRef, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Headers} from '@angular/http';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
 
-import { AuthService } from 'src/app/shared/services/auth.service';
-import { Message } from 'src/app/shared/models/message.model';
-import { OrderService } from 'src/app/shared/services/order.service';
-import { MainService } from '../../shared/services/main.service';
+import {AuthService} from 'src/app/shared/services/auth.service';
+import {Message} from 'src/app/shared/models/message.model';
+import {OrderService} from 'src/app/shared/services/order.service';
+import {MainService} from '../../shared/services/main.service';
 
 @Component({
   selector: 'app-order',
@@ -15,16 +14,16 @@ import { MainService } from '../../shared/services/main.service';
   styleUrls: ['./order.component.scss']
 })
 export class OrderComponent implements OnInit {
-  
+
   kol = 0;
   data_form: { "Ord_ID": string; "Cust_ID": any; "Addr": any; "Note": any; };
   showProductOrder: boolean = true;
 
   user: any;
 
-  ord_Id: string = '';    
+  ord_Id: string = '';
   cart = [];
-  qyu: any; 
+  qyu: any;
   price = 0;
   sumOrder = 0;
 
@@ -37,7 +36,7 @@ export class OrderComponent implements OnInit {
   message: Message;
   form: FormGroup;
 
-  showAddOrder: string = 'fa fa-shopping-basket'; 
+  showAddOrder: string = 'fa fa-shopping-basket';
   showSpinner: boolean = false;
   idCategorii;
 
@@ -45,14 +44,13 @@ export class OrderComponent implements OnInit {
   clickSum = window.localStorage.getItem('sumOrder');
 
   constructor(
-        public http: Http,
         public el: ElementRef,
         private router: Router,
         private authService: AuthService,
         private route: ActivatedRoute,
         private orderService: OrderService,
         private mainService: MainService
-  ) { 
+  ) {
     this.orderService.onClick.subscribe(cnt => {
       this.clickCnt = cnt;
     });
@@ -61,23 +59,21 @@ export class OrderComponent implements OnInit {
     });
   }
 
-  ngOnInit() { 
-
-    this.user = JSON.parse(window.localStorage.getItem('user')); 
+  ngOnInit() {
     this.ord_Id = window.localStorage.getItem('ord_Id');
-    this.message = new Message('danger', ''); 
-    
+    this.message = new Message('danger', '');
+
     this.form = new FormGroup({
       'Addr': new FormControl(null, [Validators.required]),
       'Note': new FormControl(null, [Validators.required])
     });
 
     this.checkCart();
-    if(window.location.pathname!= '/order'){      
+    if(window.location.pathname!= '/order'){
       this.idCategorii = window.location.pathname.split('categories/')[1].split('/products')[0];
-      
-    }      
-    
+
+    }
+
 
   }
 
@@ -89,19 +85,19 @@ export class OrderComponent implements OnInit {
 
         if(window.location.href.includes('products/order')){
           this.router.navigate([`/categories/${window.location.pathname.split('categories/')[1].split('/products')[0]}/products/login`, { 'nav': 'order'}])
-        }      
+        }
         else{
-          this.router.navigate(['/login', { 'nav': 'order'}]);   
-        }    
+          this.router.navigate(['/login', { 'nav': 'order'}]);
+        }
 
       }
       else if(this.message.type == 'success'){
-        if(window.location.pathname!= '/order'){      
-          this.router.navigate(['/categories', this.idCategorii, 'products']); 
+        if(window.location.pathname!= '/order'){
+          this.router.navigate(['/categories', this.idCategorii, 'products']);
         }
         else{
-          this.router.navigate(['/']); 
-        }                     
+          this.router.navigate(['/']);
+        }
       }
     }, 2000);
   }
@@ -111,30 +107,30 @@ export class OrderComponent implements OnInit {
     window.setTimeout(() => {
       this.message.text = '';
       if(this.message.type == 'success'){
-        this.router.navigate(['/']);       
+        this.router.navigate(['/']);
       }
     }, 2000);
   }
 
   clickCloseProductOrder(){
 
-    if(window.location.pathname!= '/order'){      
+    if(window.location.pathname!= '/order'){
       this.router.navigate(['/categories', this.idCategorii, 'products']);
     }
     else{
-      this.router.navigate(['/']); 
+      this.router.navigate(['/']);
     }
-    this.showProductOrder = false;    
+    this.showProductOrder = false;
 
 
-  } 
+  }
 
   checkCart(){
     if(window.localStorage.getItem('cart')!= null){
       this.cart = JSON.parse(window.localStorage.getItem('cart'));
-    }    
+    }
 
-    
+
     if(JSON.parse(window.localStorage.getItem('sumOrder'))){
       this.sumOrder = JSON.parse(window.localStorage.getItem('sumOrder'));
     }
@@ -164,11 +160,11 @@ export class OrderComponent implements OnInit {
 
         this.sum = this.price*this.cart[i].count;
         this.sumOrder += this.sum;
-      }    
+      }
 
     }
 
-    window.localStorage.setItem('sumOrder', JSON.stringify(this.sumOrder));  
+    window.localStorage.setItem('sumOrder', JSON.stringify(this.sumOrder));
 
   }
 
@@ -181,7 +177,7 @@ export class OrderComponent implements OnInit {
       if(i != null){
         this.kol += i.count;
       }
-      
+
     });
 
     if(this.kol == 0){
@@ -191,13 +187,13 @@ export class OrderComponent implements OnInit {
 
     }
     else{
-      window.localStorage.setItem('kolItems', JSON.stringify(this.kol)); 
-    }  
+      window.localStorage.setItem('kolItems', JSON.stringify(this.kol));
+    }
 
   }
- 
-  addToCartPlus(el){ 
-       
+
+  addToCartPlus(el){
+
 
     if(el.count > 0){
       el.count++;
@@ -211,26 +207,26 @@ export class OrderComponent implements OnInit {
         "Qty": this.qyu
       }
 
-      this.mainService.changeQty(data) 
+      this.mainService.changeQty(data)
       .subscribe(
         (res: any) => {
-          if(res.result == true){ 
+          if(res.result == true){
             window.localStorage.setItem('cart', JSON.stringify(this.cart));
           }
-      });      
+      });
       this.countSumOrder();
-      this.countKolOrder(); 
+      this.countKolOrder();
       window.localStorage.setItem('cart', JSON.stringify(this.cart));
       this.orderService.doClick();
-    } 
-   
+    }
+
   }
 
   addToCartMinus(el,index){
 
     if(el.count > 1){
       el.count--;
-      this.qyu = el.count;      
+      this.qyu = el.count;
 
       let OI_No = this.cart.indexOf(el) ;
 
@@ -243,30 +239,30 @@ export class OrderComponent implements OnInit {
       this.mainService.changeQty(data)
       .subscribe(
         (res: any) => {
-          if(res.result == true){ 
-            window.localStorage.setItem('cart', JSON.stringify(this.cart));   
+          if(res.result == true){
+            window.localStorage.setItem('cart', JSON.stringify(this.cart));
           }
-      });      
+      });
       this.countSumOrder();
-      this.countKolOrder(); 
-      window.localStorage.setItem('cart', JSON.stringify(this.cart));   
+      this.countKolOrder();
+      window.localStorage.setItem('cart', JSON.stringify(this.cart));
       this.orderService.doClick();
     }
     else{
-      el.count = 0;  
-      this.countSumOrder(); 
-      this.countKolOrder(); 
-      this.cart.splice(this.cart.indexOf(el), 1);  
-      window.localStorage.setItem('cart', JSON.stringify(this.cart));  
-      this.orderService.doClick(); 
+      el.count = 0;
+      this.countSumOrder();
+      this.countKolOrder();
+      this.cart.splice(this.cart.indexOf(el), 1);
+      window.localStorage.setItem('cart', JSON.stringify(this.cart));
+      this.orderService.doClick();
     }
-  
+
 
   }
 
-  addToOrder(){     
+  addToOrder(){
 
-        if(this.authService.isAuthenticated() == true){          
+        if(this.authService.isAuthenticated() == true){
 
           this.showOrder = true;
           this.showProductOrder = false;
@@ -275,7 +271,7 @@ export class OrderComponent implements OnInit {
           this.showMessage('Авторизуйтесь для заказа', 'danger');
         }
 
- 
+
   }
 
   addToOrderSave(){
@@ -290,7 +286,7 @@ export class OrderComponent implements OnInit {
       const headers = new Headers({
         'Content-Type': 'application/json; charset=utf8',
         'Authorization': authorization
-      }); 
+      });
 
       const formData = this.form.value;
 
@@ -300,8 +296,8 @@ export class OrderComponent implements OnInit {
           "Cust_ID": this.user.userId,
           "Addr": '',
           "Note": formData.Note
-        };  
-        
+        };
+
       }
       else if(formData.Note == ''){
         this.data_form = {
@@ -309,8 +305,8 @@ export class OrderComponent implements OnInit {
           "Cust_ID": this.user.userId,
           "Addr": formData.Addr,
           "Note": ''
-        };  
-        
+        };
+
       }
       else if(formData.Note == '' || formData.Addr == ''){
         this.data_form = {
@@ -318,8 +314,8 @@ export class OrderComponent implements OnInit {
           "Cust_ID": this.user.userId,
           "Addr": '',
           "Note": ''
-        };  
-        
+        };
+
       }
 
       this.data_form = {
@@ -327,29 +323,29 @@ export class OrderComponent implements OnInit {
         "Cust_ID": this.user.userId,
         "Addr": formData.Addr,
         "Note": formData.Note
-      };  
+      };
       this.mainService.saveOrder(this.data_form, headers)
       .subscribe(
-        (res) => { 
-          this.showSpinner = false; 
+        (res) => {
+          this.showSpinner = false;
 
           this.showMessage('Ваш заказ отправлен', 'success');
 
           window.localStorage.removeItem('sumOrder');
           window.localStorage.removeItem('kolItems');
-          window.localStorage.removeItem('ord_Id'); 
-          window.localStorage.removeItem('cart');      
-          this.orderService.doClick();  
- 
+          window.localStorage.removeItem('ord_Id');
+          window.localStorage.removeItem('cart');
+          this.orderService.doClick();
+
         },
-        (error) => { 
-          this.showSpinner = false;                
-          this.showMessage( error, 'danger'); 
-        } 
-      ) 
+        (error) => {
+          this.showSpinner = false;
+          this.showMessage( error, 'danger');
+        }
+      )
     }
     else{
-      this.showMessage('Авторизуйтесь для заказа', 'danger');   
+      this.showMessage('Авторизуйтесь для заказа', 'danger');
     }
   }
 }

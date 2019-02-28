@@ -3,6 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 import { MainService } from '../../shared/services/main.service';
 import { AuthService } from '../../shared/services/auth.service';
+import {OrderService} from '../../shared/services/order.service';
 
 @Component({
   selector: 'app-header',
@@ -16,10 +17,11 @@ export class HeaderComponent implements OnInit {
   showMenu = false
   hideOnMainPage = false
 
-  constructor(private router: Router,
+  constructor(public router: Router,
     private route: ActivatedRoute,
     private mainService: MainService,
-    private authService: AuthService
+    public authService: AuthService,
+    public orderService: OrderService
   ) {}
 
   ngOnInit() {
@@ -57,4 +59,12 @@ export class HeaderComponent implements OnInit {
     this.showMenu = false
   }
 
+  cartClick() {
+    if(this.router.url === '/') {
+      this.router.navigate(['/order'])
+    } else {
+      console.log(this.route.snapshot.params.id)
+      this.router.navigate([`/categories/${this.route.snapshot.params.id}/products/order`])
+    }
+  }
 }

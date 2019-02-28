@@ -4,10 +4,10 @@ import { Injectable, EventEmitter } from '@angular/core';
   providedIn: 'root'
 })
 
-export class OrderService { 
+export class OrderService {
 
-    kolOrder;
-    sumOrder;
+    kolOrder = 0;
+    sumOrder = 0;
     price: number;
     articul: any;
     quantity;
@@ -19,14 +19,17 @@ export class OrderService {
     onClick:EventEmitter<number> = new EventEmitter();
     onClickSum:EventEmitter<number> = new EventEmitter();
 
-  
+
     constructor() {
-    } 
+      this.doClick()
+      this.cart = JSON.parse(window.localStorage.getItem('cart')) || [];
+    }
+
 
     addToOrder(el) {
 
         if(JSON.parse(window.localStorage.getItem('cart'))){
-            this.cart = JSON.parse(window.localStorage.getItem('cart')); 
+            this.cart = JSON.parse(window.localStorage.getItem('cart'));
         }
         if(JSON.parse(window.localStorage.getItem('sumOrder'))){
             this.sumOrder = JSON.parse(window.localStorage.getItem('sumOrder'));
@@ -41,16 +44,16 @@ export class OrderService {
         }
         else{
           this.articul = 0;
-        }   
-        
+        }
+
         this.quantity = 1;
 
         if(this.cart){
           for(var i = 0; i < this.cart.length; i++){
             this.articul = (i+1);
-          } 
+          }
         }
-    
+
         if(this.articul!=undefined){
             this.cart.push({
               art: this.articul,
@@ -70,7 +73,7 @@ export class OrderService {
               price: this.price,
               strike: true
             });
-        }   
+        }
         if(JSON.parse(window.localStorage.getItem('sumOrder'))){
             this.sumOrder += this.price;
         }
@@ -86,11 +89,11 @@ export class OrderService {
 
 
 
-        window.localStorage.setItem('cart', JSON.stringify(this.cart)); 
+        window.localStorage.setItem('cart', JSON.stringify(this.cart));
         window.localStorage.setItem('sumOrder', JSON.stringify(this.sumOrder));
         window.localStorage.setItem('kolItems', JSON.stringify(this.kolOrder));
-    }  
-    
+    }
+
     countSum(){
         return this.sumOrder;
     }
@@ -100,20 +103,28 @@ export class OrderService {
     }
 
     public doClick(){
-      
+
       if(window.localStorage.getItem('kolItems') || window.localStorage.getItem('sumOrder')){
         this.kolOrder = window.localStorage.getItem('kolItems')
         this.sumOrder = window.localStorage.getItem('sumOrder')
-        
+
         this.clickCnt = this.kolOrder;
-        this.clickSum = this.sumOrder;      
+        this.clickSum = this.sumOrder;
       }
       else{
-        this.clickCnt = 0;
-        this.clickSum = 0;      
+        this.clickCnt = 0
+        this.clickSum = 0
       }
 
-      this.onClick.emit(this.clickCnt);
-      this.onClickSum.emit(this.clickSum);
-    }    
+      this.onClick.emit(this.clickCnt)
+      this.onClickSum.emit(this.clickSum)
+    }
+
+    public getCart() {
+      return this.cart
+    }
+
+    public containsProduct(id: number) {
+      return this.cart.find((item) => item.id === id) !== undefined
+    }
 }

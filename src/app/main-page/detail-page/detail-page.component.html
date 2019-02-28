@@ -64,11 +64,19 @@
         <span>Удалить</span>
       </div>
 
-      <div *ngIf="showBasket" class="basket"
-      (click)="addToCart(element)">
-        <img src="assets/images/white-cart.png">
-        <span>В корзину</span>
-
+      <div *ngIf="showBasket">
+        <div class="basket"
+          *ngIf="!orderService.containsProduct(element.prc_ID) else inCart"
+          (click)="addToCart(element)">
+            <img src="assets/images/white-cart.png">
+            <span>В корзину</span>
+        </div>
+        <ng-template #inCart>
+          <div class="basket in_cart">
+            <i class="fa fa-check"></i>
+            <span>В корзине</span>
+          </div>
+        </ng-template>
       </div>
     </div>
   </div>

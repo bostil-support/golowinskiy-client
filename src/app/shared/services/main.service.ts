@@ -23,6 +23,12 @@ export class MainService{
     constructor(private http: HttpClient){
     }
 
+    public getUserId() {
+      this.http.get(`${environment.api}Load/${this.cust_id}`).subscribe((res) => {
+        localStorage.setItem('userId', res.toString())
+      })
+    }
+
     public getPortal(){
         return this.urlPortal;
     }
@@ -184,6 +190,10 @@ export class MainService{
 
     saveOrder(data: {}, headers){
         return this.http.post(`${environment.api}order/save/ `, data, headers);
+    }
+
+    registorOrder(data) {
+      return this.http.post(`${environment.api}order/`, data)
     }
 
     addToCart(data){

@@ -23,22 +23,22 @@ const routes: Routes = [
             { path: 'login', component: LoginComponent },
             { path: 'registration', component: RegistrationComponent },
             { path: 'recovery', component: RecoveryComponent },
-            {path: 'order', component: OrderComponent}
-        ]}
+        ]},
+        {path: 'order', component: OrderComponent}
     ]},
     { path: 'categories/:id/products', component: ProductsPageComponent, children: [
         { path: 'auth', component: AuthPageComponent, children: [
             { path: 'login', component: LoginComponent },
             { path: 'registration', component: RegistrationComponent },
             { path: 'recovery', component: RecoveryComponent },
-            {path: 'order', component: OrderComponent}
         ]},
-        { path: ':idProduct', component: DetailPageComponent }
+        {path: 'order', component: OrderComponent},
+        { path: ':idProduct', component: DetailPageComponent },
     ]},
-    { path: 'cabinet', component: MainPageComponent, canActivate: [AuthGuard] }, 
+    { path: 'cabinet', component: MainPageComponent, canActivate: [AuthGuard] },
     { path: 'cabinet/categories/:id/products', component: ProductsPageComponent, canActivate: [AuthGuard], children: [
         { path: ':idProduct', component: DetailPageComponent }
-    ]}, 
+    ]},
     { path: 'addProduct', component: AdvertisementPageComponent, canActivate: [AuthGuard] },
     { path: 'cabinet/categories/:id/products/:idProduct/edit', component: EditAdvertisementPageComponent }
 ]
@@ -49,7 +49,7 @@ const routes: Routes = [
     ],
     exports: [
         RouterModule
-    ] 
+    ]
 })
 export class AppRoutingModule{
 

@@ -3,8 +3,8 @@
 
     <!-- begin show only for mobile fersion-->
     <div  class="header_list__item header_list__item--menu" (click)="openMenu()">
-        <i class="fa fa-bars" aria-hidden="true"></i> 
-    </div>    
+        <i class="fa fa-bars" aria-hidden="true"></i>
+    </div>
     <!-- end -->
 
     <div class="header_list__item">
@@ -12,11 +12,11 @@
       <a routerLink="/">
         <div class="header_list__item--logo">
           <img src="assets/images/logo.png">
-  
+
           <!-- begin only show for desktop fersion-->
             <span>Портал Головинского района</span>
           <!-- end -->
-  
+
         </div>
       </a>
 
@@ -36,37 +36,37 @@
     <div class="header_list__item">
       <!-- begin show for desktop fersion-->
         <a *ngIf="hideOnMainPage" routerLink="/" >
-          <div class="header_list__item--back">       
-            <span>Вернуться к каталогу</span>            
+          <div class="header_list__item--back">
+            <span>Вернуться к каталогу</span>
           </div>
         </a>
         <a *ngIf="hideCabinet" routerLink="/cabinet" >
-          <div class="header_list__item--cabinet">            
+          <div class="header_list__item--cabinet">
             <i class="fa fa-user" aria-hidden="true"></i>
-            <span>Личный кабинет</span>            
+            <span>Личный кабинет</span>
           </div>
         </a>
         <app-cabinet-user></app-cabinet-user>
       <!-- end -->
       <!-- begin show for desktop fersion-->
         <a routerLink="/addProduct">
-          <div class="header_list__item--advertisement">          
-            <button>Подать объявление</button>          
+          <div class="header_list__item--advertisement">
+            <button>Подать объявление</button>
           </div>
         </a>
       <!-- end -->
-      <a *ngIf="showBasket">
+      <a *ngIf="showBasket" (click)="cartClick()">
         <div class="header_list__item--basket">
           <div class="basket">
             <img src="assets/images/cart.png">
             <!-- begin show only for mobile fersion-->
-              <div></div>
+              <div>{{orderService.countKol()}}</div>
             <!-- end -->
           </div>
           <!-- begin show for desktop fersion-->
           <div class="order">
-            <p>Сумма товаров: <span>0 руб.</span></p>
-            <p>Количество товаров: <span>0 шт.</span></p>
+            <p>Сумма товаров: <span>{{orderService.sumOrder}} руб.</span></p>
+            <p>Количество товаров: <span>{{orderService.countKol()}} шт.</span></p>
           </div>
           <!-- end -->
         </div>
@@ -82,19 +82,19 @@
   </li>
   <li class="menu_list__item menu_list__item--cabinet" *ngIf="hideCabinet" routerLink="/cabinet">
     <i class="fa fa-user" aria-hidden="true"></i>
-    <span>Личный кабинет</span>   
+    <span>Личный кабинет</span>
   </li>
   <li routerLink="/addProduct" class="menu_list__item">
     <span>Подать объявление</span>
   </li>
   <li class="menu_list__item" *ngIf="hideOnMainPage" (click)="back()">
     <span>Вернуться к каталогу</span>
-  </li>  
+  </li>
   <li class="menu_list__item menu_list__item--user" *ngIf="this.authService.isAuthenticated()">
-    <div class="name">Здравствуйте, {{ this.authService.Account.fio }}</div>
+    <div class="name">Здравствуйте, {{ authService.Account.fio }}</div>
     <div class="exit" (click)="onLogout()">
       <i class="fa fa-power-off icon"></i>
       <span>Выйти</span>
     </div>
   </li>
-</ul> 
+</ul>

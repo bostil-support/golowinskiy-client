@@ -16,30 +16,30 @@ export class AuthService {
     private userId = null
 
     private Account = {}
-    
+
     constructor(private http: HttpClient,
         private router: Router){
-        
-    }    
+
+    }
 
     public user = {
         'Cust_ID_Main': environment.idPortal
-    } 
-    
+    }
+
     registration(){
         return this.http.put(`${environment.api}Authorization`, this.user)
     }
 
     login(): Observable<{
-        accessToken: string, 
+        accessToken: string,
         userId: string,
         role: string,
         fio: string,
         userName: string,
         phone: string
     }>{
-        return this.http.post<{ 
-            accessToken: string, 
+        return this.http.post<{
+            accessToken: string,
             userId: string,
             role: string,
             fio: string,

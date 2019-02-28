@@ -67,7 +67,7 @@
                 p{
                     font-size: 17px;
                 }
-                .add_cart{
+                .add_cart {
                     display: flex;
                     justify-content: center;
                     align-items: center;
@@ -78,6 +78,12 @@
                     cursor: pointer;
                     span{
                         font-size: 17px;
+                    }
+                    &.in_cart {
+                      i {
+                        padding: 0 5px;
+                      }
+                      cursor: auto;
                     }
                 }
             }

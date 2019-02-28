@@ -1,19 +1,24 @@
 @import "../../../constants.scss";
+//.modal_container {
+//  position: fixed;
+//  display: flex;
+//  flex-direction: column;
+//  align-items: center;
+//}
 
-.modal_window{
-    position: absolute;
+.modal_w{
+    position: fixed;
     z-index: 2;
     left: 20%;
     right: 20%;
-    top: 15%;
+    top: 3%;
     width: 60%;
-    background: rgba(0, 0, 0, 0.5);
+    background: white;
     border-radius: 10px;
     padding: 4%;
+    border: 2px solid #189691;
 }
 .modal_w{
-    width: 60%;
-    top: 10%;
     @media only screen and (max-width: 992px) {
         width: 100%;
         left: 0;
@@ -40,23 +45,10 @@
         top: 1%;
         right: 1%;
         position: absolute;
-        color: #ffffff;
+        color: black;
         font-size: 30px;
-        cursor: pointer;  
+        cursor: pointer;
     }
-}
-main .product_order{
-    background: rgba(0, 0, 0, .5);
-    //border: 4px solid rgba(24, 150, 145);
-    border-radius: 10px;
-    width: 60%;
-    height: auto;
-    padding: 3%;
-    left: 20%;
-    right: 20%;
-    top: 5%;
-    position: absolute;
-    z-index: 2;
 }
 .productOrder{
     background: rgba(0, 0, 0, .5);
