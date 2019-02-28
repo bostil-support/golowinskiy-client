@@ -6,6 +6,7 @@ import { tap } from 'rxjs/operators'
 import { environment } from "../../../environments/environment"
 import { User } from "../interfaces"
 import { Router } from "@angular/router";
+import {OrderService} from './order.service';
 
 @Injectable({
     providedIn: 'root'
@@ -18,7 +19,9 @@ export class AuthService {
     private Account = {}
 
     constructor(private http: HttpClient,
-        private router: Router){
+        private router: Router,
+        private orderService: OrderService
+                ){
 
     }
 
@@ -91,6 +94,7 @@ export class AuthService {
     logout(){
         this.setToken(null)
         localStorage.clear()
+        this.orderService.cart = []
         this.router.navigate(['/'])
     }
 }

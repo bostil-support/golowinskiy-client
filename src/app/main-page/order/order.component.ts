@@ -82,14 +82,7 @@ export class OrderComponent implements OnInit {
     window.setTimeout(() => {
       this.message.text = '';
       if(this.message.type == 'danger'){
-
-        if(window.location.href.includes('products/order')){
-          this.router.navigate([`/categories/${window.location.pathname.split('categories/')[1].split('/products')[0]}/products/login`, { 'nav': 'order'}])
-        }
-        else{
-          this.router.navigate(['/login', { 'nav': 'order'}]);
-        }
-
+        this.router.navigate(['/auth/login'], { queryParams: {route: this.router.url}})
       }
       else if(this.message.type == 'success'){
         if(window.location.pathname!= '/order'){
@@ -276,12 +269,12 @@ export class OrderComponent implements OnInit {
 
   addToOrderSave(){
     this.showSpinner = true;
-    if(this.authService.isAuthenticated() == true){
+    if(this.authService.isAuthenticated()){
 
       this.showOrder = true;
       this.showProductOrder = false;
 
-      let authorization = 'Bearer ' + this.user.accessToken;
+      let authorization = 'Bearer ' + this.authService.getToken();
 
       const headers = new Headers({
         'Content-Type': 'application/json; charset=utf8',
@@ -290,53 +283,27 @@ export class OrderComponent implements OnInit {
 
       const formData = this.form.value;
 
-      if(formData.Addr == ''){
-        this.data_form = {
-          "Ord_ID" : this.ord_Id,
-          "Cust_ID": this.user.userId,
-          "Addr": '',
-          "Note": formData.Note
-        };
-
-      }
-      else if(formData.Note == ''){
-        this.data_form = {
-          "Ord_ID" : this.ord_Id,
-          "Cust_ID": this.user.userId,
-          "Addr": formData.Addr,
-          "Note": ''
-        };
-
-      }
-      else if(formData.Note == '' || formData.Addr == ''){
-        this.data_form = {
-          "Ord_ID" : this.ord_Id,
-          "Cust_ID": this.user.userId,
-          "Addr": '',
-          "Note": ''
-        };
-
-      }
-
       this.data_form = {
-        "Ord_ID" : this.ord_Id,
-        "Cust_ID": this.user.userId,
+        "Ord_ID" : this.mainService.getOrderId(),
+        "Cust_ID": this.authService.getUserId(),
         "Addr": formData.Addr,
         "Note": formData.Note
       };
       this.mainService.saveOrder(this.data_form, headers)
       .subscribe(
-        (res) => {
+        (res: any) => {
           this.showSpinner = false;
+          if (res.result) {
+            this.showMessage('Ваш заказ отправлен', 'success');
 
-          this.showMessage('Ваш заказ отправлен', 'success');
-
-          window.localStorage.removeItem('sumOrder');
-          window.localStorage.removeItem('kolItems');
-          window.localStorage.removeItem('ord_Id');
-          window.localStorage.removeItem('cart');
-          this.orderService.doClick();
-
+            window.localStorage.removeItem('sumOrder');
+            window.localStorage.removeItem('kolItems');
+            window.localStorage.removeItem('ord_Id');
+            window.localStorage.removeItem('cart');
+            this.orderService.doClick();
+          } else {
+            this.showMessage( 'Заказ не отправлен', 'danger');
+          }
         },
         (error) => {
           this.showSpinner = false;

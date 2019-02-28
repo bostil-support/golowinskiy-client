@@ -62,8 +62,6 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.cart = this.orderService.getCart()
-    console.log(this.cart)
-    console.log(this.orderService.containsProduct(18231))
     this.categories = this.mainService.loadCategoriesFromStorage()
 
     this.message = new Message('danger', '')
@@ -73,7 +71,8 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
     this.sub = this.mainService.getShopInfo()
       .subscribe(
         (res) => {
-          this.mainService.getUserId()
+          this.mainService.registorOrder()
+
           let cid
           if(window.location.pathname.includes('cabinet')){
             cid = localStorage.getItem('userId')
@@ -151,12 +150,6 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
               this.kolItems = 1;
             }
 
-            let registerData = {
-              Cust_ID: this.authService.getUserId(),
-              Cur_Code: 810
-            }
-
-            this.mainService.registorOrder(registerData).subscribe((res: any) => {
               let data = {
                 "OrdTtl_Id" : res.ord_No,
                 "OI_No" : +this.kolItems,
@@ -174,7 +167,6 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
                       this.showMessage(`${res.message}`, 'success');
                     }
                   })
-            })
 
         })
     })

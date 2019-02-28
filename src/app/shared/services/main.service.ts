@@ -6,6 +6,7 @@ import {mergeMap, tap} from 'rxjs/operators';
 import {environment} from 'src/environments/environment';
 import {CategoryItem} from '../../categories/categories.component';
 import {AdditionalImagesData, AdditionalImagesRequest, Product} from '../interfaces';
+import {AuthService} from './auth.service';
 
 
 @Injectable({
@@ -20,13 +21,14 @@ export class MainService{
     private mainImage = null
     private mainPictureAccountUser = null
 
-    constructor(private http: HttpClient){
+    constructor(
+      private http: HttpClient,
+      private authService: AuthService,
+    ){
     }
 
     public getUserId() {
-      this.http.get(`${environment.api}Load/${this.cust_id}`).subscribe((res) => {
-        localStorage.setItem('userId', res.toString())
-      })
+      return this.http.get(`${environment.api}Load/${this.cust_id}`)
     }
 
     public getPortal(){
@@ -192,8 +194,20 @@ export class MainService{
         return this.http.post(`${environment.api}order/save/ `, data, headers);
     }
 
-    registorOrder(data) {
-      return this.http.post(`${environment.api}order/`, data)
+    registorOrder() {
+      return this.getUserId().subscribe((res) => {
+        this.http.post(`${environment.api}order/`, {
+          Cust_ID: res,
+          Cur_Code: 810
+        }).subscribe((res: any) => {
+          localStorage.setItem('ord_No', res.ord_No)
+          localStorage.setItem('ord_ID', res.ord_ID)
+        })
+      })
+    }
+
+    getOrderId() {
+      return localStorage.getItem('ord_ID')
     }
 
     addToCart(data){
