@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {CatalogItem} from '../categories/categories.component';
+import {CategoryItem} from '../categories/categories.component';
 
 @Component({
   selector: 'app-breadcrumbs',
@@ -7,7 +7,7 @@ import {CatalogItem} from '../categories/categories.component';
   styleUrls: ['./breadcrumbs.component.scss']
 })
 export class BreadcrumbsComponent implements OnInit {
-  @Input() categories: CatalogItem[];
+  @Input() categories: CategoryItem[];
   @Output() click = new EventEmitter()
 
   constructor() { }

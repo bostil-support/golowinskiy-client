@@ -3,19 +3,20 @@ import {Router} from '@angular/router'
 
 import {AuthService} from '../shared/services/auth.service'
 import {MainService} from '../shared/services/main.service'
+import {StorageService} from '../shared/services/storage.service';
 
-export interface CatalogItem {
+export interface CategoryItem {
   cust_id: number
   id: number
   isshow: "1"
-  listInnerCat: CatalogItem[]
+  listInnerCat: CategoryItem[]
   parent_id: number
   picture: string
   txt: string
 }
 
 interface SelectedItem {
-  [key: string]: CatalogItem
+  [key: string]: CategoryItem
 }
 
 @Component({
@@ -24,18 +25,19 @@ interface SelectedItem {
   styleUrls: ['./categories.component.scss']
 })
 export class CategoriesComponent implements OnInit {
-  catalog: CatalogItem[]
+  catalog: CategoryItem[]
   selected: SelectedItem = {}
   loaded = false
 
   @Input() showCatalog = true
   @Input() initialCategories = []
 
-  @Output() lastChildAction = new EventEmitter<CatalogItem[]>()
+  @Output() lastChildAction = new EventEmitter<CategoryItem[]>()
 
   constructor(private router: Router,
               private authService: AuthService,
-              private mainService: MainService) {
+              private mainService: MainService,
+              private storageService: StorageService) {
 
                 let advert = window.location.pathname.includes('addProduct')? '1': null
                 let userId = window.location.pathname.includes('cabinet')? this.authService.getUserId(): null
@@ -50,15 +52,18 @@ export class CategoriesComponent implements OnInit {
   }
 
   ngOnInit() {
-    const categories = this.initialCategories
-    let index = 1
-    for(const x of categories) {
-      this.selected['lavel' + index] = x
-      index++
+    if (this.storageService.breadcrumbFlag) {
+      const categories = this.initialCategories
+      let index = 1
+      for (const x of categories) {
+        this.selected['lavel' + index] = x
+        index++
+      }
+      this.storageService.breadcrumbFlag = false
     }
   }
 
-  select(type: string, item: CatalogItem, $event) {
+  select(type: string, item: CategoryItem, $event) {
     this.selected[type] = (this.selected[type] === item ? null : item)
     $event ? $event.stopPropagation() : null
 
@@ -67,19 +72,18 @@ export class CategoriesComponent implements OnInit {
       // this.showCatalog = false
 
       // convert item object to array
-      let items: CatalogItem[] = []
+      let items: CategoryItem[] = []
       for(const x in this.selected) {
         items.push(this.selected[x])
         if (type === x) {
           break
         }
       }
-      this.mainService.saveCategoriesToStorage(items)
       this.lastChildAction.emit(items)
     }
   }
 
-  isActive(type: string, item: CatalogItem) {
+  isActive(type: string, item: CategoryItem) {
     let typeMod = {}
     for(let typeElement in this.selected[type]) {
       if (typeElement != 'listInnerCat') {

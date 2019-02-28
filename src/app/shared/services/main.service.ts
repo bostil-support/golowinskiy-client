@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {concat, from, Observable} from 'rxjs';
+import {forkJoin, from, Observable, of} from 'rxjs';
 import {mergeMap, tap} from 'rxjs/operators';
 
 import {environment} from 'src/environments/environment';
-import {CatalogItem} from '../../categories/categories.component';
+import {CategoryItem} from '../../categories/categories.component';
 import {AdditionalImagesData, AdditionalImagesRequest, Product} from '../interfaces';
 
 
@@ -12,8 +12,6 @@ import {AdditionalImagesData, AdditionalImagesRequest, Product} from '../interfa
     providedIn: 'root'
 })
 export class MainService{
-
-    private baseUrl = environment.api;
 
     urlPortal = location.hostname.split('.')[0]
 
@@ -98,7 +96,7 @@ export class MainService{
     }
 
     getCategories(userId, advert){
-        return this.http.post<CatalogItem[]>(
+        return this.http.post<CategoryItem[]>(
             `${environment.api}categories`, {
                 Cust_ID_Main: this.getCustId(),
                 CID: userId,
@@ -157,15 +155,12 @@ export class MainService{
         return this.http.put(`${environment.api}AdditionalImg/api/AdditionalImg`, data)
     }
 
-    addAdditionalImg(data: any, headers){
-        return this.http.post(`${environment.api}AdditionalImg`, data, headers)
-    }
-
     additionalImagesGroup(data: AdditionalImagesData[]) {
       return from(data).pipe(
         mergeMap(item =>
-          concat(this.uploadImage(item.imageData),
-            this.additionalImageUpload(item.request)
+          forkJoin(this.uploadImage(item.imageData),
+            this.additionalImageUpload(item.request),
+            of(console.log('hello'))
           )
         )
       )
