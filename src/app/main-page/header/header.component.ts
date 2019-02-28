@@ -63,7 +63,6 @@ export class HeaderComponent implements OnInit {
     if(this.router.url === '/') {
       this.router.navigate(['/order'])
     } else {
-      console.log(this.route.snapshot.params.id)
       this.router.navigate([`/categories/${this.route.snapshot.params.id}/products/order`])
     }
   }

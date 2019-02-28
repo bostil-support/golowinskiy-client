@@ -293,28 +293,26 @@ export class DetailPageComponent implements OnInit {
             Cur_Code: 810
           }
 
-          this.mainService.registorOrder(registerData).subscribe((res: any) => {
-            let data = {
-              "OrdTtl_Id" : res.ord_No,
-              "OI_No" : +this.kolItems,
-              "Ctlg_No": this.ctlg_No,
-              "Qty": this.quantity,
-              "Ctlg_Name": this.ctlg_Name,
-              "Sup_ID": this.sup_ID,
-              "Descr": this.tName,
-            }
-            this.mainService.addToCart(data)
-              .subscribe(
-                (res: any) => {
-                  this.showSpinner = false;
+          let data = {
+            "OrdTtl_Id" : res.ord_No,
+            "OI_No" : +this.kolItems,
+            "Ctlg_No": this.ctlg_No,
+            "Qty": this.quantity,
+            "Ctlg_Name": this.ctlg_Name,
+            "Sup_ID": this.sup_ID,
+            "Descr": this.tName,
+          }
+          this.mainService.addToCart(data)
+            .subscribe(
+              (res: any) => {
+                this.showSpinner = false;
 
-                  if (res.result == true) {
+                if (res.result == true) {
 
-                    this.showMessage(`${res.message}`, 'success');
-                    this.showProduct = false;
-                  }
-                })
-          })
+                  this.showMessage(`${res.message}`, 'success');
+                  this.showProduct = false;
+                }
+              })
       })
     })
 

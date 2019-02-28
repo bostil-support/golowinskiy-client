@@ -105,8 +105,8 @@ export class OrderService {
     public doClick(){
 
       if(window.localStorage.getItem('kolItems') || window.localStorage.getItem('sumOrder')){
-        this.kolOrder = window.localStorage.getItem('kolItems')
-        this.sumOrder = window.localStorage.getItem('sumOrder')
+        this.kolOrder = parseInt(window.localStorage.getItem('kolItems'))
+        this.sumOrder = parseFloat(window.localStorage.getItem('sumOrder'))
 
         this.clickCnt = this.kolOrder;
         this.clickSum = this.sumOrder;
