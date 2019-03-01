@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, NavigationEnd, NavigationStart, ResolveStart, Router} from '@angular/router';
 
 import { Http } from '@angular/http';
@@ -38,17 +38,11 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   sup_ID: string
   prc_ID: string
 
-  sumOrder
-  kolOrder
   price: number
-  count: number
-  articul: any
   quantity
   prc_Br
   tName
   kolItems
-  ord_Id: string
-  cart = []
 
   constructor(private mainService: MainService,
               private route: ActivatedRoute,
@@ -61,7 +55,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.cart = this.orderService.getCart()
+    document.getElementById('fon-image')
     this.categories = this.mainService.loadCategoriesFromStorage()
 
     this.message = new Message('danger', '')
@@ -96,6 +90,16 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
     this.categories = this.mainService.loadCategoriesFromStorage()
   }
 
+  ngAfterViewInit() {
+    const action = () => {
+      const header = document.getElementsByTagName('header')[0]
+      const height = header.clientHeight
+      document.getElementById('breadcrumbs').style.paddingTop = `${height + 20}px`
+    }
+    window.onresize = action
+    action()
+  }
+
   ngOnDestroy(){
     if(this.sub){
       this.sub.unsubscribe()
@@ -117,9 +121,6 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
     this.storageService.setCategories(this.categories)
     this.storageService.breadcrumbFlag = true
     this.router.navigate(['/'])
-  }
-
-  pageChange(event) {
   }
 
   addToCart(el){

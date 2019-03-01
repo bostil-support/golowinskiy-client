@@ -36,8 +36,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-
-
     this.sub = this.mainService.getShopInfo()
       .subscribe(
         (res) => {
@@ -52,7 +50,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
 
       this.clockService.getClock()
       document.getElementById("inner").style.minHeight = `calc(100vh - ${document.getElementById("doc_time").offsetHeight}px - ${document.getElementById("footer").offsetHeight}px - 15px)`;
-
       window.setTimeout(() => {
         this.clickClock = 'end'
       }, 3000)

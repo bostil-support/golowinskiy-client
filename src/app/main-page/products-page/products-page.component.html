@@ -1,5 +1,5 @@
 <div id="fon-image">
-    <app-header></app-header>
+    <app-header id="header"></app-header>
 
     <div class="showMessage" *ngIf="showSpinner">
         <i class="fa fa-spinner fa-spin"></i>
@@ -12,8 +12,12 @@
         </div>
     </div>
 
-    <div class="breadcrumbs_container" *ngIf="!showSpinner">
-      <app-breadcrumbs (click)="breadcrumbsClick()" [categories]="categories"></app-breadcrumbs>
+    <div id="breadcrumbs" class="breadcrumbs_container">
+      <app-breadcrumbs
+        (click)="breadcrumbsClick()"
+        [categories]="categories"
+        *ngIf="!showSpinner"
+      ></app-breadcrumbs>
     </div>
 
 
