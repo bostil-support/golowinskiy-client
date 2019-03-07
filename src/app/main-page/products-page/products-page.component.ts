@@ -152,7 +152,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
             }
 
               let data = {
-                "OrdTtl_Id" : res.ord_No,
+                "OrdTtl_Id" : this.orderService.getOrderId(),
                 "OI_No" : +this.kolItems,
                 "Ctlg_No": this.ctlg_No,
                 "Qty": this.quantity,

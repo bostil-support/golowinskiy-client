@@ -7,6 +7,7 @@ import {environment} from 'src/environments/environment';
 import {CategoryItem} from '../../categories/categories.component';
 import {AdditionalImagesData, AdditionalImagesRequest, Product} from '../interfaces';
 import {AuthService} from './auth.service';
+import {OrderService} from './order.service';
 
 
 @Injectable({
@@ -24,6 +25,7 @@ export class MainService{
     constructor(
       private http: HttpClient,
       private authService: AuthService,
+      private orderService: OrderService,
     ){
     }
 
@@ -195,19 +197,16 @@ export class MainService{
     }
 
     registorOrder() {
-      return this.getUserId().subscribe((res) => {
+      console.log(this.orderService.getOrderId());
+      return this.getUserId().subscribe((res: any) => {
         this.http.post(`${environment.api}order/`, {
           Cust_ID: res,
           Cur_Code: 810
         }).subscribe((res: any) => {
           localStorage.setItem('ord_No', res.ord_No)
-          localStorage.setItem('ord_ID', res.ord_ID)
+          this.orderService.setOrderId(res.ord_ID)
         })
       })
-    }
-
-    getOrderId() {
-      return localStorage.getItem('ord_ID')
     }
 
     addToCart(data){

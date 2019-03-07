@@ -16,7 +16,7 @@ import {MainService} from '../../shared/services/main.service';
 export class OrderComponent implements OnInit {
 
   kol = 0;
-  data_form: { "Ord_ID": string; "Cust_ID": any; "Addr": any; "Note": any; };
+  data_form: { "Ord_ID": string | number; "Cust_ID": any; "Addr": any; "Note": any; };
   showProductOrder: boolean = true;
 
   user: any;
@@ -284,7 +284,7 @@ export class OrderComponent implements OnInit {
       const formData = this.form.value;
 
       this.data_form = {
-        "Ord_ID" : this.mainService.getOrderId(),
+        "Ord_ID" : this.orderService.getOrderId(),
         "Cust_ID": this.authService.getUserId(),
         "Addr": formData.Addr,
         "Note": formData.Note

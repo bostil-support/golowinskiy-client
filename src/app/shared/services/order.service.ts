@@ -8,6 +8,7 @@ export class OrderService {
 
     kolOrder = 0;
     sumOrder = 0;
+    private orderId: number;
     price: number;
     articul: any;
     quantity;
@@ -22,6 +23,7 @@ export class OrderService {
 
     constructor() {
       this.doClick()
+      this.orderId = JSON.parse(window.localStorage.getItem('ord_ID'));
       this.cart = JSON.parse(window.localStorage.getItem('cart')) || [];
       this.sumOrder = JSON.parse(window.localStorage.getItem('sumOrder')) || 0;
       this.kolOrder = JSON.parse(window.localStorage.getItem('kolItems')) || 0;
@@ -85,6 +87,15 @@ export class OrderService {
 
     countKol(){
       return this.kolOrder;
+    }
+
+    public setOrderId(orderId: number) {
+      this.orderId = orderId;
+      window.localStorage.setItem('ord_ID', this.orderId.toString());
+    }
+
+    public getOrderId(): number {
+      return this.orderId;
     }
 
     public doClick(){
