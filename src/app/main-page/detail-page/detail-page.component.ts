@@ -315,7 +315,7 @@ export class DetailPageComponent implements OnInit {
                     this.showSpinner = false;
 
                     if (res.result == true) {
-                      this.orderService.addToOrder(el, productRes.ctlg_No);
+                      this.orderService.addToOrder(el, productRes.ctlg_No, productRes.ctlg_Name, productRes.sup_ID);
                       this.showMessage(`${res.message}`, 'success');
                       this.showProduct = false;
                     }

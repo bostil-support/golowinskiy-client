@@ -111,9 +111,11 @@ export class OrderComponent implements OnInit {
     this.mainService.changeQty({
       ordTtl_Id: this.orderService.getOrderId(),
       ctlg_No: cart[index].ctlg_No,
-      qty: cart[index].count,
       ctlg_Name: cart[index].ctlg_Name,
-      oI_No: cart[index].id,
+      qty: cart[index].count,
+      oI_No: index,
+      sup_ID: cart[index].sup_ID,
+      descr: cart[index].name,
     }).subscribe()
     if (value < 0) {
       this.orderService.removeOneItem(index)

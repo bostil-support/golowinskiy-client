@@ -160,8 +160,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
                   .subscribe((res: any) => {
                       this.showSpinner = false;
                       if (res.result == true) {
-                        this.orderService.addToOrder(el, productRes.ctlg_No, productRes.ctlg_Name)
-                        console.log(el)
+                        this.orderService.addToOrder(el, productRes.ctlg_No, productRes.ctlg_Name, productRes.sup_ID)
                         this.showMessage(`${res.message}`, 'success');
                       }
                     })

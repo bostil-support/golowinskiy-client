@@ -19,7 +19,7 @@ export class OrderService {
     }
 
 
-    addToOrder(el, ctlg_No: string, ctlg_Name) {
+    addToOrder(el, ctlg_No: string, ctlg_Name: string, sup_ID: string) {
         let price = parseInt(el.prc_Br.split('.')[0].replace(/\D+/g,""));
 
         this.cart.push({
@@ -31,6 +31,7 @@ export class OrderService {
           strike: true,
           ctlg_No,
           ctlg_Name,
+          sup_ID,
         });
         window.localStorage.setItem('cart', JSON.stringify(this.cart))
     }
