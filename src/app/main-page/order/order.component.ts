@@ -14,22 +14,10 @@ import {MainService} from '../../shared/services/main.service';
   styleUrls: ['./order.component.scss']
 })
 export class OrderComponent implements OnInit {
-
-  kol = 0;
   data_form: { "Ord_ID": string | number; "Cust_ID": any; "Addr": any; "Note": any; };
   showProductOrder: boolean = true;
 
   user: any;
-
-  ord_Id: string = '';
-  cart = [];
-  qyu: any;
-  price = 0;
-  sumOrder = 0;
-
-  countP = 1;
-
-  sum = 0;
 
   showOrder: boolean = false;
 
@@ -40,27 +28,17 @@ export class OrderComponent implements OnInit {
   showSpinner: boolean = false;
   idCategorii;
 
-  clickCnt = window.localStorage.getItem('kolItems');
-  clickSum = window.localStorage.getItem('sumOrder');
-
   constructor(
         public el: ElementRef,
         private router: Router,
         private authService: AuthService,
         private route: ActivatedRoute,
-        private orderService: OrderService,
+        public orderService: OrderService,
         private mainService: MainService
   ) {
-    this.orderService.onClick.subscribe(cnt => {
-      this.clickCnt = cnt;
-    });
-    this.orderService.onClickSum.subscribe(cnt => {
-      this.clickSum = cnt;
-    });
   }
 
   ngOnInit() {
-    this.ord_Id = window.localStorage.getItem('ord_Id');
     this.message = new Message('danger', '');
 
     this.form = new FormGroup({
@@ -68,13 +46,10 @@ export class OrderComponent implements OnInit {
       'Note': new FormControl(null, [Validators.required])
     });
 
-    this.checkCart();
     if(window.location.pathname!= '/order'){
       this.idCategorii = window.location.pathname.split('categories/')[1].split('/products')[0];
 
     }
-
-
   }
 
   private showMessage( text: string, type:string = 'danger'){
@@ -118,153 +93,33 @@ export class OrderComponent implements OnInit {
 
   }
 
-  checkCart(){
-    if(window.localStorage.getItem('cart')!= null){
-      this.cart = JSON.parse(window.localStorage.getItem('cart'));
-    }
-
-
-    if(JSON.parse(window.localStorage.getItem('sumOrder'))){
-      this.sumOrder = JSON.parse(window.localStorage.getItem('sumOrder'));
-    }
-    else{
-      this.sumOrder = 0;
-    }
-
-    if(JSON.parse(window.localStorage.getItem('kolItems'))){
-      this.kol = JSON.parse(window.localStorage.getItem('kolItems'));
-    }
-    else{
-      this.kol = 0;
-    }
-
-  }
-
-
-  countSumOrder(){
-
-    this.sumOrder = 0;
-
-    for(let i in this.cart){
-      if(this.cart[i]!=null){
-
-        this.sum = 0;
-        this.price = this.cart[i].price;
-
-        this.sum = this.price*this.cart[i].count;
-        this.sumOrder += this.sum;
-      }
-
-    }
-
-    window.localStorage.setItem('sumOrder', JSON.stringify(this.sumOrder));
-
-  }
-
-  countKolOrder(){
-
-    this.kol = 0;
-
-    this.cart.forEach(i => {
-
-      if(i != null){
-        this.kol += i.count;
-      }
-
-    });
-
-    if(this.kol == 0){
-      window.localStorage.removeItem('kolItems');
-      window.localStorage.removeItem('sumOrder');
-      window.localStorage.removeItem('cart');
-
-    }
-    else{
-      window.localStorage.setItem('kolItems', JSON.stringify(this.kol));
-    }
-
-  }
-
-  addToCartPlus(el){
-
-
-    if(el.count > 0){
-      el.count++;
-      this.qyu = el.count;
-
-      let OI_No = this.cart.indexOf(el);
-
-      let data = {
-        "OrdTtl_Id" : this.ord_Id,
-        "OI_No": OI_No,
-        "Qty": this.qyu
-      }
-
-      this.mainService.changeQty(data)
-      .subscribe(
-        (res: any) => {
-          if(res.result == true){
-            window.localStorage.setItem('cart', JSON.stringify(this.cart));
-          }
-      });
-      this.countSumOrder();
-      this.countKolOrder();
-      window.localStorage.setItem('cart', JSON.stringify(this.cart));
-      this.orderService.doClick();
-    }
-
-  }
-
-  addToCartMinus(el,index){
-
-    if(el.count > 1){
-      el.count--;
-      this.qyu = el.count;
-
-      let OI_No = this.cart.indexOf(el) ;
-
-      let data = {
-        "OrdTtl_Id" : this.ord_Id,
-        "OI_No" : OI_No,
-        "Qty": this.qyu
-      }
-
-      this.mainService.changeQty(data)
-      .subscribe(
-        (res: any) => {
-          if(res.result == true){
-            window.localStorage.setItem('cart', JSON.stringify(this.cart));
-          }
-      });
-      this.countSumOrder();
-      this.countKolOrder();
-      window.localStorage.setItem('cart', JSON.stringify(this.cart));
-      this.orderService.doClick();
-    }
-    else{
-      el.count = 0;
-      this.countSumOrder();
-      this.countKolOrder();
-      this.cart.splice(this.cart.indexOf(el), 1);
-      window.localStorage.setItem('cart', JSON.stringify(this.cart));
-      this.orderService.doClick();
-    }
-
-
-  }
-
   addToOrder(){
+    if(this.authService.isAuthenticated() == true){
 
-        if(this.authService.isAuthenticated() == true){
+      this.showOrder = true;
+      this.showProductOrder = false;
+    }
+    else{
+      this.showMessage('Авторизуйтесь для заказа', 'danger');
+    }
+  }
 
-          this.showOrder = true;
-          this.showProductOrder = false;
-        }
-        else{
-          this.showMessage('Авторизуйтесь для заказа', 'danger');
-        }
-
-
+  changeCount(index: number, value: number) {
+    console.log(this.orderService.getCart())
+    // this.mainService.changeQty()
+    let cart = this.orderService.getCart()
+    this.mainService.changeQty({
+      ordTtl_Id: this.orderService.getOrderId(),
+      ctlg_No: cart[index].ctlg_No,
+      qty: cart[index].count,
+      ctlg_Name: cart[index].ctlg_Name,
+      oI_No: cart[index].id,
+    }).subscribe()
+    if (value < 0) {
+      this.orderService.removeOneItem(index)
+    } else {
+      this.orderService.addOneItem(index)
+    }
   }
 
   addToOrderSave(){
@@ -296,10 +151,7 @@ export class OrderComponent implements OnInit {
           if (res.result) {
             this.showMessage('Ваш заказ отправлен', 'success');
 
-            window.localStorage.removeItem('sumOrder');
-            window.localStorage.removeItem('kolItems');
-            window.localStorage.removeItem('ord_Id');
-            window.localStorage.removeItem('cart');
+            this.orderService.clearCartAndOrder()
             this.orderService.doClick();
           } else {
             this.showMessage( 'Заказ не отправлен', 'danger');

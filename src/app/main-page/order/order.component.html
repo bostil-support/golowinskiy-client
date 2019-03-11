@@ -25,23 +25,23 @@
 
           <div class="container order_item">
             <div class="item_list">
-              <div *ngFor="let c of cart let x = index"
+              <div *ngFor="let c of orderService.getCart() let x = index"
               >
-                <div *ngIf="c!=null">
-                  <div *ngIf="c.count>0" class="item row">
+                <div><!--<div *ngIf="c!=null">-->
+                  <div class="item row"><!--<div *ngIf="c.count>0" class="item row">-->
                     <div class="name text-left col-xs-12 col-sm-12 col-md-12 col-lg-6">
                       {{ c.name }}
                     </div>
                     <div class="count text-center col-xs-12 col-sm-12 col-md-12 col-lg-3 no-padding">
                       <div class="count_content">
 
-                        <a (click)="addToCartMinus(c, x)" [attr.data-product]="c.art">
+                        <a (click)="changeCount(x, -1)" [attr.data-product]="c.art">
                           <span class="fa fa-minus"></span>
                         </a>
 
                         <input type="text" size="1" [value]="c.count" class="text-center" data-product=""/>
 
-                        <a (click)="addToCartPlus(c)" [attr.data-product]="c.art">
+                        <a (click)="orderService.addOneItem(x)" [attr.data-product]="c.art">
                           <span class="fa fa-plus"></span>
                         </a>
                       </div>
@@ -54,7 +54,7 @@
               </div>
             </div>
           </div>
-          <div class="product_order_summa text-right col-lg-12">Общая сумма заказа: {{ sumOrder }} руб.
+          <div class="product_order_summa text-right col-lg-12">Общая сумма заказа: {{ orderService.countSum() }} руб.
           </div>
 
         </div>

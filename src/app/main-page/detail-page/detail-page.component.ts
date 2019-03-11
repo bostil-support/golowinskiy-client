@@ -4,7 +4,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {environment} from '../../../environments/environment';
 import {MainService} from '../../shared/services/main.service';
 import {Message} from '../../shared/models/message.model';
-import {Subscription} from 'rxjs';
+import {of, Subscription} from 'rxjs';
 import {Product} from '../../shared/interfaces';
 import {OrderService} from '../../shared/services/order.service';
 import {AuthService} from '../../shared/services/auth.service';
@@ -68,6 +68,14 @@ export class DetailPageComponent implements OnInit {
               private authService: AuthService) {}
 
   ngOnInit() {
+    const action = () => {
+      const header = document.getElementsByTagName('header')[0]
+      const height = header.clientHeight
+      // document.getElementById('detail-page').style.paddingTop = `${height + 20}px`
+    }
+    window.onresize = action
+    action()
+
     this.apiRoot = environment.api
     this.message = new Message('danger', '')
     let cid
@@ -267,56 +275,54 @@ export class DetailPageComponent implements OnInit {
       }
     }
 
-    this.orderService.addToOrder(el);
     this.orderService.doClick();
 
-    this.mainService.getShopInfo().subscribe(res => {
+    let registerOrder = this.orderService.countKol() === 0? this.mainService.registerOrder(): of({});
+    registerOrder.subscribe(() => {
+      this.mainService.getShopInfo().subscribe(res => {
 
-      this.mainService.getProduct(el.prc_ID, res.cust_id, res.cust_id)
-      .subscribe(
-        (res: any) => {
-          this.ctlg_No = res.ctlg_No;
-          this.ctlg_Name = res.ctlg_Name;
-          this.sup_ID = res.sup_ID;
-          this.tName = res.tName;
-          this.prc_Br = res.prc_Br;
+        this.mainService.getProduct(el.prc_ID, res.cust_id, res.cust_id)
+          .subscribe((productRes: any) => {
+              this.ctlg_No = productRes.ctlg_No;
+              this.ctlg_Name = productRes.ctlg_Name;
+              this.sup_ID = productRes.sup_ID;
+              this.tName = productRes.tName;
+              this.prc_Br = productRes.prc_Br;
 
-          if(window.localStorage.getItem('kolItems')){
-            this.kolItems = window.localStorage.getItem('kolItems');
-          }
-          else{
-            this.kolItems = 1;
-          }
+              if (window.localStorage.getItem('kolItems')) {
+                this.kolItems = window.localStorage.getItem('kolItems');
+              } else {
+                this.kolItems = 1;
+              }
 
-          let registerData = {
-            Cust_ID: this.authService.getUserId(),
-            Cur_Code: 810
-          }
+              let registerData = {
+                Cust_ID: this.authService.getUserId(),
+                Cur_Code: 810
+              }
 
-          let data = {
-            "OrdTtl_Id" : this.orderService.getOrderId(),
-            "OI_No" : +this.kolItems,
-            "Ctlg_No": this.ctlg_No,
-            "Qty": this.quantity,
-            "Ctlg_Name": this.ctlg_Name,
-            "Sup_ID": this.sup_ID,
-            "Descr": this.tName,
-          }
-          this.mainService.addToCart(data)
-            .subscribe(
-              (res: any) => {
-                this.showSpinner = false;
+              let data = {
+                "OrdTtl_Id": this.orderService.getOrderId(),
+                "OI_No": 1,
+                "Ctlg_No": productRes.ctlg_No,
+                "Qty": 1,
+                "Ctlg_Name": productRes.ctlg_Name,
+                "Sup_ID": productRes.sup_ID,
+                "Descr": productRes.tName,
+              }
+              this.mainService.addToCart(data)
+                .subscribe(
+                  (res: any) => {
+                    this.showSpinner = false;
 
-                if (res.result == true) {
-
-                  this.showMessage(`${res.message}`, 'success');
-                  this.showProduct = false;
-                }
-              })
+                    if (res.result == true) {
+                      this.orderService.addToOrder(el, productRes.ctlg_No);
+                      this.showMessage(`${res.message}`, 'success');
+                      this.showProduct = false;
+                    }
+                  })
+            })
       })
     })
-
-
   }
 
 }

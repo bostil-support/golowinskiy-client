@@ -94,7 +94,7 @@ export class AuthService {
     logout(){
         this.setToken(null)
         localStorage.clear()
-        this.orderService.cart = []
+        this.orderService.clearCartAndOrder()
         this.router.navigate(['/'])
     }
 }

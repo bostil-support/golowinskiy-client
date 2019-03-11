@@ -11,7 +11,7 @@
 </div>
 
 
-<div class="detail_product">
+<div id="detail-page" class="detail_product">
   <div (click)="close(element)" class="close">
     <i class="fa fa-times" aria-hidden="true"></i>
   </div>
@@ -56,11 +56,11 @@
         <p *ngIf="element.prc_Br">{{ element.prc_Br }}</p>
       </div>
 
-      <div class="change"> 
+      <div class="change">
         <div *ngIf="showEdit" class="edit" (click)="editProduct(element)">
           <span>Редактировать</span>
         </div>
-  
+
         <div *ngIf="showEdit" class="delete" (click)="deleteProduct(element)">
           <span>Удалить</span>
         </div>

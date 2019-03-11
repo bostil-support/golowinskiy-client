@@ -1,92 +1,69 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import {EventEmitter, Injectable} from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class OrderService {
-
-    kolOrder = 0;
-    sumOrder = 0;
     private orderId: number;
-    price: number;
-    articul: any;
-    quantity;
-    cart = [];
+    private cart = [];
 
-    private clickCnt;
-    private clickSum;
-
-    onClick:EventEmitter<number> = new EventEmitter();
-    onClickSum:EventEmitter<number> = new EventEmitter();
+    onClick:EventEmitter<number> = new EventEmitter()
+    onClickSum:EventEmitter<number> = new EventEmitter()
 
 
-    constructor() {
-      this.doClick()
-      this.orderId = JSON.parse(window.localStorage.getItem('ord_ID'));
-      this.cart = JSON.parse(window.localStorage.getItem('cart')) || [];
-      this.sumOrder = JSON.parse(window.localStorage.getItem('sumOrder')) || 0;
-      this.kolOrder = JSON.parse(window.localStorage.getItem('kolItems')) || 0;
-
+    constructor(
+    ) {
+      this.orderId = JSON.parse(window.localStorage.getItem('ord_ID'))
+      this.cart = JSON.parse(window.localStorage.getItem('cart')) || []
     }
 
 
-    addToOrder(el) {
-        this.price = parseInt(el.prc_Br.split('.')[0].replace(/\D+/g,""));
+    addToOrder(el, ctlg_No: string, ctlg_Name) {
+        let price = parseInt(el.prc_Br.split('.')[0].replace(/\D+/g,""));
 
-        this.articul = this.articul? 0: undefined
-        this.quantity = 1;
+        this.cart.push({
+          art: this.cart.length,
+          id: el.prc_ID,
+          name: el.tName,
+          count: 1,
+          price: price,
+          strike: true,
+          ctlg_No,
+          ctlg_Name,
+        });
+        window.localStorage.setItem('cart', JSON.stringify(this.cart))
+    }
 
-        if(this.cart){
-          for(let i = 0; i < this.cart.length; i++){
-            this.articul = (i+1);
-          }
-        }
+    addOneItem(index: number) {
+      this.cart[index].count += 1
+      window.localStorage.setItem('cart', JSON.stringify(this.cart))
+    }
 
-        if(this.articul!=undefined){
-            this.cart.push({
-              art: this.articul,
-              id: el.prc_ID,
-              name: el.tName,
-              count: 1,
-              price: this.price,
-              strike: true
-            });
-          }
-        else{
-            this.cart.push({
-              art: 0,
-              id: el.prc_ID,
-              name: el.tName,
-              count: 1,
-              price: this.price,
-              strike: true
-            });
-        }
-        if(JSON.parse(window.localStorage.getItem('sumOrder'))){
-            this.sumOrder += this.price;
-        }
-        else{
-            this.sumOrder = this.price;
-        }
-        if(JSON.parse(window.localStorage.getItem('cart'))){
-          this.kolOrder++;
-        }
-        else{
-          this.kolOrder = 1;
-        }
+    removeOneItem(index: number) {
+      let count = this.cart[index].count -= 1
+      if (count <= 0) {
+        this.cart.splice(index, 1)
+      }
+      window.localStorage.setItem('cart', JSON.stringify(this.cart))
+    }
 
-        window.localStorage.setItem('cart', JSON.stringify(this.cart));
-        window.localStorage.setItem('sumOrder', JSON.stringify(this.sumOrder));
-        window.localStorage.setItem('kolItems', JSON.stringify(this.kolOrder));
+    clearCartAndOrder() {
+      this.cart = [];
+      window.localStorage.setItem('cart', JSON.stringify(this.cart))
+      window.localStorage.removeItem('ord_ID')
     }
 
     countSum(){
-        return this.sumOrder;
+        return this.cart.reduce((prev, cur) => prev + cur.price, 0);
     }
 
     countKol(){
-      return this.kolOrder;
+      return this.cart.length;
+    }
+
+    public getCart() {
+      return this.cart;
     }
 
     public setOrderId(orderId: number) {
@@ -98,22 +75,9 @@ export class OrderService {
       return this.orderId;
     }
 
-    public doClick(){
-
-      if(window.localStorage.getItem('kolItems') || window.localStorage.getItem('sumOrder')){
-        this.kolOrder = parseInt(window.localStorage.getItem('kolItems'))
-        this.sumOrder = parseFloat(window.localStorage.getItem('sumOrder'))
-
-        this.clickCnt = this.kolOrder;
-        this.clickSum = this.sumOrder;
-      }
-      else{
-        this.clickCnt = 0
-        this.clickSum = 0
-      }
-
-      this.onClick.emit(this.clickCnt)
-      this.onClickSum.emit(this.clickSum)
+    public doClick() {
+      this.onClick.emit(this.countKol())
+      this.onClickSum.emit(this.countSum())
     }
 
     public containsProduct(id: number) {

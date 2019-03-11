@@ -21,8 +21,9 @@
     width: 98%;
     margin: 1%;
     position: fixed;
-    z-index: 2;
-    top: 0px;
+    z-index: 100;
+    top: 0;
+    //height: calc(50vh);
     @media screen and (max-width: 1078px){
         flex-wrap: wrap;
         height: calc(98vh);

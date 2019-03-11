@@ -6,9 +6,10 @@ import { OrderService } from '../../shared/services/order.service';
 import {environment} from '../../../environments/environment';
 import {MainService} from '../../shared/services/main.service';
 import {Message} from 'src/app/shared/models/message.model';
-import {Subscription} from 'rxjs';
+import {EMPTY, of, Subscription} from 'rxjs';
 import {StorageService} from '../../shared/services/storage.service';
 import {AuthService} from '../../shared/services/auth.service';
+import {empty} from 'rxjs/internal/Observer';
 
 @Component({
   selector: 'app-products-page',
@@ -65,8 +66,6 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
     this.sub = this.mainService.getShopInfo()
       .subscribe(
         (res) => {
-          this.mainService.registorOrder()
-
           let cid
           if(window.location.pathname.includes('cabinet')){
             cid = localStorage.getItem('userId')
@@ -124,55 +123,51 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   }
 
   addToCart(el){
-
     this.showSpinner = true;
-    this.orderService.addToOrder(el);
     this.clickCount = this.orderService.countKol();
     this.clickSum = this.orderService.countSum();
 
-    this.mainService.getShopInfo().subscribe(
+    let registerOrder = this.orderService.countKol() === 0? this.mainService.registerOrder(): of({})
 
-      (res) => {
-        this.custID = res.cust_id;
+    registerOrder.subscribe(() => {
+      this.mainService.getShopInfo().subscribe((res) => {
+          this.custID = res.cust_id;
 
-        this.mainService.getProduct(el.prc_ID, this.custID, res.cust_id)
-        .subscribe(
-          (res: any) => {
-            this.ctlg_No = res.ctlg_No;
-            this.ctlg_Name = res.ctlg_Name;
-            this.sup_ID = res.sup_ID;
-            this.tName = res.tName;
-            this.prc_Br = res.prc_Br;
+          this.mainService.getProduct(el.prc_ID, this.custID, res.cust_id)
+            .subscribe((productRes: any) => {
+                this.ctlg_No = productRes.ctlg_No;
+                this.ctlg_Name = productRes.ctlg_Name;
+                this.sup_ID = productRes.sup_ID;
+                this.tName = productRes.tName;
+                this.prc_Br = productRes.prc_Br;
 
-            if(window.localStorage.getItem('kolItems')){
-              this.kolItems = window.localStorage.getItem('kolItems');
-            }
-            else{
-              this.kolItems = 1;
-            }
+                if (window.localStorage.getItem('kolItems')) {
+                  this.kolItems = window.localStorage.getItem('kolItems');
+                } else {
+                  this.kolItems = 1;
+                }
 
-              let data = {
-                "OrdTtl_Id" : this.orderService.getOrderId(),
-                "OI_No" : +this.kolItems,
-                "Ctlg_No": this.ctlg_No,
-                "Qty": this.quantity,
-                "Ctlg_Name": this.ctlg_Name,
-                "Sup_ID": this.sup_ID,
-                "Descr": this.tName,
-              }
-              this.mainService.addToCart(data)
-                .subscribe(
-                  (res: any) => {
-                    this.showSpinner = false;
-                    if (res.result == true) {
-                      this.showMessage(`${res.message}`, 'success');
-                    }
-                  })
+                let data = {
+                  "OrdTtl_Id": this.orderService.getOrderId(),
+                  "OI_No": 1,
+                  "Ctlg_No": productRes.ctlg_No,
+                  "Qty": 1,
+                  "Ctlg_Name": productRes.ctlg_Name,
+                  "Sup_ID": productRes.sup_ID,
+                  "Descr": productRes.tName,
+                }
+                this.mainService.addToCart(data)
+                  .subscribe((res: any) => {
+                      this.showSpinner = false;
+                      if (res.result == true) {
+                        this.orderService.addToOrder(el, productRes.ctlg_No, productRes.ctlg_Name)
+                        console.log(el)
+                        this.showMessage(`${res.message}`, 'success');
+                      }
+                    })
 
+              })
         })
     })
-
-
   }
-
 }

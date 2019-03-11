@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {forkJoin, from, Observable, of} from 'rxjs';
-import {mergeMap, tap} from 'rxjs/operators';
+import {EMPTY, forkJoin, from, Observable, of} from 'rxjs';
+import {mergeMap, switchMap, tap} from 'rxjs/operators';
 
 import {environment} from 'src/environments/environment';
 import {CategoryItem} from '../../categories/categories.component';
@@ -196,17 +196,15 @@ export class MainService{
         return this.http.post(`${environment.api}order/save/ `, data, headers);
     }
 
-    registorOrder() {
-      console.log(this.orderService.getOrderId());
-      return this.getUserId().subscribe((res: any) => {
-        this.http.post(`${environment.api}order/`, {
-          Cust_ID: res,
-          Cur_Code: 810
-        }).subscribe((res: any) => {
+    registerOrder() {
+      return this.getUserId().pipe(
+        switchMap(res => this.http.post(`${environment.api}order/`,{Cust_ID: res, Cur_Code: 810})),
+        switchMap((res: any) => {
           localStorage.setItem('ord_No', res.ord_No)
           this.orderService.setOrderId(res.ord_ID)
+          return of(res)
         })
-      })
+      )
     }
 
     addToCart(data){
