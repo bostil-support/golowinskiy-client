@@ -193,8 +193,8 @@ header{
 .menu_list{
     width: 50%;
     position: fixed;
-    z-index: 3;
-    top: 0%;
+    z-index: 100;
+    top: 0;
     left: 0;
     height: calc(100vh);
     background: #179590;

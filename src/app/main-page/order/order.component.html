@@ -41,7 +41,7 @@
 
                         <input type="text" size="1" [value]="c.count" class="text-center" data-product=""/>
 
-                        <a (click)="orderService.addOneItem(x)" [attr.data-product]="c.art">
+                        <a (click)="changeCount(x, 1)" [attr.data-product]="c.art">
                           <span class="fa fa-plus"></span>
                         </a>
                       </div>

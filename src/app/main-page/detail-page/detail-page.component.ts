@@ -302,7 +302,7 @@ export class DetailPageComponent implements OnInit {
 
               let data = {
                 "OrdTtl_Id": this.orderService.getOrderId(),
-                "OI_No": 1,
+                "OI_No": this.orderService.countKol() + 1,
                 "Ctlg_No": productRes.ctlg_No,
                 "Qty": 1,
                 "Ctlg_Name": productRes.ctlg_Name,

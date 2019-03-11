@@ -105,23 +105,22 @@ export class OrderComponent implements OnInit {
   }
 
   changeCount(index: number, value: number) {
-    console.log(this.orderService.getCart())
-    // this.mainService.changeQty()
     let cart = this.orderService.getCart()
     this.mainService.changeQty({
       ordTtl_Id: this.orderService.getOrderId(),
       ctlg_No: cart[index].ctlg_No,
       ctlg_Name: cart[index].ctlg_Name,
-      qty: cart[index].count,
-      oI_No: index,
+      qty: cart[index].count + value,
+      oI_No: index + 1,
       sup_ID: cart[index].sup_ID,
       descr: cart[index].name,
-    }).subscribe()
-    if (value < 0) {
-      this.orderService.removeOneItem(index)
-    } else {
-      this.orderService.addOneItem(index)
-    }
+    }).subscribe(() => {
+      if (value < 0) {
+        this.orderService.removeOneItem(index)
+      } else {
+        this.orderService.addOneItem(index)
+      }
+    })
   }
 
   addToOrderSave(){
