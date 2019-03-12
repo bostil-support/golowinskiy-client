@@ -5,7 +5,7 @@ import {environment} from '../../../environments/environment';
 import {MainService} from '../../shared/services/main.service';
 import {Message} from '../../shared/models/message.model';
 import {of, Subscription} from 'rxjs';
-import {Product} from '../../shared/interfaces';
+import {DeleteProduct, Product} from '../../shared/interfaces';
 import {OrderService} from '../../shared/services/order.service';
 import {AuthService} from '../../shared/services/auth.service';
 
@@ -68,16 +68,10 @@ export class DetailPageComponent implements OnInit {
               private authService: AuthService) {}
 
   ngOnInit() {
-    const action = () => {
-      const header = document.getElementsByTagName('header')[0]
-      const height = header.clientHeight
-      // document.getElementById('detail-page').style.paddingTop = `${height + 20}px`
-    }
-    window.onresize = action
-    action()
-
     this.apiRoot = environment.api
     this.message = new Message('danger', '')
+    this.prc_ID = this.route.snapshot.params.idProduct
+
     let cid
 
     if(window.location.pathname.includes('cabinet')){
@@ -160,13 +154,21 @@ export class DetailPageComponent implements OnInit {
 
   deleteProduct(el: Product){
     this.showSpinner = true
-    this.mainService.deleteProduct(el).subscribe(
-      (res) => {
-        this.showSpinner = false
-        this.showMessage('Товар был успешно удален', 'success')
-        this.router.navigate(['/'])
+    this.mainService.getShopInfo().subscribe(res => {
+      let data: DeleteProduct = {
+        cid: this.authService.getUserId(),
+        appCode: this.appCode,
+        cust_ID: res.cust_id,
+        prc_ID: this.prc_ID,
       }
-    )
+      this.mainService.deleteProduct(data).subscribe(
+        (res) => {
+          this.showSpinner = false
+          this.showMessage('Товар был успешно удален', 'success')
+          this.router.navigate(['/'])
+        }
+      )
+    })
   }
 
   mouseOverImg(el){
