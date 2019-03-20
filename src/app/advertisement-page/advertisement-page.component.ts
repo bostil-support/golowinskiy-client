@@ -31,7 +31,6 @@ export class AdvertisementPageComponent implements OnInit {
 
   form: FormGroup
   data_form: any
-  formDataImages: any
 
   message: Message
 
@@ -41,7 +40,7 @@ export class AdvertisementPageComponent implements OnInit {
 
   idCategory
   itemName = ''
-  categories: CategoryItem[]
+  categories: CategoryItem[] = []
   showCatalog = false
 
   fio

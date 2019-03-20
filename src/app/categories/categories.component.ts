@@ -25,8 +25,14 @@ interface SelectedItem {
   styleUrls: ['./categories.component.scss']
 })
 export class CategoriesComponent implements OnInit {
-  @Input() categories: CategoryItem[]
+  _categories: CategoryItem[] = []
+  @Input() set categories(categories: CategoryItem[]) {
+    this._categories = categories;
+    this.recalculate = true;
+  }
   selected: SelectedItem = {}
+  selectedCategories: CategoryItem[] = []
+  recalculate = true;
 
   @Input() showCatalog = true
   @Input() initialCategories: CategoryItem[] = []
@@ -45,31 +51,49 @@ export class CategoriesComponent implements OnInit {
     })
   }
 
-  ngOnInit() {
-    const categories = this.initialCategories
-    for (let i = 0; i < categories.length - 1; i++) {
-      this.selected['lavel' + (i + 1)] = categories[i]
+  onRedraw() {
+    if (this.recalculate) {
+      this.recalculateHeight()
     }
   }
 
-  select(type: string, item: CategoryItem, $event) {
-    this.selected[type] = (this.selected[type] === item ? null : item)
-    $event ? $event.stopPropagation() : null
+  ngOnInit() {
+    this.selectedCategories = this.initialCategories.slice(0, -1)
+  }
 
-    // convert item object to array
-    let items: CategoryItem[] = []
-    for(const x in this.selected) {
-      items.push(this.selected[x])
-      if (type === x) {
-        break
+  recalculateHeight() {
+    let menu = document.getElementsByClassName('left-menu')[0] as HTMLElement
+    let menus = menu.querySelectorAll('ul')
+    let height = 0;
+    for(let i = 0; i < menus.length; i++) {
+      let client = menus[i].clientTop + menus[i].clientHeight;
+      if (client > height) {
+        height = client
       }
     }
-    // action on last child
-    if(item.listInnerCat.length == 0){
-      this.lastChildAction.emit(items)
+    menu.style.minHeight = `${height + 40}px`
+    this.recalculate = false;
+  }
+
+  select(level: number, item: CategoryItem, event) {
+    event.stopPropagation()
+    if (item.listInnerCat.length === 0) {
+      this.selectedCategories.push(item)
+      this.lastChildAction.emit(this.selectedCategories)
+    } else {
+      if (this.isEqual(this.selectedCategories[level], item)) {
+        this.selectedCategories.splice(level, 10)
+      } else {
+        this.selectedCategories.splice(level, 10, item)
+      }
+      // share selected items
+      this.storageService.selectedCategories.next(this.selectedCategories)
+      this.recalculate = true
     }
-    // share selected items
-    this.storageService.selectedCategories.next(items)
+  }
+
+  isSelected(level: number, item: CategoryItem): boolean {
+    return this.isEqual(this.selectedCategories[level], item)
   }
 
   isActive(type: string, item: CategoryItem) {
@@ -85,6 +109,27 @@ export class CategoriesComponent implements OnInit {
         itemMod[itemElement] = item[itemElement];
       }
     }
+    // return typeMod === itemMod
     return JSON.stringify(typeMod) === JSON.stringify(itemMod)
+  }
+
+  isShowSubitems(level: number, item: CategoryItem): boolean {
+    return this.isEqual(this.selectedCategories[level], item)
+  }
+
+  isEqual(item1: CategoryItem, item2: CategoryItem): boolean {
+    let item1mod = {}
+    for(let item1key in item1) {
+      if (item1key != 'listInnerCat') {
+        item1mod[item1key] = item1[item1key]
+      }
+    }
+    let item2mod = {}
+    for(let item2key in item2) {
+      if (item2key != 'listInnerCat') {
+        item2mod[item2key] = item2[item2key];
+      }
+    }
+    return JSON.stringify(item1mod) === JSON.stringify(item2mod)
   }
 }

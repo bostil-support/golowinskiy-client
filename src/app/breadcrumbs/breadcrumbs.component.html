@@ -1,5 +1,5 @@
 <div class="breadcrumbs_list" >
-  <div class="breadcrumbs_list__item" *ngFor="let item of categories; index as i" (click)="breadcrumbsClick()">
+  <div class="breadcrumbs_list__item" *ngFor="let item of _categories; index as i" (click)="breadcrumbsClick()">
     {{item.txt}}
     <i class="fa fa-angle-right"></i>
   </div>

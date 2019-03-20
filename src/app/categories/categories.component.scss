@@ -2,9 +2,9 @@ ul.left-menu{
     margin: 20px 0 0 0;
     padding:0;
 
-    height: calc(60vh); 
+    //height: calc(60vh);
     @media screen and (max-width: 1078px){
-        height: calc(90vh); 
+        //height: calc(90vh);
     }
     h5{
         font-size: 16px;
@@ -20,13 +20,13 @@ ul.left-menu{
     ul{
         padding: 0;
 
-        width: 212px;        
+        width: 212px;
         position: relative;
         border: 2px solid #189691;
         @media screen and (max-width: 1078px){
             border: none;
         }
-    } 
+    }
     ul#first-menu{
         @media screen and (max-width: 1078px){
             border-right: 2px solid #189691;
@@ -64,6 +64,6 @@ ul.left-menu{
         }
 
 
-    }    
+    }
   }
 

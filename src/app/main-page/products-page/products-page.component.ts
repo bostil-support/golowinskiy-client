@@ -117,8 +117,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   breadcrumbsClick() {
     this.storageService.setCategories(this.categories)
     this.storageService.breadcrumbFlag = true
-    console.log(this.storageService.breadcrumbFlag)
-    this.router.navigate(['/'])
+    this.router.navigate([this.router.url.includes('cabinet')? '/cabinet': '/'])
   }
 
   addToCart(el){

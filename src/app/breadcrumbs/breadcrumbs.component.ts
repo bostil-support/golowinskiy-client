@@ -7,7 +7,15 @@ import {CategoryItem} from '../categories/categories.component';
   styleUrls: ['./breadcrumbs.component.scss']
 })
 export class BreadcrumbsComponent implements OnInit {
-  @Input() categories: CategoryItem[];
+  _categories: CategoryItem[];
+  @Input() set categories(categories: CategoryItem[]) {
+    this._categories = [...categories]
+    let last = this._categories.pop();
+    if (last) {
+      last.txt = last.txt.replace(/\(\d+\)/, '')
+      this._categories.push(last)
+    }
+  }
   @Output() click = new EventEmitter()
 
   constructor() { }

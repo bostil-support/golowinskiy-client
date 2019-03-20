@@ -1,24 +1,25 @@
 <div>
+  {{onRedraw()}}
   <ul class="nav flex-column flex-nowrap text-truncate left-menu">
     <h5>Выберите раздел каталога</h5>
     <ul id="first-menu">
-      <li class="nav-item" *ngFor="let l1 of categories let x = index" (click)="select('lavel1', l1, $event, x);" [ngClass]="{active: isActive('lavel1', l1)}">
+      <li class="nav-item" *ngFor="let l1 of _categories let x = index" (click)="select(0, l1, $event);" [ngClass]="{active: isSelected(0, l1)}">
         <a>{{l1.txt}}</a>
 
-        <ul style="display:none;">
-          <li class="nav-item" *ngFor="let l2 of l1.listInnerCat let y = index" (click)="select('lavel2', l2, $event, y);" [ngClass]="{active: isActive('lavel2', l2)}">
+        <ul style="display:none;" *ngIf="isShowSubitems(0, l1)">
+          <li class="nav-item" *ngFor="let l2 of l1.listInnerCat let y = index" (click)="select(1, l2, $event);" [ngClass]="{active: isSelected(1, l2)}">
             <a>{{l2.txt}}</a>
 
-            <ul style="display:none;">
-              <li class="nav-item" *ngFor="let l3 of l2.listInnerCat let z = index" (click)="select('lavel3', l3, $event, z);" [ngClass]="{active: isActive('lavel3', l3)}">
+            <ul style="display:none;" *ngIf="isShowSubitems(1, l2)">
+              <li class="nav-item" *ngFor="let l3 of l2.listInnerCat let z = index" (click)="select(2, l3, $event);" [ngClass]="{active: isSelected(2, l3)}">
                 <a>{{l3.txt}}</a>
 
-                <ul style="display:none;">
-                  <li class="nav-item" *ngFor="let l4 of l3.listInnerCat let q = index" (click)="select('lavel4', l4, $event, q);" [ngClass]="{active: isActive('lavel4', l4)}">
+                <ul style="display:none;" *ngIf="isShowSubitems(2, l3)">
+                  <li class="nav-item" *ngFor="let l4 of l3.listInnerCat let q = index" (click)="select(3, l4, $event);" [ngClass]="{active: isSelected(3, l4)}">
                     <a>{{l4.txt}}</a>
 
-                    <ul style="display:none;">
-                      <li class="nav-item" *ngFor="let l5 of l4.listInnerCat let w = index" (click)="select('lavel5', l5, $event, w);" [ngClass]="{active: isActive('lavel5', l5)}">
+                    <ul style="display:none;" *ngIf="isShowSubitems(3, l4)">
+                      <li class="nav-item" *ngFor="let l5 of l4.listInnerCat let w = index" (click)="select(4, l5, $event);" [ngClass]="{active: isSelected(4, l5)}">
                         <a>{{l5.txt}}</a>
                       </li>
                     </ul>

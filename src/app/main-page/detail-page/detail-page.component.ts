@@ -90,19 +90,9 @@ export class DetailPageComponent implements OnInit {
 
       this.mainService.getProducts(this.route.snapshot.params['id'], res.cust_id, cid).subscribe((res) => {
         this.allGallery = res
-        if(this.route.snapshot.params['idProduct'] == this.allGallery[0].prc_ID){
-          this.showPrevElementId = false
-        }
-        else{
-          this.showPrevElementId = true
-        }
+        this.showPrevElementId = this.route.snapshot.params['idProduct'] != this.allGallery[0].prc_ID;
 
-        if(this.route.snapshot.params['idProduct'] == this.allGallery[this.allGallery.length-1].prc_ID){
-          this.showNextElementId = false
-        }
-        else{
-          this.showNextElementId = true
-        }
+        this.showNextElementId = this.route.snapshot.params['idProduct'] != this.allGallery[this.allGallery.length - 1].prc_ID;
       })
 
       this.mainService.getProduct(this.route.snapshot.params.idProduct, res.cust_id, res.cust_id).subscribe(
@@ -142,7 +132,7 @@ export class DetailPageComponent implements OnInit {
     }
   }
 
-  showDetail(el){
+  showDetail(){
     let a = document.getElementById('show_description')
     a.className = 'description show'
     this.showDescription = false
@@ -152,7 +142,7 @@ export class DetailPageComponent implements OnInit {
     this.router.navigate(['/cabinet/categories', el.id, 'products', el.prc_ID, 'edit'])
   }
 
-  deleteProduct(el: Product){
+  deleteProduct(){
     this.showSpinner = true
     this.mainService.getShopInfo().subscribe(res => {
       let data: DeleteProduct = {
@@ -163,9 +153,16 @@ export class DetailPageComponent implements OnInit {
       }
       this.mainService.deleteProduct(data).subscribe(
         (res) => {
+          console.log(res)
           this.showSpinner = false
           this.showMessage('Товар был успешно удален', 'success')
-          this.router.navigate(['/'])
+          // navigate to products page
+          let url = this.router.url
+          let index = url.lastIndexOf('/')
+          this.router.navigate([url.substr(0, index)]).then(() => {
+            // todo refresh data on product page, solution: bring loading to service
+            window.location.reload()
+          })
         }
       )
     })
