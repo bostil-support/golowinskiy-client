@@ -3,13 +3,23 @@
     <app-header></app-header>
 
     <div id="inner">
-
-        <app-categories
-          (lastChildAction)="onCategoriesClick($event)"
-          [initialCategories]="storageService.getCategories()"
-        ></app-categories>
-
-        <router-outlet></router-outlet>
+      <ng-container *ngIf="showCategories">
+        <div class="categories-mobile">
+          <app-mobile-categories
+            (lastChildAction)="onCategoriesClick($event)"
+            [initialCategories]="initialCategories"
+            [categories]="categories"
+          ></app-mobile-categories>
+        </div>
+        <div class="categories">
+          <app-categories
+            (lastChildAction)="onCategoriesClick($event)"
+            [initialCategories]="initialCategories"
+            [categories]="categories"
+          ></app-categories>
+        </div>
+        <!--<router-outlet></router-outlet>-->
+      </ng-container>
     </div>
 
     <div class="data" id="doc_time" [@hideClock]="clickClock">

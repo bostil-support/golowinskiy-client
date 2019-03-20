@@ -1,15 +1,13 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {ActivatedRoute, NavigationEnd, NavigationStart, ResolveStart, Router} from '@angular/router';
-
-import { Http } from '@angular/http';
-import { OrderService } from '../../shared/services/order.service';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {OrderService} from '../../shared/services/order.service';
 import {environment} from '../../../environments/environment';
 import {MainService} from '../../shared/services/main.service';
 import {Message} from 'src/app/shared/models/message.model';
-import {EMPTY, of, Subscription} from 'rxjs';
+import {of, Subscription} from 'rxjs';
 import {StorageService} from '../../shared/services/storage.service';
 import {AuthService} from '../../shared/services/auth.service';
-import {empty} from 'rxjs/internal/Observer';
+import {CategoryItem} from '../../categories/categories.component';
 
 @Component({
   selector: 'app-products-page',
@@ -22,7 +20,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   apiRoot
   showSpinner = true
   showBasket = false
-  categories = []
+  categories: CategoryItem[] = []
 
   message: Message
   sub: Subscription
@@ -119,6 +117,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   breadcrumbsClick() {
     this.storageService.setCategories(this.categories)
     this.storageService.breadcrumbFlag = true
+    console.log(this.storageService.breadcrumbFlag)
     this.router.navigate(['/'])
   }
 

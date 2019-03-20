@@ -107,7 +107,7 @@ section.advertisement{
         i{
             font-size: 27px;
             color: rgba(24, 150, 145, 1);
-        }    
+        }
     }
     .list_photo{
         max-width: 370px;
@@ -127,7 +127,7 @@ section.advertisement{
             margin-right: 28px;
         }
     }
-    
+
     .upload-images{
         display: flex;
         flex-wrap: wrap;
@@ -171,6 +171,20 @@ section.advertisement{
             color: #189691;
         }
     }
+}
+
+.categories, .categories-mobile {
+  display: none;
+}
+@media screen and (min-width: 1080px) {
+  .categories {
+    display: block;
+  }
+}
+@media screen and (max-width: 1079px) {
+  .categories-mobile {
+    display: block;
+  }
 }
 
 

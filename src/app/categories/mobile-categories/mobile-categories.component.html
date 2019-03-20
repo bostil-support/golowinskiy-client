@@ -1,8 +1,54 @@
-<div class="categories_header">
-  <a>{{category.txt}}</a>
-  <ul>
-    <li class="nav-item" *ngFor="let item of category.listInnerCat">
-      <a>{{item.txt}}</a>
-    </li>
-  </ul>
+<div class="mobile_categories">
+  <div class="categories_header">Выберите раздел каталога</div>
+  <div class="categories_list top-level" *ngFor="let category of categories, let index = index">
+    <a class="category_item"
+       (click)="click(0, category)"
+       *ngIf="isShowItem(0, category)"
+       [ngClass]="{selected: isSelected(0, category)}"
+    >
+      {{category.txt}}
+    </a>
+    <div class="list_container" *ngIf="isShowSubitems(0, category)">
+      <div class="categories_list" *ngFor="let category of category.listInnerCat, let index = index">
+        <a class="category_item"
+           (click)="click(1, category)"
+           *ngIf="isShowItem(1, category)"
+           [ngClass]="{selected: isSelected(1, category)}"
+        >
+          {{category.txt}}
+        </a>
+        <div class="list_container" *ngIf="isShowSubitems(1, category)">
+          <div class="categories_list" *ngFor="let category of category.listInnerCat, let index = index">
+            <a class="category_item"
+               (click)="click(2, category)"
+               *ngIf="isShowItem(2, category)"
+               [ngClass]="{selected: isSelected(2, category)}"
+            >
+              {{category.txt}}
+            </a>
+            <div class="list_container" *ngIf="isShowSubitems(2, category)">
+              <div class="categories_list" *ngFor="let category of category.listInnerCat, let index = index">
+                <a class="category_item"
+                   (click)="click(3, category)"
+                   *ngIf="isShowItem(3, category)"
+                   [ngClass]="{selected: isSelected(3, category)}"
+                >
+                  {{category.txt}}
+                </a>
+                <div class="list_container" *ngIf="isShowSubitems(3, category)">
+                  <div class="categories_list" *ngFor="let category of category.listInnerCat, let index = index">
+                    <a class="category_item"
+                       (click)="click(4, category)"
+                    >
+                      {{category.txt}}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

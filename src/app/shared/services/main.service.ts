@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {EMPTY, forkJoin, from, Observable, of} from 'rxjs';
+import {forkJoin, from, Observable, of} from 'rxjs';
 import {mergeMap, switchMap, tap} from 'rxjs/operators';
 
 import {environment} from 'src/environments/environment';

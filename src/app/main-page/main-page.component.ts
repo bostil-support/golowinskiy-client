@@ -6,6 +6,7 @@ import {ClockService} from '../shared/services/clock.service';
 import {Router} from '@angular/router';
 import {CategoryItem} from '../categories/categories.component';
 import {StorageService} from '../shared/services/storage.service';
+import {AuthService} from '../shared/services/auth.service';
 
 @Component({
   selector: 'main-page.component',
@@ -24,6 +25,9 @@ import {StorageService} from '../shared/services/storage.service';
   ]
 })
 export class MainPageComponent implements OnInit, OnDestroy {
+  categories: CategoryItem[] = []
+  initialCategories: CategoryItem[] = []
+  showCategories = false
 
   clickClock = 'start'
   sub: Subscription
@@ -32,14 +36,22 @@ export class MainPageComponent implements OnInit, OnDestroy {
     public router: Router,
     public mainService: MainService,
     private clockService: ClockService,
-    public storageService: StorageService
+    public storageService: StorageService,
+    private authService: AuthService,
   ) { }
 
   ngOnInit() {
+    let advert = window.location.pathname.includes('addProduct')? '1': null
+    let userId = window.location.pathname.includes('cabinet')? this.authService.getUserId(): null
+
     this.sub = this.mainService.getShopInfo()
       .subscribe(
         (res) => {
           this.mainService.getFonPictures()
+          this.mainService.getCategories(userId, advert).subscribe((res) => {
+            this.categories = res
+            this.showCategories = true
+          })
         },
         (error) => {
           this.mainService.getErrorFonPicture()
@@ -54,6 +66,19 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.clickClock = 'end'
       }, 3000)
     }
+
+    this.initialCategories = this.storageService.breadcrumbFlag? this.storageService.getCategories(): []
+    this.storageService.breadcrumbFlag = false;
+  }
+
+  ngAfterViewInit() {
+    let action = () => {
+      let header = document.getElementsByTagName('header')[0]
+      const height = header.clientHeight
+      document.getElementById("inner").style.paddingTop = `${height + 20}px`
+    }
+    window.onresize = action
+    action()
   }
 
   ngOnDestroy(){
@@ -63,8 +88,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
   }
 
   onCategoriesClick(items: CategoryItem[]) {this.storageService.setCategories(items)
-    const item = items.pop()
     this.mainService.saveCategoriesToStorage(items)
+    const item = items.pop()
     this.router.navigate([`${window.location.pathname}/categories/${item.id}/products`])
   }
 }

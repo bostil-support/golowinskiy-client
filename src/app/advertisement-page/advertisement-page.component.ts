@@ -8,8 +8,9 @@ import {Message} from 'src/app/shared/models/message.model';
 import {AuthService} from 'src/app/shared/services/auth.service';
 import {MainService} from '../shared/services/main.service';
 import {CategoryItem} from '../categories/categories.component';
-import {AdditionalImagesData, AdditionalImagesRequest} from '../shared/interfaces';
-import {Observable} from 'rxjs';
+import {AdditionalImagesData} from '../shared/interfaces';
+import {of} from 'rxjs';
+import {StorageService} from '../shared/services/storage.service';
 
 export interface ImageDataInterface {
   src: string;
@@ -41,7 +42,7 @@ export class AdvertisementPageComponent implements OnInit {
   idCategory
   itemName = ''
   categories: CategoryItem[]
-  showCatalog = true
+  showCatalog = false
 
   fio
   userName
@@ -56,12 +57,16 @@ export class AdvertisementPageComponent implements OnInit {
   }
   additionalImagesData: ImageDataInterface[] = []
 
+  // categories
+  categoriesData: CategoryItem[]
+
   @ViewChild('submitButton') submitButton: ElementRef
 
   constructor(
     private router: Router,
     private authService: AuthService,
-    private mainService: MainService
+    private mainService: MainService,
+    public storageService: StorageService,
   ) { }
 
   private showMessage( text: string, type:string = 'danger'){
@@ -96,8 +101,14 @@ export class AdvertisementPageComponent implements OnInit {
     this.mainService.getShopInfo().subscribe(
       (res) => {
         this.cust_id = res.cust_id;
-        this.showSpinner = false
         this.userId = this.authService.getUserId()
+        let advert = window.location.pathname.includes('addProduct')? '1': null
+        let userId = window.location.pathname.includes('cabinet')? this.authService.getUserId(): null
+        this.mainService.getCategories(userId, advert).subscribe((res) => {
+          this.categoriesData = res
+          this.showCatalog = true
+          this.showSpinner = false
+        })
       }
     )
   }
@@ -240,10 +251,10 @@ export class AdvertisementPageComponent implements OnInit {
     }
     this.mainService.getUserInfo(headers).subscribe((res: any) => {
       this.Validators(this.data_form.Ctlg_Name)
-      if (res.isCanPromo == true) {
+      if (res.isCanPromo === true) {
         this.showSpinner = true;
 
-        let imgObserv = new Observable()
+        let imgObserv = of({})
         if (this.mainImageData.blob) {
           const formData = new FormData()
           formData.append('AppCode', this.cust_id)
@@ -254,32 +265,35 @@ export class AdvertisementPageComponent implements OnInit {
 
         imgObserv.subscribe(() => {
             this.mainService.addProduct(this.data_form, headers)
-              .subscribe(
-                (res: any) => {
-                  const data: AdditionalImagesData[] = []
-                  for (let i = 0; i < this.additionalImagesData.length; i++) {
-                    let name = this.additionalImagesData[i].name;
-                    name = name.replace(/(\.[\w\d_-]+)$/i, `${i}'$1`)
-                    const formData = new FormData();
-                    data.push({
-                      imageData: formData,
-                      request: {
-                        catalog: this.cust_id,
-                        id: this.idCategory,
-                        prc_ID: res.prc_id,
-                        imageOrder: i,
-                        tImage: name,
-                        appcode: this.cust_id,
-                        cid: this.userId
-                      }
-                    })
-                    formData.append('AppCode', this.cust_id)
-                    formData.append('Img', this.additionalImagesData[i].blob)
-                    formData.append('TImageprev', name)
-                  }
-                    this.mainService.additionalImagesGroup(data)
-                      .subscribe(() => this.successAddedProduct(this.data_form.Ctlg_Name))
-                })
+              .subscribe((res: any) => {
+                const data: AdditionalImagesData[] = []
+                for (let i = 0; i < this.additionalImagesData.length; i++) {
+                  let name = this.additionalImagesData[i].name;
+                  name = name.replace(/(\.[\w\d_-]+)$/i, `${i}'$1`)
+                  const formData = new FormData();
+                  data.push({
+                    imageData: formData,
+                    request: {
+                      catalog: this.cust_id,
+                      id: this.idCategory,
+                      prc_ID: res.prc_id,
+                      imageOrder: i,
+                      tImage: name,
+                      appcode: this.cust_id,
+                      cid: this.userId
+                    }
+                  })
+                  formData.append('AppCode', this.cust_id)
+                  formData.append('Img', this.additionalImagesData[i].blob)
+                  formData.append('TImageprev', name)
+                }
+                this.mainService.additionalImagesGroup(data)
+                  .subscribe(
+                    () => this.successAddedProduct(this.data_form.Ctlg_Name),
+                    () => console.log('additional images upload error'),
+                    () => this.successAddedProduct(this.data_form.Ctlg_Name)
+                  )
+              })
           },
           () => {
             this.showSpinner = false

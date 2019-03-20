@@ -40,7 +40,18 @@
           </div>
       </div>
 
-      <app-categories (lastChildAction)="categorySelect($event)" [showCatalog]="showCatalog"></app-categories>
+      <ng-container *ngIf="showCatalog">
+        <div class="categories">
+          <app-categories (lastChildAction)="categorySelect($event)"
+                          [categories]="categoriesData"
+          ></app-categories>
+        </div>
+        <div class="categories-mobile">
+          <app-mobile-categories (lastChildAction)="categorySelect($event)"
+                                 [categories]="categoriesData"
+          ></app-mobile-categories>
+        </div>
+      </ng-container>
 
       <div class="row justify-content-md-center choosed">
           <div class="col-lg-8 col-xs-12 no-padding">

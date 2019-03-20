@@ -25,41 +25,30 @@ interface SelectedItem {
   styleUrls: ['./categories.component.scss']
 })
 export class CategoriesComponent implements OnInit {
-  catalog: CategoryItem[]
+  @Input() categories: CategoryItem[]
   selected: SelectedItem = {}
-  loaded = false
 
   @Input() showCatalog = true
-  @Input() initialCategories = []
+  @Input() initialCategories: CategoryItem[] = []
 
   @Output() lastChildAction = new EventEmitter<CategoryItem[]>()
 
   constructor(private router: Router,
               private authService: AuthService,
               private mainService: MainService,
-              private storageService: StorageService) {
-
-                let advert = window.location.pathname.includes('addProduct')? '1': null
-                let userId = window.location.pathname.includes('cabinet')? this.authService.getUserId(): null
-
-                this.mainService.getShopInfo().subscribe( (res) => {
-                  this.mainService.getCategories(userId, advert).subscribe((res) => {
-                    this.catalog = res
-                    this.loaded = true
-                  })
-                })
-
+              private storageService: StorageService
+  ) {
+    storageService.selectedCategories.subscribe(value => {
+      for (let i = 0; i < value.length; i++) {
+        this.selected['lavel' + (i + 1)] = value[i]
+      }
+    })
   }
 
   ngOnInit() {
-    if (this.storageService.breadcrumbFlag) {
-      const categories = this.initialCategories
-      let index = 1
-      for (const x of categories) {
-        this.selected['lavel' + index] = x
-        index++
-      }
-      this.storageService.breadcrumbFlag = false
+    const categories = this.initialCategories
+    for (let i = 0; i < categories.length - 1; i++) {
+      this.selected['lavel' + (i + 1)] = categories[i]
     }
   }
 
@@ -67,20 +56,20 @@ export class CategoriesComponent implements OnInit {
     this.selected[type] = (this.selected[type] === item ? null : item)
     $event ? $event.stopPropagation() : null
 
+    // convert item object to array
+    let items: CategoryItem[] = []
+    for(const x in this.selected) {
+      items.push(this.selected[x])
+      if (type === x) {
+        break
+      }
+    }
     // action on last child
     if(item.listInnerCat.length == 0){
-      // this.showCatalog = false
-
-      // convert item object to array
-      let items: CategoryItem[] = []
-      for(const x in this.selected) {
-        items.push(this.selected[x])
-        if (type === x) {
-          break
-        }
-      }
       this.lastChildAction.emit(items)
     }
+    // share selected items
+    this.storageService.selectedCategories.next(items)
   }
 
   isActive(type: string, item: CategoryItem) {

@@ -1,0 +1,25 @@
+.mobile_categories {
+  background: white;
+  .categories_header {
+    border: 2px solid #189691;
+    font-size: 16px;
+    padding: 3px;
+  }
+  .categories_list {
+    font-size: 12px;
+    .category_item {
+      border-bottom: 2px solid #189691;
+      display: block;
+      cursor: pointer;
+      padding: 3px;
+      &.selected {
+        background: #189691;
+        border-bottom: 2px solid white;
+      }
+    }
+    &.top-level {
+      border-right: 2px solid #189691;
+      border-left: 2px solid #189691;
+    }
+  }
+}
