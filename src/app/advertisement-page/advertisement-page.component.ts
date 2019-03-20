@@ -34,7 +34,6 @@ export class AdvertisementPageComponent implements OnInit {
 
   message: Message
 
-  showValidators = false
   showSpinner = true
   isDisabled = true
 
@@ -184,11 +183,8 @@ export class AdvertisementPageComponent implements OnInit {
     })
   }
 
-  mouseOverButton(){
-    this.showValidators = this.form.invalid;
-  }
-  mouseLeaveButton(){
-    this.showValidators = false
+  isFormValid(): boolean {
+    return !this.form.invalid
   }
 
   createForm() {

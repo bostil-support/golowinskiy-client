@@ -6,14 +6,26 @@ section.advertisement{
     }
     .showSpinner{
         position: fixed;
-        top: 50%;
-        left: 48%;
-        right: 48%;
-        z-index: 2;
-        i{
-            font-size: 60px;
-            color: #5c646b;
+        top: 48%;
+        z-index: 50;
+        display: flex;
+        justify-content: center;
+        left: 0;
+        right: 0;
+        i {
+          font-size: 60px;
+          color: #5c646b;
         }
+    }
+    .validators{
+      border: 1px solid #f00;
+      padding: 2%;
+      color: #f00;
+      border-radius: .25rem;
+      display: none;
+    }
+    #submit-area:hover .validators {
+      display: block;
     }
     .showMessage{
         text-align: center;
@@ -55,12 +67,6 @@ section.advertisement{
         width: 100%;
         min-height: 100px;
         border: 1px solid rgba(24, 150, 145, 1);
-    }
-    .validators{
-        border: 1px solid #f00;
-        padding: 2%;
-        color: #f00;
-        border-radius: .25rem;
     }
     .btn{
         height: 38px;

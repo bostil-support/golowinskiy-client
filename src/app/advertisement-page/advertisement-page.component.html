@@ -231,16 +231,17 @@
               </div>
               <div class="row justify-content-md-center">
                   <div class="col col-lg-4 mb-3 hover_btn"
-                  (mouseenter)="mouseOverButton()" (mouseleave)="mouseLeaveButton()">
+                       id="submit-area"
+                  >
                       <button
                           name="submitButton" #submitButton
                           class="btn btn-block btn-primary"
                           type="submit"
-                          [disabled]="form.invalid"
+                          [disabled]="showSpinner || !isFormValid()"
                       >
                           Разместить объявление
                       </button>
-                      <div class="validators" *ngIf="showValidators"
+                      <div class="validators" *ngIf="!showSpinner && !isFormValid()"
                       >
                           *Вы не выбрали раздел каталога или наименование товара
                       </div>
