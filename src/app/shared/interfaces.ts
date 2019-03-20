@@ -22,9 +22,15 @@ export interface AdditionalImagesData {
   imageData: FormData,
 }
 
-
 export interface Product{
     prc_ID: number,
     cust_ID: number,
     appCode: string
+}
+
+export interface DeleteProduct {
+  prc_ID: number | string,
+  cust_ID: number | string,
+  appCode: string | string,
+  cid: number | string,
 }

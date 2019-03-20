@@ -5,7 +5,7 @@ import {mergeMap, switchMap, tap} from 'rxjs/operators';
 
 import {environment} from 'src/environments/environment';
 import {CategoryItem} from '../../categories/categories.component';
-import {AdditionalImagesData, AdditionalImagesRequest, Product} from '../interfaces';
+import {AdditionalImagesData, AdditionalImagesRequest, DeleteProduct, Product} from '../interfaces';
 import {AuthService} from './auth.service';
 import {OrderService} from './order.service';
 
@@ -147,7 +147,7 @@ export class MainService{
         return this.http.post(`${environment.api}product`, data, headers)
     }
 
-    deleteProduct(data: Product){
+    deleteProduct(data: DeleteProduct){
         let options = {
             headers: new HttpHeaders({
                 'Content-Type': 'application/json',
