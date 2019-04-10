@@ -178,4 +178,11 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
         })
     })
   }
+
+  navigateToCategory (items: CategoryItem[]) {
+    this.mainService.saveCategoriesToStorage(items)
+    const item = items[items.length - 1]
+    const cabinet = this.isCabinet()? '/cabinet': ''
+    this.router.navigate([`${cabinet}/categories/${item.id}/products`])
+  }
 }

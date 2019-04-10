@@ -89,9 +89,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
   }
 
   onCategoriesClick(items: CategoryItem[]) {this.storageService.setCategories(items)
-    // items[-1].txt = 'hello'
     this.mainService.saveCategoriesToStorage(items)
-    const item = items.pop()
+    const item = items[items.length - 1]
     this.router.navigate([`${window.location.pathname}/categories/${item.id}/products`])
   }
 }

@@ -23,6 +23,7 @@
     <app-mobile-categories
       [initialCategories]="categories"
       [categories]="(isCabinet()? categoriesService.userCategories$: categoriesService.mainCategories$) | async"
+      (lastChildAction)="navigateToCategory($event)"
     ></app-mobile-categories>
 
 
