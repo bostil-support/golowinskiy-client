@@ -20,7 +20,6 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   Gallery = []
   apiRoot
   showSpinner = true
-  showBasket = false
   categories: CategoryItem[] = []
 
   message: Message
@@ -32,14 +31,14 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
 
   clickCount
   clickSum
-  custID
+  cid: string = null
+  custID: string
   ctlg_No: string
   ctlg_Name: string
   sup_ID: string
   prc_ID: string
 
   price: number
-  quantity
   prc_Br
   tName
   kolItems
@@ -57,41 +56,29 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    document.getElementById('fon-image')
     this.categories = this.mainService.loadCategoriesFromStorage()
-
     this.message = new Message('danger', '')
-
     this.apiRoot = environment.api
+    this.cid = this.isCabinet()? localStorage.getItem('userId'): ''
+    this.sub = this.mainService.getShopInfo().subscribe(
+      () => this.request(),
+      () => {
+        this.mainService.getErrorFonPicture()
+      }
+    )
+  }
 
-    this.sub = this.mainService.getShopInfo()
-      .subscribe(res => {
-          let cid
-          if(window.location.pathname.includes('cabinet')){
-            cid = localStorage.getItem('userId')
-            this.showBasket = false
-          }
-          else{
-            cid = ''
-            this.showBasket = true
-          }
-          this.mainService.getProducts(this.route.snapshot.params['id'], res.cust_id, cid).subscribe((res) => {
-            this.Gallery = res
-            this.showSpinner = false
-          })
-          this.mainService.getFonPictures()
-          if(this.isCabinet()) {
-            this.categoriesService.fetchCategoriesUser()
-          } {
-            this.categoriesService.fetchCategoriesAll()
-          }
-        },
-        (error) => {
-          this.mainService.getErrorFonPicture()
-        }
-      )
-
-    this.categories = this.mainService.loadCategoriesFromStorage()
+  request() {
+    this.mainService.getProducts(this.route.snapshot.params['id'], this.mainService.getCustId(), this.cid).subscribe((res) => {
+      this.Gallery = res
+      this.showSpinner = false
+    })
+    this.mainService.getFonPictures()
+    if(this.isCabinet()) {
+      this.categoriesService.fetchCategoriesUser()
+    } {
+      this.categoriesService.fetchCategoriesAll()
+    }
   }
 
   ngAfterViewInit() {
@@ -183,6 +170,11 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
     this.mainService.saveCategoriesToStorage(items)
     const item = items[items.length - 1]
     const cabinet = this.isCabinet()? '/cabinet': ''
-    this.router.navigate([`${cabinet}/categories/${item.id}/products`])
+    this.router.navigate([`${cabinet}/categories/${item.id}/products`]).then(succeeded => {
+      if (succeeded) {
+        this.showSpinner = true
+        this.request()
+      }
+    })
   }
 }

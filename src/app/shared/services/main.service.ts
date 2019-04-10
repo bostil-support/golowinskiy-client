@@ -8,6 +8,7 @@ import {CategoryItem} from '../../categories/categories.component';
 import {AdditionalImagesData, AdditionalImagesRequest, DeleteProduct, Product} from '../interfaces';
 import {AuthService} from './auth.service';
 import {OrderService} from './order.service';
+import {ShopInfoModel} from '../models/shop-info.model';
 
 
 @Injectable({
@@ -50,16 +51,8 @@ export class MainService{
 
     }
 
-    getShopInfo():Observable<{
-        cust_id: string,
-        mainImage: string,
-        mainPictureAccountUser: string
-    }>{
-        return this.http.get<{
-            cust_id: string,
-            mainImage: string,
-            mainPictureAccountUser: string
-        }>(`${environment.api}shopinfo/${this.getIdPortal()}`)
+    getShopInfo() {
+        return this.http.get<ShopInfoModel>(`${environment.api}shopinfo/${this.getIdPortal()}`)
             .pipe(
                 tap(
                    ({cust_id, mainImage, mainPictureAccountUser}) => {

@@ -28,16 +28,14 @@ export class MobileCategoriesComponent implements OnInit {
 
   click(level: number, item: CategoryItem) {
     const oldCategory = this.selectedCategories[level]
+    if (oldCategory !== undefined) {
+      this.selectedCategories.splice(level, 10);
+    } else {
+      this.selectedCategories.splice(level, 10, item);
+    }
     if (item.listInnerCat.length === 0) {
       if(!this.isEqual(oldCategory, item)) {
-        this.selectedCategories.splice(level, 10, item)
-      }
-      this.lastChildAction.emit(this.selectedCategories);
-    } else {
-      if (oldCategory !== undefined) {
-        this.selectedCategories.splice(level, 10);
-      } else {
-        this.selectedCategories.splice(level, 10, item);
+        this.lastChildAction.emit(this.selectedCategories);
       }
     }
 

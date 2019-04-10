@@ -38,7 +38,7 @@
                 <h4 (click)="detail(product)">{{ product.tName }}</h4>
                 <div class="price">
                     <p *ngIf="product.prc_Br">{{ product.prc_Br }}</p>
-                    <div *ngIf="showBasket">
+                    <div *ngIf="cid">
                       <div class="add_cart"
                            *ngIf="!orderService.containsProduct(product.prc_ID) else inCart"
                            (click)="addToCart(product)">
