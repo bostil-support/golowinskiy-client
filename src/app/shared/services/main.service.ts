@@ -105,7 +105,7 @@ export class MainService{
         return this.http.get(`${environment.api}userinfo/${localStorage.getItem('userId')}/`, headers)
     }
 
-    getCategories(userId, advert){
+    getCategories(userId?: string, advert?: string){
         return this.http.post<CategoryItem[]>(
             `${environment.api}categories`, {
                 Cust_ID_Main: this.getCustId(),

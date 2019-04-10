@@ -96,40 +96,11 @@ export class CategoriesComponent implements OnInit {
     return this.isEqual(this.selectedCategories[level], item)
   }
 
-  isActive(type: string, item: CategoryItem) {
-    let typeMod = {}
-    for(let typeElement in this.selected[type]) {
-      if (typeElement != 'listInnerCat') {
-        typeMod[typeElement] = this.selected[type][typeElement]
-      }
-    }
-    let itemMod = {}
-    for(let itemElement in item) {
-      if (itemElement != 'listInnerCat') {
-        itemMod[itemElement] = item[itemElement];
-      }
-    }
-    // return typeMod === itemMod
-    return JSON.stringify(typeMod) === JSON.stringify(itemMod)
-  }
-
   isShowSubitems(level: number, item: CategoryItem): boolean {
     return this.isEqual(this.selectedCategories[level], item)
   }
 
-  isEqual(item1: CategoryItem, item2: CategoryItem): boolean {
-    let item1mod = {}
-    for(let item1key in item1) {
-      if (item1key != 'listInnerCat') {
-        item1mod[item1key] = item1[item1key]
-      }
-    }
-    let item2mod = {}
-    for(let item2key in item2) {
-      if (item2key != 'listInnerCat') {
-        item2mod[item2key] = item2[item2key];
-      }
-    }
-    return JSON.stringify(item1mod) === JSON.stringify(item2mod)
+  isEqual(item1?: CategoryItem, item2?: CategoryItem): boolean {
+    return (item1 && item1.id) === (item2 && item2.id)
   }
 }

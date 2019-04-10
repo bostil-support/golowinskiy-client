@@ -3,19 +3,19 @@
     <app-header></app-header>
 
     <div id="inner">
-      <ng-container *ngIf="showCategories">
+      <ng-container>
         <div class="categories-mobile">
           <app-mobile-categories
             (lastChildAction)="onCategoriesClick($event)"
-            [initialCategories]="initialCategories"
-            [categories]="categories"
+            [initialCategories]="initialCategories.slice(0, -1)"
+            [categories]="(isCabinet()? categoriesService.userCategories$: categoriesService.mainCategories$) | async"
           ></app-mobile-categories>
         </div>
         <div class="categories">
           <app-categories
             (lastChildAction)="onCategoriesClick($event)"
-            [initialCategories]="initialCategories"
-            [categories]="categories"
+            [initialCategories]="initialCategories.slice(0, -1)"
+            [categories]="(isCabinet()? categoriesService.userCategories$: categoriesService.mainCategories$) | async"
           ></app-categories>
         </div>
         <!--<router-outlet></router-outlet>-->

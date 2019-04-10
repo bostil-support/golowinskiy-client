@@ -1,4 +1,4 @@
-<div class="mobile_categories">
+<div class="mobile_categories" *ngIf="categories.length > 0">
   <div class="categories_header">Выберите раздел каталога</div>
   <div class="categories_list top-level" *ngFor="let category of categories, let index = index">
     <a class="category_item"
@@ -39,6 +39,7 @@
                   <div class="categories_list" *ngFor="let category of category.listInnerCat, let index = index">
                     <a class="category_item"
                        (click)="click(4, category)"
+                       [ngClass]="{selected: isSelected(4, category)}"
                     >
                       {{category.txt}}
                     </a>

@@ -7,6 +7,7 @@ import {Router} from '@angular/router';
 import {CategoryItem} from '../categories/categories.component';
 import {StorageService} from '../shared/services/storage.service';
 import {AuthService} from '../shared/services/auth.service';
+import {CategoriesService} from '../shared/services/categories.service';
 
 @Component({
   selector: 'main-page.component',
@@ -25,9 +26,7 @@ import {AuthService} from '../shared/services/auth.service';
   ]
 })
 export class MainPageComponent implements OnInit, OnDestroy {
-  categories: CategoryItem[] = []
   initialCategories: CategoryItem[] = []
-  showCategories = false
 
   clickClock = 'start'
   sub: Subscription
@@ -38,34 +37,24 @@ export class MainPageComponent implements OnInit, OnDestroy {
     private clockService: ClockService,
     public storageService: StorageService,
     private authService: AuthService,
+    private categoriesService: CategoriesService,
   ) { }
 
   ngOnInit() {
-    let advert = window.location.pathname.includes('addProduct')? '1': null
-    let userId = window.location.pathname.includes('cabinet')? this.authService.getUserId(): null
-
     this.sub = this.mainService.getShopInfo()
       .subscribe(
         (res) => {
           this.mainService.getFonPictures()
-          this.mainService.getCategories(userId, advert).subscribe((res) => {
-            this.categories = res
-            this.showCategories = true
-          })
+          if (this.isCabinet()) {
+            this.categoriesService.fetchCategoriesUser()
+          } else {
+            this.categoriesService.fetchCategoriesAll()
+          }
         },
         (error) => {
           this.mainService.getErrorFonPicture()
         }
       )
-
-    if(document.getElementById("doc_time")){
-
-      this.clockService.getClock()
-      document.getElementById("inner").style.minHeight = `calc(100vh - ${document.getElementById("doc_time").offsetHeight}px - ${document.getElementById("footer").offsetHeight}px - 15px)`;
-      window.setTimeout(() => {
-        this.clickClock = 'end'
-      }, 3000)
-    }
 
     this.initialCategories = this.storageService.breadcrumbFlag? this.storageService.getCategories(): []
     this.storageService.breadcrumbFlag = false;
@@ -79,12 +68,24 @@ export class MainPageComponent implements OnInit, OnDestroy {
     }
     window.onresize = action
     action()
+
+    if(document.getElementById("doc_time")){
+      this.clockService.getClock()
+      document.getElementById("inner").style.minHeight = `calc(100vh - ${document.getElementById("doc_time").offsetHeight}px - ${document.getElementById("footer").offsetHeight}px - 15px)`;
+      window.setTimeout(() => {
+        this.clickClock = 'end'
+      }, 3000)
+    }
   }
 
   ngOnDestroy(){
     if(this.sub){
       this.sub.unsubscribe()
     }
+  }
+
+  isCabinet(): boolean {
+    return window.location.pathname.includes('cabinet');
   }
 
   onCategoriesClick(items: CategoryItem[]) {this.storageService.setCategories(items)

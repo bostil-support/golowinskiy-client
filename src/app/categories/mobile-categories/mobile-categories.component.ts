@@ -23,7 +23,7 @@ export class MobileCategoriesComponent implements OnInit {
 
   ngOnInit() {
     // load selected categories if redirect over breadcrumbs
-    this.selectedCategories = this.initialCategories.slice(0, -1)
+    this.selectedCategories = this.initialCategories
   }
 
   click(level: number, item: CategoryItem) {
@@ -54,19 +54,7 @@ export class MobileCategoriesComponent implements OnInit {
     return this.isEqual(this.selectedCategories[level], item)
   }
 
-  isEqual(item1: CategoryItem, item2: CategoryItem): boolean {
-    let item1mod = {}
-    for(let item1key in item1) {
-      if (item1key != 'listInnerCat') {
-        item1mod[item1key] = item1[item1key]
-      }
-    }
-    let item2mod = {}
-    for(let item2key in item2) {
-      if (item2key != 'listInnerCat') {
-        item2mod[item2key] = item2[item2key];
-      }
-    }
-    return JSON.stringify(item1mod) === JSON.stringify(item2mod)
+  isEqual(item1?: CategoryItem, item2?: CategoryItem): boolean {
+    return (item1 && item1.id) === (item2 && item2.id)
   }
 }

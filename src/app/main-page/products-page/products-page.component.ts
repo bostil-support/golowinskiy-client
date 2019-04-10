@@ -8,6 +8,7 @@ import {of, Subscription} from 'rxjs';
 import {StorageService} from '../../shared/services/storage.service';
 import {AuthService} from '../../shared/services/auth.service';
 import {CategoryItem} from '../../categories/categories.component';
+import {CategoriesService} from '../../shared/services/categories.service';
 
 @Component({
   selector: 'app-products-page',
@@ -48,9 +49,11 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
               private router: Router,
               public orderService: OrderService,
               private storageService: StorageService,
-              private authService: AuthService) {
-                this.orderService.onClickSum.subscribe(cnt=>this.clickSum = cnt)
-                this.orderService.onClick.subscribe(cnt=>this.clickCount = cnt)
+              private authService: AuthService,
+              private categoriesService: CategoriesService,
+  ) {
+    this.orderService.onClickSum.subscribe(cnt=>this.clickSum = cnt)
+    this.orderService.onClick.subscribe(cnt=>this.clickCount = cnt)
   }
 
   ngOnInit() {
@@ -62,8 +65,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
     this.apiRoot = environment.api
 
     this.sub = this.mainService.getShopInfo()
-      .subscribe(
-        (res) => {
+      .subscribe(res => {
           let cid
           if(window.location.pathname.includes('cabinet')){
             cid = localStorage.getItem('userId')
@@ -78,6 +80,11 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
             this.showSpinner = false
           })
           this.mainService.getFonPictures()
+          if(this.isCabinet()) {
+            this.categoriesService.fetchCategoriesUser()
+          } {
+            this.categoriesService.fetchCategoriesAll()
+          }
         },
         (error) => {
           this.mainService.getErrorFonPicture()
@@ -91,7 +98,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
     const action = () => {
       const header = document.getElementsByTagName('header')[0]
       const height = header.clientHeight
-      document.getElementById('breadcrumbs').style.paddingTop = `${height + 20}px`
+      document.getElementById('main-content').style.paddingTop = `${height + 20}px`
     }
     window.onresize = action
     action()
@@ -101,6 +108,10 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
     if(this.sub){
       this.sub.unsubscribe()
     }
+  }
+
+  private isCabinet(): boolean {
+    return window.location.pathname.includes('cabinet')
   }
 
   private showMessage( text: string, type:string = 'danger'){
