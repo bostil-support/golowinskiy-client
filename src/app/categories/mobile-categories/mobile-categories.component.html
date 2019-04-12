@@ -39,6 +39,7 @@
                   <div class="categories_list" *ngFor="let category of category.listInnerCat, let index = index">
                     <a class="category_item"
                        (click)="click(4, category)"
+                       *ngIf="isShowItem(4, category)"
                        [ngClass]="{selected: isSelected(4, category)}"
                     >
                       {{category.txt}}
