@@ -3,10 +3,12 @@
   .categories_header {
     border: 2px solid #189691;
     font-size: 16px;
+    font-weight: bold;
     padding: 3px;
   }
   .categories_list {
-    font-size: 14px;
+    font-size: 16px;
+    font-weight: bold;
     .category_item {
       border-bottom: 2px solid #189691;
       display: block;
@@ -15,6 +17,7 @@
       &.selected {
         background: #189691;
         border-bottom: 2px solid white;
+        color: white;
       }
     }
     &.top-level {

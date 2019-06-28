@@ -99,7 +99,7 @@ export class MainService {
 
   getCategories(userId?: string, advert?: string) {
     return this.http.post<CategoryItem[]>(
-      `${environment.api}Load/api/categories`, {
+      `${environment.api}categories`, {
         cust_ID_Main: this.getCustId(),
         cid: userId,
         advert: advert

@@ -10,8 +10,8 @@ ul.left-menu {
   h5 {
     font-size: 16px;
     padding: 3px;
-
-    width: 212px;
+    font-weight: bold;
+    width: 250px;
     background: #ffffff;
     margin: 0;
     border-top: 2px solid #189691;
@@ -22,7 +22,7 @@ ul.left-menu {
   ul {
     padding: 0;
 
-    width: 212px;
+    width: 250px;
     position: relative;
     border: 2px solid #189691;
     @media screen and (max-width: 1078px) {
@@ -51,7 +51,8 @@ ul.left-menu {
       color: #000000;
       font-size: 12px;
       padding: 2px 10px;
-      font-size: 15px;
+      font-size: 16px;
+      font-weight: bold;
     }
   }
 
@@ -65,8 +66,8 @@ ul.left-menu {
     display: block !important;
 
     position: absolute;
-    top: 0;
-    left: 208px;
+    top: -2px;
+    left: 246px;
     @media screen and (max-width: 1078px) {
       position: static;
       width: 100%;
