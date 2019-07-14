@@ -40,15 +40,18 @@
           </div>
       </div>
 
-      <ng-container *ngIf="showCatalog">
+      <ng-container>
         <div class="categories">
-          <app-categories (lastChildAction)="categorySelect($event)"
-                          [categories]="categoriesData"
+          <app-categories
+            (lastChildAction)="categorySelect($event)"
+            [initialCategories]="initialCategories.slice(0, -1)"
+            [categories]="categoriesService.mainCategories$ | async"
           ></app-categories>
         </div>
         <div class="categories-mobile">
           <app-mobile-categories (lastChildAction)="categorySelect($event)"
-                                 [categories]="categoriesData"
+                                 [initialCategories]="initialCategories.slice(0, 1)"
+                                 [categories]="(isCabinet()? categoriesService.userCategories$: categoriesService.mainCategories$) | async"
           ></app-mobile-categories>
         </div>
       </ng-container>
@@ -56,7 +59,7 @@
       <div class="row justify-content-md-center choosed">
           <div class="col-lg-8 col-xs-12 no-padding">
               Вы выбрали раздел
-            <app-breadcrumbs [categories]="categories" (click)="breadcrumbsClick()"></app-breadcrumbs>
+              <app-breadcrumbs [categories]="categories" (click)="breadcrumbsClick()"></app-breadcrumbs>
           </div>
       </div>
       <div class="row justify-content-md-center choosed">
@@ -237,14 +240,11 @@
                           name="submitButton" #submitButton
                           class="btn btn-block btn-primary"
                           type="submit"
-                          [disabled]="showSpinner || !isFormValid()"
+                          [disabled]="showSpinner || form.invalid"
                       >
                           Разместить объявление
                       </button>
-                      <div class="validators" *ngIf="!showSpinner && !isFormValid()"
-                      >
-                          *Вы не выбрали раздел каталога или наименование товара
-                      </div>
+
                   </div>
               </div>
 

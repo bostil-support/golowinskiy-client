@@ -11,6 +11,7 @@ import {CategoryItem} from '../categories/categories.component';
 import {AdditionalImagesData} from '../shared/interfaces';
 import {of} from 'rxjs';
 import {StorageService} from '../shared/services/storage.service';
+import {CategoriesService} from '../shared/services/categories.service';
 
 export interface ImageDataInterface {
   src: string;
@@ -56,7 +57,7 @@ export class AdvertisementPageComponent implements OnInit {
   additionalImagesData: ImageDataInterface[] = []
 
   // categories
-  categoriesData: CategoryItem[]
+  initialCategories: CategoryItem[] = []
 
   @ViewChild('submitButton') submitButton: ElementRef
 
@@ -65,17 +66,8 @@ export class AdvertisementPageComponent implements OnInit {
     private authService: AuthService,
     private mainService: MainService,
     public storageService: StorageService,
+    private categoriesService: CategoriesService
   ) { }
-
-  private showMessage( text: string, type:string = 'danger'){
-    this.message = new Message(type, text)
-    window.setTimeout(() => {
-      this.message.text = ''
-      if(this.message.type == 'success'){
-        this.router.navigate(['/addProduct'])
-      }
-    }, 2000)
-  }
 
   ngOnInit() {
     this.apiRoot = environment.api
@@ -102,13 +94,23 @@ export class AdvertisementPageComponent implements OnInit {
         this.userId = this.authService.getUserId()
         let advert = window.location.pathname.includes('addProduct')? '1': null
         let userId = window.location.pathname.includes('cabinet')? this.authService.getUserId(): null
-        this.mainService.getCategories(userId, advert).subscribe((res) => {
-          this.categoriesData = res
-          this.showCatalog = true
-          this.showSpinner = false
-        })
+        this.categoriesService.fetchCategoriesAll()
+        this.showSpinner = false
       }
     )
+
+    this.initialCategories = this.storageService.getCategories()
+    this.storageService.breadcrumbFlag = false;
+  }
+
+  private showMessage( text: string, type:string = 'danger'){
+    this.message = new Message(type, text)
+    window.setTimeout(() => {
+      this.message.text = ''
+      if(this.message.type == 'success'){
+        this.router.navigate(['/addProduct'])
+      }
+    }, 2000)
   }
 
   loadFile(files: File, callback: (src: string, name: string) => any) {
@@ -184,7 +186,10 @@ export class AdvertisementPageComponent implements OnInit {
   }
 
   isFormValid(): boolean {
-    return !this.form.invalid
+    console.log("isFormValid");
+    console.log(this.form.valid);  
+    return this.form.valid;
+
   }
 
   createForm() {
@@ -311,5 +316,16 @@ export class AdvertisementPageComponent implements OnInit {
     this.itemName = ''
     this.idCategory = ''
     this.showCatalog = true
+  }
+
+  private isCabinet(): boolean {
+    return window.location.pathname.includes('cabinet')
+  }
+
+  onCategoriesClick(items: CategoryItem[]) {
+    this.storageService.setCategories(items)
+    this.mainService.saveCategoriesToStorage(items)
+    const item = items[items.length - 1]
+    //this.router.navigate([`${window.location.pathname}/categories/${item.id}/products`])
   }
 }

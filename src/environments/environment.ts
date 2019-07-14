@@ -12,7 +12,7 @@ interface Environment {
 
 export const environment: Environment = {
   production: false,
-  api: 'http://golowinskiy-api.bostil.ru/api/',
+  api: 'http://golowinskiy-api.bostil.ru/api/',  //'http://localhost:55840/api/',
   images: 'http://golowinskiy-api.bostil.ru',
   idPortal: '19139',
   domain: 'golowinskiy.bostil.ru'
