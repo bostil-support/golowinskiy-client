@@ -148,7 +148,7 @@ export class MainService {
       }),
       body: data
     };
-    return this.http.delete(`${environment.api}Img`, options);
+    return this.http.delete(`${environment.api}product`, options);
   }
 
   editProduct(data: any) {

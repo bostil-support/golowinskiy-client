@@ -198,6 +198,7 @@ export class EditAdvertisementPageComponent implements OnInit {
   }
 
   deleteImages(url, i){
+    console.log("deleteImages");
     this.showSpinner = true
     if(this.filesImg.length != 0){
       this.filesImg.splice(this.urlsImages.indexOf(this.filesImg[i]), 1)

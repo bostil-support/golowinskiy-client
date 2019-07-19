@@ -153,9 +153,11 @@ export class DetailPageComponent implements OnInit {
       }
       this.mainService.deleteProduct(data).subscribe(
         (res) => {
-          console.log(res)
           this.showSpinner = false
-          this.showMessage('Товар был успешно удален', 'success')
+          if(res)
+            this.showMessage('Товар был успешно удален', 'success')
+          else
+            this.showMessage('Произошла ошибка удаления товара', 'success')
           // navigate to products page
           let url = this.router.url
           let index = url.lastIndexOf('/')
