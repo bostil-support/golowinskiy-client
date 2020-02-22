@@ -262,7 +262,7 @@ export class AdvertisementPageComponent implements OnInit {
           imgObserv = this.mainService.uploadImage(formData)
         }
 
-        imgObserv.subscribe(() => {
+        imgObserv.subscribe(() => { 
             this.mainService.addProduct(this.data_form, headers)
               .subscribe((res: any) => {
                 const data: AdditionalImagesData[] = []
@@ -293,6 +293,7 @@ export class AdvertisementPageComponent implements OnInit {
                     () => this.successAddedProduct(this.data_form.Ctlg_Name)
                   )
               })
+              
           },
           () => {
             this.showSpinner = false

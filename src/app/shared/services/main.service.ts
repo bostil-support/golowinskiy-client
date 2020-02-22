@@ -39,14 +39,15 @@ export class MainService {
   }
 
   public getIdPortal() {
-    var n = parseInt(this.urlPortal);
+   // var n = parseInt(this.urlPortal);
 
-    if (location.hostname.split('.').length == 2 || location.hostname == environment.domain) {
+  //  if (location.hostname.split('.').length == 2 || location.hostname == environment.domain) {
       return this.idPortal;
 
-    } else {
+  /*  } else {
       return this.urlPortal;
     }
+    */
 
   }
 
@@ -103,17 +104,13 @@ export class MainService {
       cid: userId,
       advert: advert
     };
-  //  if(!prepatedObject.cid)
-      delete prepatedObject.cid 
       if(!prepatedObject.advert)
       delete prepatedObject.advert   
-      console.log(prepatedObject)
     return this.http.post<CategoryItem[]>(
       `${environment.api}categories`, prepatedObject);
   }
 
   getProducts(id, cust_id, userId): Observable<any> {
-    console.log(id, cust_id, userId)
     return this.http.post(`${environment.api}Gallery/`,
       {
         Cust_ID: cust_id,
