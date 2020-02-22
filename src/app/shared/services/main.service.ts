@@ -98,12 +98,18 @@ export class MainService {
   }
 
   getCategories(userId?: string, advert?: string) {
+    let prepatedObject = {
+      cust_ID_Main: environment.idPortal,
+      cid: userId,
+      advert: advert
+    };
+  //  if(!prepatedObject.cid)
+      delete prepatedObject.cid 
+      if(!prepatedObject.advert)
+      delete prepatedObject.advert   
+      console.log(prepatedObject)
     return this.http.post<CategoryItem[]>(
-      `${environment.api}categories`, {
-        cust_ID_Main: this.getCustId(),
-        cid: userId,
-        advert: advert
-      });
+      `${environment.api}categories`, prepatedObject);
   }
 
   getProducts(id, cust_id, userId): Observable<any> {

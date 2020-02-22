@@ -1,7 +1,7 @@
 <div>
   {{onRedraw()}}
   <ul class="nav flex-column flex-nowrap text-truncate left-menu">
-    <h5>Выберите раздел каталога</h5>
+    <h5>Выберите раздел каталога  <img *ngIf="(isCategoriesLoaded | async)" [src]="loadingImage" /> </h5> 
     <ul id="first-menu">
       <li class="nav-item" *ngFor="let l1 of _categories let x = index" (click)="select(0, l1, $event);" [ngClass]="{active: isSelected(0, l1)}">
         <a>{{l1.txt}}</a>

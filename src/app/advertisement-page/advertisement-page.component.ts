@@ -60,7 +60,7 @@ export class AdvertisementPageComponent implements OnInit {
   initialCategories: CategoryItem[] = []
 
   @ViewChild('submitButton') submitButton: ElementRef
-
+   advertId: string = "1";
   constructor(
     private router: Router,
     private authService: AuthService,
@@ -94,12 +94,11 @@ export class AdvertisementPageComponent implements OnInit {
         this.userId = this.authService.getUserId()
         let advert = window.location.pathname.includes('addProduct')? '1': null
         let userId = window.location.pathname.includes('cabinet')? this.authService.getUserId(): null
-        this.categoriesService.fetchCategoriesAll()
         this.showSpinner = false
       }
     )
-
-    this.initialCategories = this.storageService.getCategories()
+    this.categoriesService.fetchCategoriesAll(null,this.advertId);
+    this.initialCategories = this.storageService.getCategories();
     this.storageService.breadcrumbFlag = false;
   }
 

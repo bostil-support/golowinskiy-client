@@ -4,6 +4,8 @@ import {Router} from '@angular/router'
 import {AuthService} from '../shared/services/auth.service'
 import {MainService} from '../shared/services/main.service'
 import {StorageService} from '../shared/services/storage.service';
+import { CategoriesService } from '../shared/services/categories.service';
+import { Observable } from 'rxjs';
 
 export interface CategoryItem {
   cust_id: number
@@ -25,6 +27,8 @@ interface SelectedItem {
   styleUrls: ['./categories.component.scss']
 })
 export class CategoriesComponent implements OnInit {
+  loadingImage = "data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==";
+  isCategoriesLoaded: Observable<boolean>;
   _categories: CategoryItem[] = []
   @Input() set categories(categories: CategoryItem[]) {
     this._categories = categories;
@@ -42,13 +46,15 @@ export class CategoriesComponent implements OnInit {
   constructor(private router: Router,
               private authService: AuthService,
               private mainService: MainService,
-              private storageService: StorageService
+              private storageService: StorageService,
+              private categoryService: CategoriesService
   ) {
     storageService.selectedCategories.subscribe(value => {
       for (let i = 0; i < value.length; i++) {
         this.selected['lavel' + (i + 1)] = value[i]
       }
-    })
+    });
+    this.isCategoriesLoaded = this.categoryService.isCategoriesLoaded();
   }
 
   onRedraw() {
