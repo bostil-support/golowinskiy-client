@@ -46,7 +46,7 @@ export class AdvertisementPageComponent implements OnInit {
   fio
   userName
   phone
-
+  isCanPromo: boolean = false;
 
   // new images code
   mainImageData: ImageDataInterface = {
@@ -58,7 +58,7 @@ export class AdvertisementPageComponent implements OnInit {
 
   // categories
   initialCategories: CategoryItem[] = []
-
+  
   @ViewChild('submitButton') submitButton: ElementRef
    advertId: string = "1";
   constructor(
@@ -70,6 +70,7 @@ export class AdvertisementPageComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    
     this.apiRoot = environment.api
     this.form = new FormGroup({
       'Article': new FormControl(null),
@@ -100,6 +101,13 @@ export class AdvertisementPageComponent implements OnInit {
     this.categoriesService.fetchCategoriesAll(null,this.advertId);
     this.initialCategories = this.storageService.getCategories();
     this.storageService.breadcrumbFlag = false;
+        const headers = new Headers({
+      'Content-Type': 'application/json; charset=utf8',
+      'Authorization': 'Bearer ' + localStorage.getItem('token')
+    })
+    this.mainService.getUserInfo(headers).subscribe((res: any) => {
+      this.isCanPromo = res.isCanPromo;
+    });
   }
 
   private showMessage( text: string, type:string = 'danger'){
@@ -185,8 +193,6 @@ export class AdvertisementPageComponent implements OnInit {
   }
 
   isFormValid(): boolean {
-    console.log("isFormValid");
-    console.log(this.form.valid);  
     return this.form.valid;
 
   }
@@ -248,11 +254,8 @@ export class AdvertisementPageComponent implements OnInit {
     if (this.mainImageData.blob) {
       this.data_form['TImageprev'] = this.mainImageData.name
     }
-    this.mainService.getUserInfo(headers).subscribe((res: any) => {
-      this.Validators(this.data_form.Ctlg_Name)
-      if (res.isCanPromo === true) {
+      if (this.isCanPromo === true) {
         this.showSpinner = true;
-
         let imgObserv = of({})
         if (this.mainImageData.blob) {
           const formData = new FormData()
@@ -261,14 +264,14 @@ export class AdvertisementPageComponent implements OnInit {
           formData.append('TImageprev', this.mainImageData.name)
           imgObserv = this.mainService.uploadImage(formData)
         }
-
         imgObserv.subscribe(() => { 
+          this.Validators(this.data_form.Ctlg_Name)
             this.mainService.addProduct(this.data_form, headers)
               .subscribe((res: any) => {
                 const data: AdditionalImagesData[] = []
                 for (let i = 0; i < this.additionalImagesData.length; i++) {
                   let name = this.additionalImagesData[i].name;
-                  name = name.replace(/(\.[\w\d_-]+)$/i, `${i}'$1`)
+                  name = name.replace(/(\.[\w\d_-]+)$/i, `${i}$1`);
                   const formData = new FormData();
                   data.push({
                     imageData: formData,
@@ -289,18 +292,19 @@ export class AdvertisementPageComponent implements OnInit {
                 this.mainService.additionalImagesGroup(data)
                   .subscribe(
                     () => this.successAddedProduct(this.data_form.Ctlg_Name),
-                    () => console.log('additional images upload error'),
+                    () => console.warn('additional images upload error'),
                     () => this.successAddedProduct(this.data_form.Ctlg_Name)
                   )
               })
-              
           },
           () => {
             this.showSpinner = false
             this.showMessage('Объявление не было размещено', 'danger')
           })
+      }else{
+        alert("isCanPromo is false")
       }
-    })
+
   }
 
   categorySelect(items: CategoryItem[]) {

@@ -174,7 +174,7 @@ export class MainService {
   }
 
   additionalImageUpload(additionalData: AdditionalImagesRequest) {
-    return this.http.post(`${environment.api}AdditionalImg `, additionalData);
+    return this.http.post(`${environment.api}AdditionalImg`, additionalData);
   }
 
   saveCategoriesToStorage(categories) {

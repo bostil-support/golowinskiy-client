@@ -287,6 +287,7 @@ export class EditAdvertisementPageComponent implements OnInit {
         (res: any) => {
           if(res.isCanPromo == true){
             if(this.selectedFile == null){
+              console.log(this.data_form)
               this.mainService.editProduct(this.data_form)
               .subscribe(
                 (res: any) => {
@@ -302,6 +303,7 @@ export class EditAdvertisementPageComponent implements OnInit {
                           "Appcode": this.cust_id,
                           "CID": localStorage.getItem('userId')
                         }
+                        console.log(this.dataAddImg);
                         this.mainService.editAdditionalImg(this.dataAddImg)
                         .subscribe(
                           (res) => {
