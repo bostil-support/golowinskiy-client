@@ -97,6 +97,7 @@ export class DetailPageComponent implements OnInit {
 
       this.mainService.getProduct(this.route.snapshot.params.idProduct, res.cust_id, res.cust_id).subscribe(
         (res: any) => {
+          console.log(res)
           this.element = res
           this.elementImage_Base = res.t_imageprev
           this.showProduct = true
@@ -115,7 +116,16 @@ export class DetailPageComponent implements OnInit {
 
 
   }
-
+  currentPosition: number = 0;
+  goLeft(){
+    this.currentPosition = this.currentPosition >=0 ? this.currentPosition-=1 : 0;
+    this.additionalImages = this.element.additionalImages.slice(this.currentPosition,3 + this.currentPosition);
+  }
+  goRight(){
+    const lastItem: number = this.element.additionalImages.length - 3;
+    this.currentPosition = this.currentPosition < lastItem ? this.currentPosition+1 : lastItem;
+    this.additionalImages = this.element.additionalImages.slice(this.currentPosition,3 + this.currentPosition);
+  }
   private showMessage( text: string, type:string = 'danger'){
     this.message = new Message(type, text);
     window.setTimeout(() => {
@@ -203,6 +213,7 @@ export class DetailPageComponent implements OnInit {
 
     this.mainService.getProduct(this.nextElementId, this.appCode, this.appCode).subscribe(
       (res: any) => {
+        console.log(res)
           this.element = res
           this.elementImage_Base = res.t_imageprev
           if(this.element.additionalImages.length > 3 ){
@@ -244,6 +255,7 @@ export class DetailPageComponent implements OnInit {
 
     this.mainService.getProduct(this.prevElementId, this.appCode, this.appCode).subscribe(
       (res: any) => {
+        console.log(res)
           this.element = res
           this.elementImage_Base = res.t_imageprev
           if(this.element.additionalImages.length > 3 ){
