@@ -198,12 +198,12 @@ export class EditAdvertisementPageComponent implements OnInit {
   }
 
   deleteImages(url, i){
-    console.log("deleteImages");
-    this.showSpinner = true
+    const index = this.urls.indexOf(url);
+    if (index !== -1) this.urls.splice(index, 1);
     if(this.filesImg.length != 0){
       this.filesImg.splice(this.urlsImages.indexOf(this.filesImg[i]), 1)
       this.urls.splice(this.urls.indexOf(url), 1)
-      this.showSpinner = false
+  //    this.showSpinner = false
     }
     else{
       this.mainService.getShopInfo().subscribe(res => {
