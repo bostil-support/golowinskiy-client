@@ -198,35 +198,26 @@ export class EditAdvertisementPageComponent implements OnInit {
   }
 
   deleteImages(url, i){
-    const index = this.urls.indexOf(url);
-    if (index !== -1) this.urls.splice(index, 1);
-    if(this.filesImg.length != 0){
-      this.filesImg.splice(this.urlsImages.indexOf(this.filesImg[i]), 1)
-      this.urls.splice(this.urls.indexOf(url), 1)
-  //    this.showSpinner = false
-    }
-    else{
-      this.mainService.getShopInfo().subscribe(res => {
-        // this.mainService.deleteProduct(
-        //     {
-        //       "Cust_ID": this.user.userId,
-        //       "Prc_ID": this.route.snapshot.params['idProduct'],
-        //       "ImageOrder": this.urlsImages[i].imageOrder,
-        //       "AppCode": res.cust_id,
-        //       "Cid": localStorage.getItem('userId')
-        //     }
-        //   )
-        // .subscribe(
-        //   (res: any) => {
-        //     if(res.result == true){
-        //       this.urlsImages.splice(this.urlsImages.indexOf(this.urlsImages[i]), 1);
-        //       this.urls.splice(this.urls.indexOf(url), 1);
-        //       this.showSpinner = false;
-
-        //     }
-        //   })
-      })
-    }
+     const preparedObj = {
+      "cust_ID": environment.idPortal,
+      "Prc_ID": this.route.snapshot.params['idProduct'],
+      "ImageOrder": i,
+      "appCode": environment.idPortal,
+      "cid": localStorage.getItem('userId')
+     }
+     this.showSpinner = true;
+     this.mainService.deleteAdditionalImg(JSON.stringify(preparedObj)).subscribe((res: {result: boolean})=>{
+       this.showSpinner = false;
+       if(res.result){
+        const index = this.urls.indexOf(url);
+        if (index !== -1) this.urls.splice(index, 1);
+       }
+     }, 
+     err=>{
+        this.showSpinner = false;
+        console.error(err);
+        alert('cant delete additional image');
+     });
   }
 
   onSubmit(){

@@ -159,7 +159,17 @@ export class MainService {
   }
 
   editAdditionalImg(data: any) {
+    console.log(data)
     return this.http.put(`${environment.api}AdditionalImg/api/AdditionalImg`, data);
+  }
+  deleteAdditionalImg(data: any) {
+    let options = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+      body: data
+    };
+    return this.http.delete(`${environment.api}AdditionalImg/api/AdditionalImg`, options);
   }
 
   additionalImagesGroup(data: AdditionalImagesData[]) {
