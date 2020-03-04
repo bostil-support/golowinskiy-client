@@ -34,8 +34,8 @@
 
     <!-- begin show only for mobile fersion-->
       <div *ngIf="showProduct && element.additionalImages" class="detail_product__item--additional_images">
-        <div *ngIf="showAdditionalImages" class="arrows prew">
-          <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        <div *ngIf="showAdditionalImages && currentPosition !==0" class="arrows prew">
+          <i (click)="goLeft()" class="fa fa-chevron-left mr-2" aria-hidden="true"></i>
         </div>
         <div class="images">
           <img
@@ -44,8 +44,8 @@
             [src]="apiRoot + 'Img?AppCode=' + appCode + '&ImgFileName=' + item.t_image"
           >
         </div>
-        <div *ngIf="showAdditionalImages" class="arrows next">
-          <i class="fa fa-chevron-right" aria-hidden="true"></i>
+        <div *ngIf="showAdditionalImages && currentPosition !== (element.additionalImages.length - 3)" class="arrows next">
+          <i (click)="goRight()" class="fa fa-chevron-right ml-2" aria-hidden="true"></i>
         </div>
       </div>
     <!-- end -->
@@ -62,7 +62,6 @@
         </div>
 
         <div *ngIf="showEdit" class="delete" (click)="deleteProduct(element)">
-          <span>Удалить</span>
         </div>
       </div>
 
