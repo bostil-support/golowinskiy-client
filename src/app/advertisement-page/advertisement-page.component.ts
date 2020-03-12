@@ -157,10 +157,9 @@ export class AdvertisementPageComponent implements OnInit {
   Validators(el){
     this.itemName = el.txt
   }
-
+  selectedFile: File = null;
   mainFileSelected(event){
-    const file = <File>event.target.files[0]
-    // this.selectedFile = <File>event.target.files[0]
+    const file = this.selectedFile = <File>event.target.files[0]
     this.loadFile(file, (src, name) => {
       this.mainImageData.src = src
       this.mainImageData.name = name
@@ -260,11 +259,13 @@ export class AdvertisementPageComponent implements OnInit {
         if (this.mainImageData.blob) {
           const formData = new FormData()
           formData.append('AppCode', this.cust_id)
-          formData.append('Img', this.mainImageData.blob)
+          formData.append('Img', this.selectedFile)
           formData.append('TImageprev', this.mainImageData.name)
+          this.startTimer();
           imgObserv = this.mainService.uploadImage(formData)
         }
         imgObserv.subscribe(() => { 
+          this.pauseTimer();
           this.Validators(this.data_form.Ctlg_Name)
             this.mainService.addProduct(this.data_form, headers)
               .subscribe((res: any) => {
@@ -305,6 +306,18 @@ export class AdvertisementPageComponent implements OnInit {
         alert("isCanPromo is false")
       }
 
+  }
+
+  timeLeft: number = 0;
+  interval;
+  startTimer() {
+    this.interval = setInterval(() => {
+        this.timeLeft++;
+    },1000)
+  }
+  pauseTimer() {
+    clearInterval(this.interval);
+    console.log('request timer = '+this.timeLeft+' sec.')
   }
 
   categorySelect(items: CategoryItem[]) {

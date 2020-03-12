@@ -278,7 +278,6 @@ export class EditAdvertisementPageComponent implements OnInit {
         (res: any) => {
           if(res.isCanPromo == true){
             if(this.selectedFile == null){
-              console.log(this.data_form)
               this.mainService.editProduct(this.data_form)
               .subscribe(
                 (res: any) => {
@@ -294,7 +293,6 @@ export class EditAdvertisementPageComponent implements OnInit {
                           "Appcode": this.cust_id,
                           "CID": localStorage.getItem('userId')
                         }
-                        console.log(this.dataAddImg);
                         this.mainService.editAdditionalImg(this.dataAddImg)
                         .subscribe(
                           (res) => {
@@ -319,9 +317,11 @@ export class EditAdvertisementPageComponent implements OnInit {
               )
             }
             else{
+              this.startTimer();
               this.mainService.uploadImage(this.dataForm)
               .subscribe(
                 (res: any) => {
+                  this.pauseTimer()
                   if(res.result == true){
                     this.mainService.editProduct(this.data_form)
                     .subscribe(
@@ -381,5 +381,18 @@ export class EditAdvertisementPageComponent implements OnInit {
         }
       )
     })
+  }
+
+
+  timeLeft: number = 0;
+  interval;
+  startTimer() {
+    this.interval = setInterval(() => {
+        this.timeLeft++;
+    },1000)
+  }
+  pauseTimer() {
+    clearInterval(this.interval);
+    console.log('request timer = '+this.timeLeft+' sec.')
   }
 }

@@ -97,7 +97,6 @@ export class DetailPageComponent implements OnInit {
 
       this.mainService.getProduct(this.route.snapshot.params.idProduct, res.cust_id, res.cust_id).subscribe(
         (res: any) => {
-          console.log(res)
           this.element = res
           this.elementImage_Base = res.t_imageprev
           this.showProduct = true
