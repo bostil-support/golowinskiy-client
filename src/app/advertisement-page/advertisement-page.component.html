@@ -240,7 +240,7 @@
                           name="submitButton" #submitButton
                           class="btn btn-block btn-primary"
                           type="submit"
-                          [disabled]="showSpinner || form.invalid"
+                          [disabled]="showSpinner || form.invalid || uploadStatus"
                       >
                           Разместить объявление
                       </button>
