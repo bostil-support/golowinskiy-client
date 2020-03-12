@@ -15,6 +15,15 @@
         animation: fa-spin 2s infinite linear;
     }
 }
+.loadingItem{
+    z-index: 3;
+    i{
+        font-size: 70px;
+        color: #ffffff;
+        -webkit-animation: fa-spin 2s infinite linear;
+        animation: fa-spin 2s infinite linear;
+    }
+}
 .detail_product{
     display: flex;
     align-items: flex-start;

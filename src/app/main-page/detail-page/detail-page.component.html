@@ -22,8 +22,13 @@
       (click)="routePrewProduct(element)">
         <i *ngIf="showPrevElementId" class="fa fa-chevron-left" aria-hidden="true"></i>
       </div>
-      <div class="image">
+      <div *ngIf="showProduct" class="image">
         <img [src]="apiRoot + 'Img?AppCode=' + appCode + '&ImgFileName=' + elementImage_Base">
+      </div>
+      <div *ngIf="!showProduct" class="image">
+        <div class="loadingItem">
+          <i class="fa fa-spinner" aria-hidden="true"></i>
+        </div>
       </div>
       <div class="arrows next"
           [attr.data-next]="nextElementId"

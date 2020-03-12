@@ -393,6 +393,6 @@ export class EditAdvertisementPageComponent implements OnInit {
   }
   pauseTimer() {
     clearInterval(this.interval);
-    console.log('request timer = '+this.timeLeft+' sec.')
+    console.log('images request timer = '+this.timeLeft+' sec.')
   }
 }

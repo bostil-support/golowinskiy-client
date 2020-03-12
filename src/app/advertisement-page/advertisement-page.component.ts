@@ -17,6 +17,7 @@ export interface ImageDataInterface {
   src: string;
   name: string;
   blob: Blob;
+  file: File
 }
 
 @Component({
@@ -52,7 +53,8 @@ export class AdvertisementPageComponent implements OnInit {
   mainImageData: ImageDataInterface = {
     src: '',
     name: '',
-    blob: null
+    blob: null,
+    file: null
   }
   additionalImagesData: ImageDataInterface[] = []
 
@@ -167,14 +169,15 @@ export class AdvertisementPageComponent implements OnInit {
       this.isDisabled = false
     })
   }
-
+  selectedFiles: File = null;
   additionalImagesAdd(event){
-    const file = <File>event.target.files[0]
+    const file = this.selectedFiles = <File>event.target.files[0]
     this.loadFile(file, (src, name) => {
       const item: ImageDataInterface = {
         src,
         name,
-        blob: null
+        blob: null,
+        file
       }
       this.additionalImagesData.push(item)
       this.redraw(item, 0)
@@ -184,9 +187,10 @@ export class AdvertisementPageComponent implements OnInit {
   additionalImagesChange(event, index){
     const file = <File>event.target.files[0]
     this.loadFile(file, (src, name) => {
-      const item = this.additionalImagesData[index]
-      item.src = src
-      item.name = name
+      const item = this.additionalImagesData[index];
+      item.src = src;
+      item.name = name;
+      item.file = file;
       this.redraw(item, 0)
     })
   }
@@ -221,11 +225,12 @@ export class AdvertisementPageComponent implements OnInit {
     this.mainImageData = {
       src: '',
       name: '',
-      blob: null
+      blob: null,
+      file: null
     }
     this.additionalImagesData = []
   }
-
+  countAdditionalImgs: number = 0;
   onSubmit() {
     const headers = new Headers({
       'Content-Type': 'application/json; charset=utf8',
@@ -287,15 +292,22 @@ export class AdvertisementPageComponent implements OnInit {
                     }
                   })
                   formData.append('AppCode', this.cust_id)
-                  formData.append('Img', this.additionalImagesData[i].blob)
+                  formData.append('Img', this.additionalImagesData[i].file)
                   formData.append('TImageprev', name)
                 }
                 this.mainService.additionalImagesGroup(data)
                   .subscribe(
-                    () => this.successAddedProduct(this.data_form.Ctlg_Name),
-                    () => console.warn('additional images upload error'),
-                    () => this.successAddedProduct(this.data_form.Ctlg_Name)
-                  )
+                    () => {
+                      this.countAdditionalImgs +=1;
+                      if(this.countAdditionalImgs == this.additionalImagesData.length){
+                        this.successAddedProduct(this.data_form.Ctlg_Name);
+                      }
+                    },
+                    () => console.warn('additional images upload error')
+                  );
+
+                  if(this.additionalImagesData.length == 0)
+                  this.successAddedProduct(this.data_form.Ctlg_Name)
               })
           },
           () => {
@@ -317,7 +329,7 @@ export class AdvertisementPageComponent implements OnInit {
   }
   pauseTimer() {
     clearInterval(this.interval);
-    console.log('request timer = '+this.timeLeft+' sec.')
+    console.log('images request timer = '+this.timeLeft+' sec.')
   }
 
   categorySelect(items: CategoryItem[]) {
