@@ -182,6 +182,12 @@ export class MainService {
       )
     );
   }
+  uploadImagesArray(data: any) {
+    return from(data).pipe(
+      mergeMap(item => this.uploadImage(item)
+      )
+    );
+  }
 
   additionalImageUpload(additionalData: AdditionalImagesRequest) {
     return this.http.post(`${environment.api}AdditionalImg`, additionalData);

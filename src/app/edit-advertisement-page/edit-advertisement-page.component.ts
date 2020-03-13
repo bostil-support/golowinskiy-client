@@ -65,7 +65,7 @@ export class EditAdvertisementPageComponent implements OnInit {
 
   urlsAdd = [];
   dataAddImg;
-
+  isCanPromo: boolean = false;
   cust_id;
   fio
   userName
@@ -81,7 +81,13 @@ export class EditAdvertisementPageComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    const headers = new Headers({
+      'Content-Type': 'application/json; charset=utf8',
+      'Authorization': 'Bearer ' + localStorage.getItem('token')
+    })
+    this.mainService.getUserInfo(headers).subscribe((res: any) => {
+      this.isCanPromo = res.isCanPromo;
+    });
     this.fio = localStorage.getItem('fio')
     this.userName = localStorage.getItem('userName')
     this.phone = localStorage.getItem('phone')
@@ -136,11 +142,11 @@ export class EditAdvertisementPageComponent implements OnInit {
 
   }
 
-  private showMessage( text: string, type:string = 'danger'){
+  private showMessage( text: string, type:string = 'danger',redirect: boolean = true){
     this.message = new Message(type, text)
     window.setTimeout(() => {
       this.message.text = ''
-      if(this.message.type == 'success'){
+      if(this.message.type == 'success' && redirect){
         this.router.navigate(['/cabinet/categories', this.route.snapshot.params['id'], 'products', this.route.snapshot.params['idProduct']])
       }
     }, 2000)
@@ -155,7 +161,7 @@ export class EditAdvertisementPageComponent implements OnInit {
     }
     reader.readAsDataURL(this.selectedFile)
   }
-
+/*
   onFilesMultipleSelectedAdd(event, i){
     this.selectedFiles = <File>event.target.files[0]
     var reader = new FileReader()
@@ -176,23 +182,23 @@ export class EditAdvertisementPageComponent implements OnInit {
     this.imageIndexList.push(this.imageIndex)
     this.filesImg.push(this.imageName)
   }
-
+*/
+arrayOfAdditionalImages = new Array<FormData>();
   onFilesMultipleSelected(event, i){
     this.selectedFiles = <File>event.target.files[0]
     var reader = new FileReader()
     reader.onload = (event: any) => {
-      this.urls[i] = event.target.result    }
+      i ? this.urls[i] = event.target.result : this.urls[this.urls.length] = event.target.result
+    }
     reader.readAsDataURL(this.selectedFiles)
     this.formDataImages = new FormData()
-    this.imageIndex = i
+    this.imageIndex = i ? i : this.urls.length;
     this.imageName = this.selectedFiles.name.split('.')[0] + i + '.' + this.selectedFiles.name.split('.')[1]
-    this.mainService.getShopInfo().subscribe(res => {
-      this.formDataImages.append('AppCode', res.cust_id)
+      this.formDataImages.append('AppCode', this.AppCode)
       this.formDataImages.append('Img', this.selectedFiles)
       this.formDataImages.append('TImageprev', this.imageName)
-
-      this.mainService.uploadImage(this.formDataImages).subscribe()
-    })
+      this.arrayOfAdditionalImages.push(this.formDataImages);
+    //  this.mainService.uploadImage(this.formDataImages).subscribe()
     this.imageIndexList.push(this.imageIndex)
     this.filesImg.push(this.imageName)
   }
@@ -220,12 +226,32 @@ export class EditAdvertisementPageComponent implements OnInit {
      });
   }
 
-  onSubmit(){
-
-    this.showSpinner = true
+  countAdditionalImgs: number = 0;
+  async uploadAdditionalImages(){
+    return new Promise((resolve, reject)=>{
+      this.mainService.uploadImagesArray(this.arrayOfAdditionalImages)
+      .subscribe(
+        () => {
+          this.countAdditionalImgs +=1;
+          if(this.countAdditionalImgs == this.arrayOfAdditionalImages.length)
+            resolve(true);
+        },
+        (error) => {
+          this.showMessage(error, 'danger',false)
+          reject(false)
+        }
+      );
+    })
+  }
+  async onSubmit(){
+    this.showSpinner = true;
+    if(this.arrayOfAdditionalImages.length > 0){
+      this.showMessage('Загрузка изображений...', 'primary',false);
+      await this.uploadAdditionalImages();
+      this.showMessage('Изображения обновлены!', 'success',false);
+    }
     const formData = this.form.value
-    this.mainService.getShopInfo().subscribe(res => {
-      this.cust_id = res.cust_id
+      this.cust_id = this.AppCode;
       if(this.selectedFile == null){
         this.data_form = {
           "Catalog": this.cust_id,      //nomer catalog
@@ -266,17 +292,7 @@ export class EditAdvertisementPageComponent implements OnInit {
         this.dataForm.append('Img', this.selectedFile);
         this.dataForm.append('TImageprev', this.selectedFile.name);
       }
-
-      let authorization = 'Bearer ' + localStorage.getItem('token');
-
-      const headers = new Headers({
-        'Content-Type': 'application/json; charset=utf8',
-        'Authorization': 'Bearer ' + localStorage.getItem('token')
-      })
-      this.mainService.getUserInfo(headers)
-      .subscribe(
-        (res: any) => {
-          if(res.isCanPromo == true){
+          if(this.isCanPromo){
             if(this.selectedFile == null){
               this.mainService.editProduct(this.data_form)
               .subscribe(
@@ -317,11 +333,9 @@ export class EditAdvertisementPageComponent implements OnInit {
               )
             }
             else{
-              this.startTimer();
               this.mainService.uploadImage(this.dataForm)
               .subscribe(
                 (res: any) => {
-                  this.pauseTimer()
                   if(res.result == true){
                     this.mainService.editProduct(this.data_form)
                     .subscribe(
@@ -342,17 +356,17 @@ export class EditAdvertisementPageComponent implements OnInit {
                               .subscribe(
                                 (res) => {
                                   this.showSpinner = false
-                                  this.showMessage('Объявления было успешно отредактировано', 'success')
+                                  this.showMessage('Объявление было успешно отредактировано', 'success')
                               })
                             }
                           }
                           else{
                             this.showSpinner = false
-                            this.showMessage('Объявления было успешно отредактировано', 'success')
+                            this.showMessage('Объявление было успешно отредактировано', 'success')
                           }
                         }
                         else{
-                          this.showMessage( 'Объявления не было отредактировано', 'danger')
+                          this.showMessage( 'Объявление не было отредактировано', 'danger')
                         }
                       },
                       (error) => {
@@ -362,7 +376,7 @@ export class EditAdvertisementPageComponent implements OnInit {
                     )
                   }
                   else{
-                    this.showMessage( 'Объявления не было отредактировано', 'danger')
+                    this.showMessage( 'Объявление не было отредактировано', 'danger')
                   }
                 },
                 (error) => {
@@ -373,26 +387,8 @@ export class EditAdvertisementPageComponent implements OnInit {
             }
           }
           else{
-            this.showMessage( 'Объявления не было отредактировано', 'danger')
+            this.showMessage( 'Объявление не было отредактировано', 'danger')
           }
-        },
-        (error) => {
-          this.showMessage( error, 'danger')
-        }
-      )
-    })
   }
 
-
-  timeLeft: number = 0;
-  interval;
-  startTimer() {
-    this.interval = setInterval(() => {
-        this.timeLeft++;
-    },1000)
-  }
-  pauseTimer() {
-    clearInterval(this.interval);
-    console.log('images request timer = '+this.timeLeft+' sec.')
-  }
 }

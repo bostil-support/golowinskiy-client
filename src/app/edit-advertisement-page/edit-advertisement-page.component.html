@@ -149,8 +149,8 @@
                             <input
                                 style="display: none;"
                                 type="file"
-                                name="onFilesMultipleSelectedAdd"
-                                (change)="onFilesMultipleSelectedAdd($event)"
+                                name="onFilesMultipleSelected"
+                                (change)="onFilesMultipleSelected($event)"
                                 #filesInputAdd
                                 capture="camera"
                             >
@@ -166,6 +166,7 @@
                                 <img (click)="filesInput.click()"               
                                     alt=""                                    
                                     [src]="url"
+                                    style="width:90%; height: 90%; padding: 1px;"
                                 >
                                 <i class="fa fa-times delete" (click)="deleteImages(url, i)" aria-hidden="true"></i>
                             </div> 

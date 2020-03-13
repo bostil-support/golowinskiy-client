@@ -170,7 +170,7 @@ export class AdvertisementPageComponent implements OnInit {
       this.mainImageData.name = name
     //  this.showSpinner = false;
       this.uploadStatus = false;
-  //  this.redraw(this.mainImageData, 0)
+      this.redraw(this.mainImageData, 0)
       this.isDisabled = false
     })
   }
@@ -196,7 +196,7 @@ export class AdvertisementPageComponent implements OnInit {
       this.additionalImagesData.push(item)
     //  this.showSpinner = false;
        this.uploadStatus = false;
-    //  this.redraw(item, 0)
+       this.redraw(item, 0)
     })
   }
 
@@ -209,7 +209,7 @@ export class AdvertisementPageComponent implements OnInit {
       item.name = name;
       item.file = file;
       this.showSpinner = false;
-    //  this.redraw(item, 0)
+      this.redraw(item, 0)
     })
   }
 
@@ -337,6 +337,7 @@ export class AdvertisementPageComponent implements OnInit {
       }
 
   }
+
 
   timeLeft: number = 0;
   interval;
