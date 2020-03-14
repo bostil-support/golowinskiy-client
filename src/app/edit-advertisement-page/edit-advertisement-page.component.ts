@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Headers} from '@angular/http';
-import {FormControl, FormGroup} from '@angular/forms';
+import {FormControl, FormGroup, FormBuilder} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 
 import {environment} from 'src/environments/environment';
@@ -74,6 +74,7 @@ export class EditAdvertisementPageComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
+    private fb: FormBuilder,
     private route: ActivatedRoute,
     private mainService: MainService
   ) {
@@ -95,23 +96,36 @@ export class EditAdvertisementPageComponent implements OnInit {
     this.id = this.route.snapshot.params['id']
     this.prc_ID = this.route.snapshot.params['idProduct']
 
-    this.form = new FormGroup({
-      'TArticle': new FormControl(null),
-      'TName': new FormControl(null),
-      'TDescription': new FormControl(null),
-      'TCost': new FormControl(null),
-      'TImageprev': new FormControl(null),
-      'TypeProd': new FormControl(null),
-      'PrcNt': new FormControl(null),
-      'TransformMech': new FormControl(null),
-      'Ctlg_Name': new FormControl(null),
-      'youtube': new FormControl(null)
+    this.form = this.fb.group({
+      TArticle: '',
+      TName: '',
+      TDescription: '',
+      TCost: '',
+      TImageprev: '',
+      TypeProd: '',
+      PrcNt: '',
+      TransformMech: '',
+      Ctlg_Name: '',
+      youtube: '',
     })
-
+    this.showSpinner = true;
     this.mainService.getShopInfo().subscribe(res => {
       this.AppCode = res.cust_id
       this.mainService.getProduct(this.route.snapshot.params['idProduct'], localStorage.getItem('userId'), res.cust_id)
       .subscribe( (res: any) => {
+        this.form.setValue({
+          TArticle: '',
+          TName: res.tName,
+          TDescription: res.tDescription,
+          TCost: res.prc_Br,
+          TImageprev: '',
+          TypeProd: '',
+          PrcNt: '',
+          TransformMech: '',
+          Ctlg_Name: res.ctlg_Name,
+          youtube: res.youtube,
+        });
+        this.showSpinner = false;
         this.srcImg = `${environment.api}Img?AppCode=${this.AppCode}&ImgFileName=${res.t_imageprev}`
         this.srcImgName = res.t_imageprev
         this.element = res
