@@ -159,7 +159,6 @@ export class MainService {
   }
 
   editAdditionalImg(data: any) {
-    console.log(data)
     return this.http.put(`${environment.api}AdditionalImg/api/AdditionalImg`, data);
   }
   deleteAdditionalImg(data: any) {
@@ -176,8 +175,8 @@ export class MainService {
     return from(data).pipe(
       mergeMap(item =>
         forkJoin(this.uploadImage(item.imageData),
-          this.additionalImageUpload(item.request),
-          of(console.log('hello'))
+        //  this.additionalImageUpload(item.request),
+        //  of(console.log('hello'))
         )
       )
     );
@@ -185,6 +184,12 @@ export class MainService {
   uploadImagesArray(data: any) {
     return from(data).pipe(
       mergeMap(item => this.uploadImage(item)
+      )
+    );
+  }
+  additionalImagesArray(data: any) {
+    return from(data).pipe(
+      mergeMap((item: any) => this.additionalImageUpload(item.request)
       )
     );
   }

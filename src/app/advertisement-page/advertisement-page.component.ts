@@ -248,6 +248,7 @@ export class AdvertisementPageComponent implements OnInit {
     }
     this.additionalImagesData = []
   }
+  countUploadImgs: number = 0;
   countAdditionalImgs: number = 0;
   onSubmit() {
     const headers = new Headers({
@@ -284,11 +285,11 @@ export class AdvertisementPageComponent implements OnInit {
           formData.append('AppCode', this.cust_id)
           formData.append('Img', this.selectedFile)
           formData.append('TImageprev', this.mainImageData.name)
-          this.startTimer();
+//         this.startTimer();
           imgObserv = this.mainService.uploadImage(formData)
         }
         imgObserv.subscribe(() => { 
-          this.pauseTimer();
+//          this.pauseTimer();
           this.Validators(this.data_form.Ctlg_Name)
             this.mainService.addProduct(this.data_form, headers)
               .subscribe((res: any) => {
@@ -297,6 +298,9 @@ export class AdvertisementPageComponent implements OnInit {
                   let name = this.additionalImagesData[i].name;
                   name = name.replace(/(\.[\w\d_-]+)$/i, `${i}$1`);
                   const formData = new FormData();
+                  formData.append('AppCode', this.cust_id)
+                  formData.append('Img', this.additionalImagesData[i].file)
+                  formData.append('TImageprev', name)
                   data.push({
                     imageData: formData,
                     request: {
@@ -309,16 +313,18 @@ export class AdvertisementPageComponent implements OnInit {
                       cid: this.userId
                     }
                   })
-                  formData.append('AppCode', this.cust_id)
-                  formData.append('Img', this.additionalImagesData[i].file)
-                  formData.append('TImageprev', name)
                 }
                 this.mainService.additionalImagesGroup(data)
                   .subscribe(
                     () => {
-                      this.countAdditionalImgs +=1;
-                      if(this.countAdditionalImgs == this.additionalImagesData.length){
-                        this.successAddedProduct(this.data_form.Ctlg_Name);
+                      this.countUploadImgs +=1;
+                      if(this.countUploadImgs == this.additionalImagesData.length){
+                        this.mainService.additionalImagesArray(data).subscribe(()=>{
+                          this.countAdditionalImgs +=1;
+                          if(this.countAdditionalImgs == this.additionalImagesData.length){
+                            this.successAddedProduct(this.data_form.Ctlg_Name);
+                          }
+                        });
                       }
                     },
                     () => console.warn('additional images upload error')
