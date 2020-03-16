@@ -112,9 +112,10 @@ export class AdvertisementPageComponent implements OnInit {
     });
   }
 
-  private showMessage( text: string, type:string = 'danger',redirect: boolean = true,showSpinner: boolean = false){
+  private showMessage( text: string, type:string = 'danger',redirect: boolean = true,showSpinner: boolean = false,hideMessage: boolean = true){
     this.message = new Message(type, text,showSpinner)
     window.setTimeout(() => {
+      if(hideMessage)
       this.message.text = ''
       if(this.message.type == 'success' && redirect){
         this.router.navigate(['/addProduct'])
@@ -261,7 +262,7 @@ export class AdvertisementPageComponent implements OnInit {
       'Content-Type': 'application/json; charset=utf8',
       'Authorization': 'Bearer ' + localStorage.getItem('token')
     })
-    this.showMessage('Идет загрузка ', 'primary',false,true);
+    this.showMessage('Идет загрузка ', 'primary',false,true,false);
     this.submitButton.nativeElement.disabled = true
     const formData = this.form.value
 

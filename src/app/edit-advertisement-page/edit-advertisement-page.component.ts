@@ -156,9 +156,10 @@ export class EditAdvertisementPageComponent implements OnInit {
 
   }
    
-  private showMessage( text: string, type:string = 'danger',redirect: boolean = true,showSpinner: boolean = false){
+  private showMessage( text: string, type:string = 'danger',redirect: boolean = true,showSpinner: boolean = false,hideMessage: boolean = true){
     this.message = new Message(type, text,showSpinner)
     window.setTimeout(() => {
+      if(hideMessage)
       this.message.text = ''
       if(this.message.type == 'success' && redirect){
         this.router.navigate(['/cabinet/categories', this.route.snapshot.params['id'], 'products', this.route.snapshot.params['idProduct']])
@@ -258,12 +259,9 @@ arrayOfAdditionalImages = new Array<FormData>();
     })
   }
   async onSubmit(){
-  //  this.showSpinner = true;
-    this.showMessage('Идет редактирование ', 'primary',false,true);
+    this.showMessage('Идет редактирование ', 'primary',false,true,false);
     if(this.arrayOfAdditionalImages.length > 0){
-    //  this.showMessage('Загрузка изображений...', 'primary',false);
       await this.uploadAdditionalImages();
-    //  this.showMessage('Изображения обновлены!', 'success',false);
     }
     const formData = this.form.value
       this.cust_id = this.AppCode;
@@ -326,14 +324,12 @@ arrayOfAdditionalImages = new Array<FormData>();
                         }
                         this.mainService.editAdditionalImg(this.dataAddImg)
                         .subscribe(
-                          (res) => {
-                     //       this.showSpinner = false
+                          () => {
                             this.showMessage('Объявления было успешно отредактировано', 'success')
                         })
                       }
                     }
                     else{
-                  //   this.showSpinner = false
                       this.showMessage('Объявления было успешно отредактировано', 'success')
                     }
                   }
@@ -342,7 +338,6 @@ arrayOfAdditionalImages = new Array<FormData>();
                   }
                 },
                 (error) => {
-                //  this.showSpinner = false
                   this.showMessage( error, 'danger')
                 }
               )
