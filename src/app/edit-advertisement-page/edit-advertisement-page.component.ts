@@ -20,7 +20,7 @@ export class EditAdvertisementPageComponent implements OnInit {
   imageIndex: any;
   data_form: any;
   showPhone: boolean = false;
-
+  loadingImage = "data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==";
   form: FormGroup;
   message: Message;
 
@@ -155,9 +155,9 @@ export class EditAdvertisementPageComponent implements OnInit {
     }
 
   }
-
-  private showMessage( text: string, type:string = 'danger',redirect: boolean = true){
-    this.message = new Message(type, text)
+   
+  private showMessage( text: string, type:string = 'danger',redirect: boolean = true,showSpinner: boolean = false){
+    this.message = new Message(type, text,showSpinner)
     window.setTimeout(() => {
       this.message.text = ''
       if(this.message.type == 'success' && redirect){
@@ -202,11 +202,11 @@ arrayOfAdditionalImages = new Array<FormData>();
     this.selectedFiles = <File>event.target.files[0]
     var reader = new FileReader()
     reader.onload = (event: any) => {
-      i ? this.urls[i] = event.target.result : this.urls[this.urls.length] = event.target.result
+      Number.isInteger(i) ? this.urls[i] = event.target.result : this.urls[this.urls.length] = event.target.result
     }
     reader.readAsDataURL(this.selectedFiles)
     this.formDataImages = new FormData()
-    this.imageIndex = i ? i : this.urls.length;
+    this.imageIndex = Number.isInteger(i) ? i : this.urls.length;
     this.imageName = this.selectedFiles.name.split('.')[0] + i + '.' + this.selectedFiles.name.split('.')[1]
       this.formDataImages.append('AppCode', this.AppCode)
       this.formDataImages.append('Img', this.selectedFiles)
@@ -258,11 +258,12 @@ arrayOfAdditionalImages = new Array<FormData>();
     })
   }
   async onSubmit(){
-    this.showSpinner = true;
+  //  this.showSpinner = true;
+    this.showMessage('Идет редактирование ', 'primary',false,true);
     if(this.arrayOfAdditionalImages.length > 0){
-      this.showMessage('Загрузка изображений...', 'primary',false);
+    //  this.showMessage('Загрузка изображений...', 'primary',false);
       await this.uploadAdditionalImages();
-      this.showMessage('Изображения обновлены!', 'success',false);
+    //  this.showMessage('Изображения обновлены!', 'success',false);
     }
     const formData = this.form.value
       this.cust_id = this.AppCode;
@@ -326,13 +327,13 @@ arrayOfAdditionalImages = new Array<FormData>();
                         this.mainService.editAdditionalImg(this.dataAddImg)
                         .subscribe(
                           (res) => {
-                            this.showSpinner = false
+                     //       this.showSpinner = false
                             this.showMessage('Объявления было успешно отредактировано', 'success')
                         })
                       }
                     }
                     else{
-                      this.showSpinner = false
+                  //   this.showSpinner = false
                       this.showMessage('Объявления было успешно отредактировано', 'success')
                     }
                   }
@@ -341,15 +342,17 @@ arrayOfAdditionalImages = new Array<FormData>();
                   }
                 },
                 (error) => {
-                  this.showSpinner = false
+                //  this.showSpinner = false
                   this.showMessage( error, 'danger')
                 }
               )
             }
             else{
+              this.startTimer()
               this.mainService.uploadImage(this.dataForm)
               .subscribe(
                 (res: any) => {
+                  this.pauseTimer();
                   if(res.result == true){
                     this.mainService.editProduct(this.data_form)
                     .subscribe(
@@ -369,13 +372,13 @@ arrayOfAdditionalImages = new Array<FormData>();
                               this.mainService.editAdditionalImg(this.dataAddImg)
                               .subscribe(
                                 (res) => {
-                                  this.showSpinner = false
+                               //   this.showSpinner = false
                                   this.showMessage('Объявление было успешно отредактировано', 'success')
                               })
                             }
                           }
                           else{
-                            this.showSpinner = false
+                        //    this.showSpinner = false
                             this.showMessage('Объявление было успешно отредактировано', 'success')
                           }
                         }
@@ -384,7 +387,7 @@ arrayOfAdditionalImages = new Array<FormData>();
                         }
                       },
                       (error) => {
-                        this.showSpinner = false
+                    //    this.showSpinner = false
                         this.showMessage( error, 'danger')
                       }
                     )
@@ -394,7 +397,7 @@ arrayOfAdditionalImages = new Array<FormData>();
                   }
                 },
                 (error) => {
-                  this.showSpinner = false
+           //       this.showSpinner = false
                   this.showMessage( error, 'danger')
                 }
               )
@@ -403,6 +406,19 @@ arrayOfAdditionalImages = new Array<FormData>();
           else{
             this.showMessage( 'Объявление не было отредактировано', 'danger')
           }
+  }
+
+
+  timeLeft: number = 0;
+  interval;
+  startTimer() {
+    this.interval = setInterval(() => {
+        this.timeLeft++;
+    },1000)
+  }
+  pauseTimer() {
+    clearInterval(this.interval);
+    console.log('update image request timer = '+this.timeLeft+' sec.')
   }
 
 }

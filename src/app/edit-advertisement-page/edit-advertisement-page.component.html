@@ -43,7 +43,7 @@
         <div 
             class="alert alert-{{message.type}}"
         >            
-            {{ message.text }}
+            {{ message.text }} <img *ngIf="message.spinner" [src]="loadingImage" alt="">
         </div>
     </div>
 
@@ -177,7 +177,7 @@
                     <button 
                         class="btn btn-block btn-primary"
                         type="submit"  
-                        [disabled]="form.invalid"                                
+                        [disabled]="form.invalid || message.spinner"                                
                     >
                       Редактировать объявление
                     </button>

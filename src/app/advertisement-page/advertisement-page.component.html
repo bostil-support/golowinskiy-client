@@ -72,7 +72,7 @@
           <div
               class="alert alert-{{message.type}}"
           >
-              {{ message.text }}
+              {{ message.text }} <img *ngIf="message.spinner" [src]="loadingMini" alt="">
           </div>
       </div>
 
@@ -240,7 +240,7 @@
                           name="submitButton" #submitButton
                           class="btn btn-block btn-primary"
                           type="submit"
-                          [disabled]="showSpinner || form.invalid || uploadStatus"
+                          [disabled]="showSpinner || form.invalid || uploadStatus || message.spinner"
                       >
                           Разместить объявление
                       </button>
