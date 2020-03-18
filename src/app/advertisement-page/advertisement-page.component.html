@@ -56,7 +56,7 @@
         </div>
       </ng-container>
 
-      <div class="row justify-content-md-center choosed">
+      <div *ngIf="false" class="row justify-content-md-center choosed">
           <div class="col-lg-8 col-xs-12 no-padding">
               Вы выбрали раздел
               <app-breadcrumbs [categories]="categories" (click)="breadcrumbsClick()"></app-breadcrumbs>

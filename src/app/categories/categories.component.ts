@@ -80,19 +80,26 @@ export class CategoriesComponent implements OnInit {
     menu.style.minHeight = `${height + 40}px`
     this.recalculate = false;
   }
-
+   previous_level: number = null;
   select(level: number, item: CategoryItem, event) {
     event.stopPropagation()
     if (item.listInnerCat.length === 0) {
-      this.selectedCategories.push(item)
-      this.lastChildAction.emit(this.selectedCategories)
+      if(this.previous_level !== level){
+        this.previous_level = level;
+        this.selectedCategories.push(item);
+        this.lastChildAction.emit(this.selectedCategories);
+      }else{
+        this.selectedCategories[this.selectedCategories.length -1] = item;
+        this.lastChildAction.emit(this.selectedCategories);
+      }
     } else {
       if (this.isEqual(this.selectedCategories[level], item)) {
-        this.selectedCategories.splice(level, 10)
+        this.previous_level = level;
+        this.selectedCategories.length = 0;
       } else {
-        this.selectedCategories.splice(level, 10, item)
+        this.previous_level = level;
+        this.selectedCategories.splice(level, this.selectedCategories.length, item)
       }
-      // share selected items
       this.storageService.selectedCategories.next(this.selectedCategories)
       this.recalculate = true
     }
