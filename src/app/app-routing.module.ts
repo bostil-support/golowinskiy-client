@@ -7,7 +7,6 @@ import { AppComponent } from "./app.component"
 import { MainPageComponent } from "./main-page/main-page.component"
 import { AdvertisementPageComponent } from "./advertisement-page/advertisement-page.component"
 import { EditAdvertisementPageComponent } from "./edit-advertisement-page/edit-advertisement-page.component"
-
 import { AuthPageComponent } from "./main-page/auth-page/auth-page.component"
 import { LoginComponent } from "./main-page/auth-page/login/login.component"
 import { RegistrationComponent } from "./main-page/auth-page/registration/registration.component"

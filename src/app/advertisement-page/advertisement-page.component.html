@@ -1,6 +1,6 @@
 <section class="advertisement">
+    
     <div class="container">
-
       <div class="showSpinner" *ngIf="showSpinner">
           <i class="fa fa-spinner fa-spin"></i>
       </div>
@@ -38,8 +38,8 @@
                   </div>
               </div>
           </div>
+          
       </div>
-
       <ng-container>
         <div class="categories">
           <app-categories
@@ -72,7 +72,7 @@
           <div
               class="alert alert-{{message.type}}"
           >
-              {{ message.text }} <img *ngIf="message.spinner" [src]="loadingMini" alt="">
+              {{ message.text }} <img *ngIf="message.spinner" height="20px" [src]="loadingMini" alt="">
           </div>
       </div>
 
@@ -186,6 +186,7 @@
                               <i *ngIf="!mainImageData.blob" class="fa fa-upload arrow" aria-hidden="true"></i>
                               <i *ngIf="mainImageData.blob" class="fa fa-rotate-right" (click)="redraw(mainImageData, 90)"></i>
                           </div>
+                          <progress class="aprogress" [id]="mainImageData.name" value="0" max="100"></progress>
                       </div>
                   </div>
               </div>
@@ -217,13 +218,17 @@
                                       #filesInput
                                       capture="camera"
                                   >
-                                  <img (click)="filesInput.click()"
-                                      alt=""
-                                      [src]="image.src"
-                                      style="width:100%; height: 100%; padding: 1px;"
-                                  >
-                                  <i class="fa fa-times delete" (click)="removeAdditionalImage(i)" aria-hidden="true"></i>
-                                  <i class="fa fa-times fa-repeat" (click)="redraw(image, 90)" aria-hidden="true"></i>
+                                  <div class="upload_image_container">
+                                    <img (click)="filesInput.click()"
+                                    alt=""
+                                    [src]="image.src"
+                                    id="addIm{{i}}"
+                                    class="uploadImage"
+                                >
+                                <progress class="aprogress" [id]="image.name" value="0" max="100"></progress>
+                                <i class="fa fa-times delete" (click)="removeAdditionalImage(i)" aria-hidden="true"></i>
+                                <i class="fa fa-times fa-repeat repeat" (click)="redraw(image, 90)" aria-hidden="true"></i>
+                                  </div>
                               </div>
                               <i class="fa fa-upload arrow" aria-hidden="true"
                                   (click)="filesInputAdd.click()"
@@ -241,9 +246,9 @@
                           name="submitButton" #submitButton
                           class="btn btn-block btn-primary"
                           type="submit"
-                          [disabled]="showSpinner || form.invalid || uploadStatus || message.spinner"
+                          [disabled]="showSpinner || form.invalid || uploadStatus || message.spinner || (_imageNotLoaded | async)"
                       >
-                          Разместить объявление
+                          Разместить объявление <img height="20px" *ngIf="(_imageNotLoaded | async)" [src]="loadingImage" />
                       </button>
 
                   </div>

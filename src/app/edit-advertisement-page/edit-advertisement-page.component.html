@@ -43,7 +43,7 @@
         <div 
             class="alert alert-{{message.type}}"
         >            
-            {{ message.text }} <img *ngIf="message.spinner" [src]="loadingImage" alt="">
+            {{ message.text }} <img *ngIf="message.spinner" height="20px" [src]="loadingImage" alt="">
         </div>
     </div>
 
@@ -177,9 +177,9 @@
                     <button 
                         class="btn btn-block btn-primary"
                         type="submit"  
-                        [disabled]="form.invalid || message.spinner"                                
+                        [disabled]="form.invalid || message.spinner || (_imageNotLoaded | async)"                                
                     >
-                      Редактировать объявление
+                      Редактировать объявление<span *ngIf="false" style="font-weight:bold"> {{progress}}</span><img height="20px" *ngIf="(_imageNotLoaded | async)" [src]="loadingImage" />
                     </button>
                 </div>               
             </div>

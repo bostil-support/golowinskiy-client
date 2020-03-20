@@ -19,7 +19,7 @@ export interface AdditionalImagesRequest {
 
 export interface AdditionalImagesData {
   request: AdditionalImagesRequest,
-  imageData: FormData,
+  imageData?: FormData,
 }
 
 export interface Product{

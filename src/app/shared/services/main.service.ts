@@ -9,6 +9,7 @@ import {AdditionalImagesData, AdditionalImagesRequest, DeleteProduct, Product} f
 import {AuthService} from './auth.service';
 import {OrderService} from './order.service';
 import {ShopInfoModel} from '../models/shop-info.model';
+import { CommonService } from './common.service';
 
 
 @Injectable({
@@ -27,6 +28,7 @@ export class MainService {
     private http: HttpClient,
     private authService: AuthService,
     private orderService: OrderService,
+    public commonService: CommonService
   ) {
   }
 
@@ -94,8 +96,8 @@ export class MainService {
     }
   }
 
-  getUserInfo(headers) {
-    return this.http.get(`${environment.api}userinfo/${localStorage.getItem('userId')}/`, headers);
+  getUserInfo(headers?) {
+    return this.http.get(`${environment.api}userinfo/${localStorage.getItem('userId')}/`);
   }
 
   getCategories(userId?: string, advert?: string) {
@@ -129,9 +131,41 @@ export class MainService {
       }
     );
   }
-
+/*
   uploadImage(data: any) {
     return this.http.post(`${environment.api}img/upload/`, data);
+  }
+*/
+
+
+  uploadImage(data: any){
+  //  return this.postImagesXHR(`${environment.api}img/upload/`,data)
+    return this.http.post(`${environment.api}img/upload/`, data);
+  }
+  uploadImageXHR(data: any,i?,callback?){
+      return this.postImagesXHR(`${environment.api}img/upload/`,data,i,callback)
+    }
+
+  sizeCounter: number = 0;
+  postImagesXHR(url,data,i?,callback?) {
+    let previousSendedData: number = null
+    return from(new Promise((res,rej)=>{
+      const bro = {
+        getData: (data: number) => {
+            const res = previousSendedData == null ? data : data - previousSendedData;
+            this.sizeCounter +=res
+            this.commonService.addImagesStackUploaded.next(this.sizeCounter);
+            previousSendedData = data;
+        }
+      }
+      const xhr = new XMLHttpRequest(); 
+      xhr.open('POST', url);
+      xhr.upload.onprogress = (event) => callback(i, event.loaded,event.total)// bro.getData(event.loaded)  
+      xhr.upload.onload = () => res(xhr);
+      xhr.upload.onerror = () => rej(xhr)
+      xhr.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('token'));
+      xhr.send(data);
+    }));
   }
 
   uploadImageGroup(data: FormData[]) {

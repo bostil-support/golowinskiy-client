@@ -23,11 +23,9 @@ import {AuthPageComponent} from './main-page/auth-page/auth-page.component';
 import {LoginComponent} from './main-page/auth-page/login/login.component';
 import {RegistrationComponent} from './main-page/auth-page/registration/registration.component';
 import {RecoveryComponent} from './main-page/auth-page/recovery/recovery.component';
-
 import {CategoriesComponent} from './categories/categories.component';
 import {ProductsPageComponent} from './main-page/products-page/products-page.component';
 import {DetailPageComponent} from './main-page/detail-page/detail-page.component';
-
 import {BreadcrumbsComponent} from './breadcrumbs/breadcrumbs.component';
 import { OrderComponent } from './main-page/order/order.component';
 import { MobileCategoriesComponent } from './categories/mobile-categories/mobile-categories.component';
@@ -51,7 +49,7 @@ import { MobileCategoriesComponent } from './categories/mobile-categories/mobile
     DetailPageComponent,
     BreadcrumbsComponent,
     OrderComponent,
-    MobileCategoriesComponent
+    MobileCategoriesComponent,
   ],
   imports: [
     HttpClientModule,
