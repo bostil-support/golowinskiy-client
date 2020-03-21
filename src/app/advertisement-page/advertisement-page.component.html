@@ -244,11 +244,11 @@
                   >
                       <button
                           name="submitButton" #submitButton
-                          class="btn btn-block btn-primary"
+                          class="btn btn-block" [ngClass]="(_imageNotLoaded | async) ? 'btn-info': 'btn-primary'"
                           type="submit"
                           [disabled]="showSpinner || form.invalid || uploadStatus || message.spinner || (_imageNotLoaded | async)"
                       >
-                          Разместить объявление <img height="20px" *ngIf="(_imageNotLoaded | async)" [src]="loadingImage" />
+                          <span *ngIf="!(_imageNotLoaded | async)">Разместить объявление</span><span *ngIf="(_imageNotLoaded | async)" style="font-weight: bold;">Идет загрузка фото </span>  <img height="20px" *ngIf="(_imageNotLoaded | async)" [src]="loadingImage" />
                       </button>
 
                   </div>
