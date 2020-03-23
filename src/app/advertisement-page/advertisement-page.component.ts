@@ -166,6 +166,10 @@ export class AdvertisementPageComponent implements OnInit {
   selectedFile: File = null;
   mainFileSelected(event){
     const file = this.selectedFile = <File>event.target.files[0];
+    if(this.mainImageData.name){
+      this.uploadedImageStatuses.delete(this.mainImageData.name);
+      document.getElementById(this.mainImageData.name).style.display = "block";
+    }
     this.mainImageData.src = this.loadingSpinner;
     this.uploadStatus = true;
     setTimeout(()=>{
@@ -185,7 +189,6 @@ export class AdvertisementPageComponent implements OnInit {
     this.additionalImagesData.push({
       src: this.loadingSpinner,
       name: null,
-      blob: null,
       file: null
     });
     const file = this.selectedFiles = <File>event.target.files[0]
@@ -203,21 +206,33 @@ export class AdvertisementPageComponent implements OnInit {
            this.uploadStatus = false;
         //   this.redraw(item, 0)
       });
-    },500)
+    }, 500)
   }
 
   additionalImagesChange(event, index){
     this.showSpinner = true;
-    const file = <File>event.target.files[0]
-    this.loadFile(file, (src, name) => {
-      const item = this.additionalImagesData[index];
-      item.src = src;
-      item.name = name;
-      item.file = file;
-      this.showSpinner = false;
-      this.redraw(item, 0)
-    })
-  }
+    if(this.additionalImagesData[index].name){
+      this.uploadedImageStatuses.delete(this.additionalImagesData[index].name);
+      document.getElementById(this.additionalImagesData[index].name).style.display = "block";
+    }
+    this.additionalImagesData[index] = {
+      src: this.loadingSpinner,
+      name: null,
+      file: null
+    };
+    const file = <File>event.target.files[0];
+    setTimeout(()=>{
+      this.loadFile(file, (src, name) => {
+        const item = this.additionalImagesData[index];
+        item.src = src;
+        item.name = name.replace(/(\.[\w\d_-]+)$/i, `${Math.round(Math.random() * 100)}$1`);
+        item.file = file;
+        this.showSpinner = false;
+      //  this.redraw(item, 0)
+      this.uploadImages(item);
+      });
+    }, 500);
+  };
 
   isFormValid(): boolean {
     return this.form.valid;
@@ -258,26 +273,26 @@ export class AdvertisementPageComponent implements OnInit {
   countAdditionalImgs: number = 0;
   subscriptionImages : Subscription;
   onSubmit() {
-    this.showMessage('Идет загрузка ', 'primary',false,true,false);
+    this.showMessage('Идет публикация ', 'primary',false,true,false);
     this.submitButton.nativeElement.disabled = true;
-    const formData = this.form.value
-    this.data_form = {
-      "Catalog": this.cust_id,      //nomer catalog
-      "Id": this.idCategory,         // post categories/
-      "Ctlg_Name": formData.Categories,     //input form
-      "TArticle": formData.Article, //input form
-      "TName": formData.TName, //input form
-      "TDescription": formData.TDescription, //input form
-      "TCost": formData.TCost, //input form
-      "Appcode": this.cust_id,
-      "TypeProd": formData.TypeProd, //input form
-      "PrcNt": formData.PrcNt, //input form
-      "TransformMech": formData.TransformMech,  //input form
-      "CID": this.userId, // userId for auth,
-      "video": formData.youtube
-    }
     this.subscriptionImages = this._imageNotLoaded.subscribe((res)=>{
       if(!res){
+        const formData = this.form.value
+        this.data_form = {
+          "Catalog": this.cust_id,      //nomer catalog
+          "Id": this.idCategory,         // post categories/
+          "Ctlg_Name": formData.Categories,     //input form
+          "TArticle": formData.Article, //input form
+          "TName": formData.TName, //input form
+          "TDescription": formData.TDescription, //input form
+          "TCost": formData.TCost, //input form
+          "Appcode": this.cust_id,
+          "TypeProd": formData.TypeProd, //input form
+          "PrcNt": formData.PrcNt, //input form
+          "TransformMech": formData.TransformMech,  //input form
+          "CID": this.userId, // userId for auth,
+          "video": formData.youtube
+        }
         if (this.selectedFile) {
           this.data_form['TImageprev'] = this.mainImageData.name
         }
@@ -337,6 +352,7 @@ export class AdvertisementPageComponent implements OnInit {
         element.style.display = "none";
       this._imageNotLoaded.next(!Array.from(this.uploadedImageStatuses.values()).every(obj=>obj))
     });
+    console.log(this.uploadedImageStatuses)
   }
 /*
   timeLeft: number = 0;
