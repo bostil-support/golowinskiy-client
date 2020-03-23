@@ -127,41 +127,6 @@
               </div>
 
               <div
-                  class="form-group"
-              >
-                  <div class="row justify-content-md-center">
-                      <div class="col-lg-4">
-                          <label>Описание товара, услуги</label>
-                      </div>
-                      <div class="col-lg-4">
-                          <textarea
-                              type="textarea"
-                              id="TDescription"
-                              formControlName="TDescription"
-                          >
-                          </textarea>
-                      </div>
-                  </div>
-              </div>
-
-              <div
-                  class="form-group"
-              >
-                  <div class="row justify-content-md-center">
-                      <div class="col-lg-4">
-                          <label>Цена</label>
-                      </div>
-                      <div class="col-lg-4">
-                          <input
-                              type="text"
-                              id="TCost"
-                              formControlName="TCost"
-                          >
-                      </div>
-                  </div>
-              </div>
-
-              <div
                   class="mb-3"
               >
                   <div class="row justify-content-md-center">
@@ -191,6 +156,7 @@
                   </div>
               </div>
 
+              
               <div
                   class="mb-3"
               >
@@ -238,17 +204,55 @@
                       </div>
                   </div>
               </div>
+
+
+              <div
+              class="form-group"
+          >
+              <div class="row justify-content-md-center">
+                  <div class="col-lg-4">
+                      <label>Описание товара, услуги</label>
+                  </div>
+                  <div class="col-lg-4">
+                      <textarea
+                          type="textarea"
+                          id="TDescription"
+                          formControlName="TDescription"
+                      >
+                      </textarea>
+                  </div>
+              </div>
+          </div>
+
+          <div
+              class="form-group"
+          >
+              <div class="row justify-content-md-center">
+                  <div class="col-lg-4">
+                      <label>Цена</label>
+                  </div>
+                  <div class="col-lg-4">
+                      <input
+                          type="text"
+                          id="TCost"
+                          formControlName="TCost"
+                      >
+                  </div>
+              </div>
+          </div>
+
+          
               <div class="row justify-content-md-center">
                   <div class="col col-lg-4 mb-3 hover_btn"
                        id="submit-area"
                   >
                       <button
                           name="submitButton" #submitButton
-                          class="btn btn-block" [ngClass]="(_imageNotLoaded | async) ? 'btn-info': 'btn-primary'"
+                          class="btn btn-block btn-primary"
                           type="submit"
-                          [disabled]="showSpinner || form.invalid || uploadStatus || message.spinner || (_imageNotLoaded | async)"
+                          [disabled]="showSpinner || form.invalid || message.spinner"
                       >
-                          <span *ngIf="!(_imageNotLoaded | async)">Разместить объявление</span><span *ngIf="(_imageNotLoaded | async)" style="font-weight: bold;">Идет загрузка фото </span>  <img height="20px" *ngIf="(_imageNotLoaded | async)" [src]="loadingImage" />
+                          <span>Разместить объявление</span>
                       </button>
 
                   </div>

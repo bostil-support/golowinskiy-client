@@ -9,7 +9,7 @@ import {AuthService} from 'src/app/shared/services/auth.service';
 import {MainService} from '../shared/services/main.service';
 import {CategoryItem, CategoriesComponent} from '../categories/categories.component';
 import {AdditionalImagesData} from '../shared/interfaces';
-import {of, BehaviorSubject} from 'rxjs';
+import {of, BehaviorSubject, Subscription} from 'rxjs';
 import {StorageService} from '../shared/services/storage.service';
 import {CategoriesService} from '../shared/services/categories.service';
 import { CommonService } from '../shared/services/common.service';
@@ -256,11 +256,11 @@ export class AdvertisementPageComponent implements OnInit {
   }
   countUploadImgs: number = 0;
   countAdditionalImgs: number = 0;
+  subscriptionImages : Subscription;
   onSubmit() {
     this.showMessage('Идет загрузка ', 'primary',false,true,false);
     this.submitButton.nativeElement.disabled = true;
     const formData = this.form.value
-
     this.data_form = {
       "Catalog": this.cust_id,      //nomer catalog
       "Id": this.idCategory,         // post categories/
@@ -276,41 +276,45 @@ export class AdvertisementPageComponent implements OnInit {
       "CID": this.userId, // userId for auth,
       "video": formData.youtube
     }
-    if (this.selectedFile) {
-      this.data_form['TImageprev'] = this.mainImageData.name
-    }
-      if (this.isCanPromo === true) {
-          this.Validators(this.data_form.Ctlg_Name)
-            this.mainService.addProduct(this.data_form, this.headers)
-              .subscribe((res: any) => {
-                const data: AdditionalImagesData[] = []
-                for (let i = 0; i < this.additionalImagesData.length; i++) {
-                  let name = this.additionalImagesData[i].name;
-                  data.push({
-                    request: {
-                      catalog: this.cust_id,
-                      id: this.idCategory,
-                      prc_ID: res.prc_id,
-                      imageOrder: i,
-                      tImage: name,
-                      appcode: this.cust_id,
-                      cid: this.userId
+    this.subscriptionImages = this._imageNotLoaded.subscribe((res)=>{
+      if(!res){
+        if (this.selectedFile) {
+          this.data_form['TImageprev'] = this.mainImageData.name
+        }
+          if (this.isCanPromo === true) {
+              this.Validators(this.data_form.Ctlg_Name)
+                this.mainService.addProduct(this.data_form, this.headers)
+                  .subscribe((res: any) => {
+                    const data: AdditionalImagesData[] = []
+                    for (let i = 0; i < this.additionalImagesData.length; i++) {
+                      let name = this.additionalImagesData[i].name;
+                      data.push({
+                        request: {
+                          catalog: this.cust_id,
+                          id: this.idCategory,
+                          prc_ID: res.prc_id,
+                          imageOrder: i,
+                          tImage: name,
+                          appcode: this.cust_id,
+                          cid: this.userId
+                        }
+                      })
                     }
+                    this.mainService.additionalImagesArray(data).subscribe(()=>{
+                      this.countAdditionalImgs +=1;
+                      if(this.countAdditionalImgs == this.additionalImagesData.length){
+                        this.successAddedProduct(this.data_form.Ctlg_Name);
+                      }
+                    });
+                    if(this.additionalImagesData.length == 0)
+                    this.successAddedProduct(this.data_form.Ctlg_Name)
                   })
-                }
-                this.mainService.additionalImagesArray(data).subscribe(()=>{
-                  this.countAdditionalImgs +=1;
-                  if(this.countAdditionalImgs == this.additionalImagesData.length){
-                    this.successAddedProduct(this.data_form.Ctlg_Name);
-                  }
-                });
-                if(this.additionalImagesData.length == 0)
-                this.successAddedProduct(this.data_form.Ctlg_Name)
-              })
-      }else{
-        alert("isCanPromo is false")
+          }else{
+            alert("isCanPromo is false")
+          } 
+          this.subscriptionImages.unsubscribe();       
       }
-
+    })
   }
   uploadedImageStatuses = new Map();
   showStatus(name,loaded,total){
