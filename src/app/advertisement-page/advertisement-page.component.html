@@ -151,7 +151,7 @@
                               <i *ngIf="!mainImageData.blob" class="fa fa-upload arrow" aria-hidden="true"></i>
                               <i *ngIf="mainImageData.blob" class="fa fa-rotate-right" (click)="redraw(mainImageData, 90)"></i>
                           </div>
-                          <progress class="aprogress" [id]="mainImageData.name" value="0" max="100"></progress>
+                          <progress class="aprogress" #mainImage [id]="mainImageData.name" value="0" max="100"></progress>
                       </div>
                   </div>
               </div>
@@ -241,7 +241,7 @@
               </div>
           </div>
 
-          
+
               <div class="row justify-content-md-center">
                   <div class="col col-lg-4 mb-3 hover_btn"
                        id="submit-area"

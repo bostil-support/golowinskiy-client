@@ -100,7 +100,7 @@ textarea{
     text-align: center;
     border: 1px solid #189691;
     position: relative;
-    margin: 5px 20px 5px 0;
+    margin: 5px 20px 10px 0;
     cursor: pointer;
 }
 .upload-images > div img {
@@ -162,3 +162,22 @@ i.arrow{
     margin-right: 28px;
 }
 
+.upload_image_container{
+    position: relative;
+    display: flex;
+    height: 82px;
+    .uploadImage{
+        width:100%; 
+        height: 100%; 
+        padding: 1px;
+    }
+    .aprogress{
+       position: absolute;
+       width: 98px;
+       height: 9px;
+       bottom: 1px;
+    }
+}
+.aprogress{
+   // display: none !important;
+}

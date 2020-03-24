@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild, OnDestroy} from '@angular/core';
 import {Headers} from '@angular/http';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
@@ -26,7 +26,7 @@ export interface ImageDataInterface {
   templateUrl: './advertisement-page.component.html',
   styleUrls: ['./advertisement-page.component.scss']
 })
-export class AdvertisementPageComponent implements OnInit {
+export class AdvertisementPageComponent implements OnInit, OnDestroy{
   headers = new Headers({
     'Content-Type': 'application/json; charset=utf8',
     'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -68,6 +68,7 @@ export class AdvertisementPageComponent implements OnInit {
   initialCategories: CategoryItem[] = []
   
   @ViewChild('submitButton') submitButton: ElementRef
+  @ViewChild('mainImage') mainImg: ElementRef
    advertId: string = "1";
   constructor(
     private router: Router,
@@ -169,6 +170,8 @@ export class AdvertisementPageComponent implements OnInit {
     if(this.mainImageData.name){
       this.uploadedImageStatuses.delete(this.mainImageData.name);
       document.getElementById(this.mainImageData.name).style.display = "block";
+    }else{
+      this.mainImg.nativeElement.style.display = "block";
     }
     this.mainImageData.src = this.loadingSpinner;
     this.uploadStatus = true;
@@ -275,7 +278,7 @@ export class AdvertisementPageComponent implements OnInit {
   onSubmit() {
     this.showMessage('Идет публикация ', 'primary',false,true,false);
     this.submitButton.nativeElement.disabled = true;
-    this.subscriptionImages = this._imageNotLoaded.subscribe((res)=>{
+    this._imageNotLoaded.subscribe((res)=>{
       if(!res){
         const formData = this.form.value
         this.data_form = {
@@ -319,15 +322,17 @@ export class AdvertisementPageComponent implements OnInit {
                       this.countAdditionalImgs +=1;
                       if(this.countAdditionalImgs == this.additionalImagesData.length){
                         this.successAddedProduct(this.data_form.Ctlg_Name);
+                        setTimeout(()=>location.reload(),750);
                       }
                     });
-                    if(this.additionalImagesData.length == 0)
-                    this.successAddedProduct(this.data_form.Ctlg_Name)
+                    if(this.additionalImagesData.length == 0){
+                      this.successAddedProduct(this.data_form.Ctlg_Name)
+                      setTimeout(()=>location.reload(),750);
+                    }
                   })
           }else{
             alert("isCanPromo is false")
-          } 
-          this.subscriptionImages.unsubscribe();       
+          }       
       }
     })
   }
@@ -391,6 +396,10 @@ export class AdvertisementPageComponent implements OnInit {
     this.mainService.saveCategoriesToStorage(items)
     const item = items[items.length - 1]
     //this.router.navigate([`${window.location.pathname}/categories/${item.id}/products`])
+  }
+
+  ngOnDestroy(){
+    this.subscriptionImages.unsubscribe();
   }
 
 }

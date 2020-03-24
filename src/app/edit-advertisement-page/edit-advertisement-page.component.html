@@ -121,12 +121,17 @@
                             capture="camera"
                         >
                         <div class="upload btn-file" (click)="fileInput.click()">
-                            <img id="img" 
-                                [src]="srcImg" 
+                            <img *ngIf="srcImg.file" id="img" 
+                                [src]="srcImg.file" 
                                 style="width:100px; height:70px" alt=""
                             >
+                            <img *ngIf="!srcImg.file" id="img" 
+                            [src]="loadingSpinner" 
+                            style="width:100px; height:70px" alt=""
+                        >
                             <i *ngIf="uploadImg" class="fa fa-upload arrow" aria-hidden="true"></i>                                                        
-                        </div>                                                   
+                        </div>              
+                        <progress [id]="srcImg.name" style="width: 99px; display: none" class="aprogress"  value="0" max="100"></progress>                                     
                     </div>
                 </div>                                            
             </div>
@@ -157,12 +162,15 @@
                                     #filesInput
                                     capture="camera"
                                 >
+                                <div class="upload_image_container">
                                 <img (click)="filesInput.click()"               
                                     alt=""                                    
-                                    [src]="url"
+                                    [src]="url.file"
                                     style="width:90%; height: 90%; padding: 1px;"
                                 >
+                               <progress [id]="url.name" class="aprogress"  value="0" max="100"></progress>
                                 <i class="fa fa-times delete" (click)="deleteImages(url, i)" aria-hidden="true"></i>
+                            </div>
                             </div> 
                             <i class="fa fa-upload arrow" aria-hidden="true"
                                 (click)="filesInputAdd.click()"
@@ -177,9 +185,9 @@
                     <button 
                         class="btn btn-block btn-primary"
                         type="submit"  
-                        [disabled]="form.invalid || message.spinner || (_imageNotLoaded | async)"                                
+                        [disabled]="form.invalid || message.spinner"                                
                     >
-                      Редактировать объявление<span *ngIf="false" style="font-weight:bold"> {{progress}}</span><img height="20px" *ngIf="(_imageNotLoaded | async)" [src]="loadingImage" />
+                      Редактировать объявление
                     </button>
                 </div>               
             </div>

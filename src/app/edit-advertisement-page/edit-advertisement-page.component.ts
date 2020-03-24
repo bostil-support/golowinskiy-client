@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, AfterViewInit, OnDestroy} from '@angular/core';
 import {Headers} from '@angular/http';
 import {FormControl, FormGroup, FormBuilder} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -7,7 +7,7 @@ import {environment} from 'src/environments/environment';
 import {Message} from 'src/app/shared/models/message.model';
 import {AuthService} from 'src/app/shared/services/auth.service';
 import {MainService} from '../shared/services/main.service';
-import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
+import { BehaviorSubject, forkJoin, Observable, Subscription } from 'rxjs';
 import { CommonService } from '../shared/services/common.service';
 
 @Component({
@@ -15,7 +15,7 @@ import { CommonService } from '../shared/services/common.service';
   templateUrl: './edit-advertisement-page.component.html',
   styleUrls: ['./edit-advertisement-page.component.scss']
 })
-export class EditAdvertisementPageComponent implements OnInit {
+export class EditAdvertisementPageComponent implements OnInit, OnDestroy {
   public _imageNotLoaded = new BehaviorSubject<boolean>(false);
   AppCode: any;
   urlsImages = [];
@@ -28,7 +28,7 @@ export class EditAdvertisementPageComponent implements OnInit {
   message: Message;
   loadingSpinner = ""
   showModal: boolean = true;
-
+  additionalImagesArray: any;
   user: any;
 
   Gallery = [];
@@ -43,7 +43,7 @@ export class EditAdvertisementPageComponent implements OnInit {
 
   is_edit: boolean;
 
-  srcImg = '';
+  srcImg: any = {file: null, name: null};
   srcAddImg = '';
   selectedFile: File = null;
 
@@ -108,7 +108,6 @@ export class EditAdvertisementPageComponent implements OnInit {
     this.apiRoot = environment.api
     this.id = this.route.snapshot.params['id']
     this.prc_ID = this.route.snapshot.params['idProduct']
-
     this.form = this.fb.group({
       TArticle: '',
       TName: '',
@@ -139,7 +138,7 @@ export class EditAdvertisementPageComponent implements OnInit {
           youtube: res.youtube,
         });
         this.showSpinner = false;
-        this.srcImg = `${environment.api}Img?AppCode=${this.AppCode}&ImgFileName=${res.t_imageprev}`
+        this.srcImg = {file:`${environment.api}Img?AppCode=${this.AppCode}&ImgFileName=${res.t_imageprev}`,name:res.t_imageprev};
         this.srcImgName = res.t_imageprev
         this.element = res
         this.Ctlg_Name = res.ctlg_Name
@@ -148,17 +147,22 @@ export class EditAdvertisementPageComponent implements OnInit {
         this.TName = res.tName
         this.TDescription =res.tDescription
         this.TCost = res.prc_Br
-        this.youtube = res.youtube
-
+        this.youtube = res.youtube;
+        this.additionalImagesArray = res.additionalImages;
         if(res.additionalImages != 0){
           for(let i in res.additionalImages){
-            this.urls[i] = `${environment.api}Img?AppCode=${this.AppCode}&ImgFileName=${res.additionalImages[i].t_image}`;
+            this.urls[i] = {file:`${environment.api}Img?AppCode=${this.AppCode}&ImgFileName=${res.additionalImages[i].t_image}`, name:res.additionalImages[i].t_image};
             this.urlsImages.push(res.additionalImages[i]);
           }
         }
+        setTimeout(()=>{
+          res.additionalImages.forEach(element => {
+            if(document.getElementById(element.t_image))
+            document.getElementById(element.t_image).style.display = "none";
+          });
+        });
       })
     })
-
     this.message = new Message('danger', '')
     if(localStorage.getItem('phone')){
       this.showPhone = true
@@ -168,7 +172,7 @@ export class EditAdvertisementPageComponent implements OnInit {
     }
 
   }
-   
+
   private showMessage( text: string, type:string = 'danger',redirect: boolean = true,showSpinner: boolean = false,hideMessage: boolean = true){
     this.message = new Message(type, text,showSpinner)
     window.setTimeout(() => {
@@ -181,253 +185,276 @@ export class EditAdvertisementPageComponent implements OnInit {
   }
 
   onFileSelected(event){
-    this.selectedFile = <File>event.target.files[0]
+    this.selectedFile = <File>event.target.files[0];
+    document.getElementById(this.srcImg.name).style.display = "block";
+    if(this.srcImg.name){
+      this.uploadedImageStatuses.delete(this.srcImg.name);
+    }
     var reader = new FileReader();
-    this.srcImg = this.loadingSpinner;
+    this.srcImg = {
+      file: this.loadingSpinner, 
+      name: this.selectedFile.name
+    };
     reader.onload = (event: any) => {
-      this.srcImg = event.target.result
-      this.uploadImg = false
+      this.srcImg = {
+        file: event.target.result, 
+        name: this.selectedFile.name
+      }
+      this.srcImgName = this.selectedFile.name;
+      this.uploadImages(this.srcImg);
+      this.uploadImg = false;
     }
     reader.readAsDataURL(this.selectedFile)
   }
-/*
-  onFilesMultipleSelectedAdd(event, i){
-    this.selectedFiles = <File>event.target.files[0]
-    var reader = new FileReader()
-    reader.onload = (event: any) => {
-      this.urls[this.urls.length] = event.target.result
-    }
-    reader.readAsDataURL(this.selectedFiles)
-    this.formDataImages = new FormData()
-    this.imageIndex = this.urls.length
-    this.imageName = this.selectedFiles.name.split('.')[0] + this.urls.length + '.' + this.selectedFiles.name.split('.')[1]
-    this.mainService.getShopInfo().subscribe(res => {
-      this.formDataImages.append('AppCode', res.cust_id)
-      this.formDataImages.append('Img', this.selectedFiles)
-      this.formDataImages.append('TImageprev', this.imageName)
 
-      this.mainService.uploadImage(this.formDataImages).subscribe()
-    })
-    this.imageIndexList.push(this.imageIndex)
-    this.filesImg.push(this.imageName)
-  }
-*/
+loadFile(files: File, callback: (src: string, name: string) => any) {
+  const file = files;
+  const reader = new FileReader();
+  reader.onload = () => callback(reader.result.toString(), file.name);
+  reader.readAsDataURL(file);
+}
 
   arrayOfAdditionalImages = new Array<FormData>();
   sizeCounter: number = 0;
   onFilesMultipleSelected(event, i){
+    const previousImgName = i ? this.urls[i].name : '';
     this.selectedFiles = <File>event.target.files[0];
+    const name = this.selectedFiles.name.replace(/(\.[\w\d_-]+)$/i, `${Math.round(Math.random() * 100)}$1`);
     this.sizeCounter +=event.target.files[0].size 
     this.commonStore.addImagesStack.next(this.sizeCounter);
     var reader = new FileReader()
-    Number.isInteger(i) ? this.urls[i] = this.loadingSpinner : this.urls[this.urls.length] = this.loadingSpinner;
-    this._imageNotLoaded.next(true)
+    const obj = {file: this.loadingSpinner, name: null}
+    Number.isInteger(i) ? this.urls[i] = obj : this.urls.push(obj);
     setTimeout(()=>{
       reader.onload = (event: any) => {
-        Number.isInteger(i) ? this.urls[i] = event.target.result : this.urls[this.urls.length -1] = event.target.result;
+        const obj = {
+          file: event.target.result, 
+          name}
+        Number.isInteger(i) ? this.urls[i] = obj : this.urls[this.urls.length -1] = obj;
+        this.imageIndex = Number.isInteger(i) ? this.getImageOrderId(previousImgName) : this.urls.length;
+        const preparedObj = {
+          file: this.selectedFiles,
+          name
+        }
+        this.imageIndexList.push(this.imageIndex)
+        this.filesImg.push(name)
+        this.uploadImages(preparedObj);
       }
       reader.readAsDataURL(this.selectedFiles)
-    //  this.sizeCounter = this.selectedFile? this.selectedFile.size : 0;
-      //this.commonStore.additionalImagesStack.next(this.sizeCounter);
-      this.formDataImages = new FormData()
-      this.imageIndex = Number.isInteger(i) ? i : this.urls.length;
-      this.imageName = this.selectedFiles.name.split('.')[0] + i + '.' + this.selectedFiles.name.split('.')[1]
-      this.formDataImages.append('AppCode', this.AppCode)
-      this.formDataImages.append('Img', this.selectedFiles)
-      this.formDataImages.append('TImageprev', this.imageName)
-      this.arrayOfAdditionalImages.push(this.formDataImages);
-      this.imageIndexList.push(this.imageIndex)
-      this.filesImg.push(this.imageName)
-      this.mainService.uploadImage(this.formDataImages).subscribe(res=>this._imageNotLoaded.next(false));
     },500)
+  }
+ 
+  uploadedImageStatuses = new Map();
+  showStatus(name,loaded,total){
+    const percent = Math.ceil(loaded / total * 100);
+    const element = document.getElementById(name);
+    element ? (element as any).value = percent: '';
+  }
+  uploadImages(additionalImagesData){
+    const formData = new FormData();
+    formData.append('AppCode', this.AppCode)
+    formData.append('Img', additionalImagesData.file)
+    formData.append('TImageprev', additionalImagesData.name)
+    this.uploadedImageStatuses.set(additionalImagesData.name,false);
+    this._imageNotLoaded.next(true)
+    this.mainService.uploadImageXHR(formData,additionalImagesData.name,this.showStatus).subscribe(() => {
+      this.uploadedImageStatuses.set(additionalImagesData.name,true);
+      const element = document.getElementById(additionalImagesData.name);
+      if(element)
+        element.style.display = "none";
+      this._imageNotLoaded.next(!Array.from(this.uploadedImageStatuses.values()).every(obj=>obj))
+    });
+    console.log(this.uploadedImageStatuses)
   }
 
   deleteImages(url, i){
-    const preparedObj = {
-      "cust_ID": environment.idPortal,
-      "Prc_ID": this.route.snapshot.params['idProduct'],
-      "ImageOrder": i,
-      "appCode": environment.idPortal,
-      "cid": localStorage.getItem('userId')
-    }
-    this.showSpinner = true;
-    this.mainService.deleteAdditionalImg(JSON.stringify(preparedObj)).subscribe((res: {result: boolean})=>{
-    this.showSpinner = false;
-      if(res.result){
-        const index = this.urls.indexOf(url);
-        if (index !== -1) this.urls.splice(index, 1);
+    const imgNumber = this.getImageOrderId(url);
+    const index = this.urls.indexOf(url);
+    if(imgNumber){
+      const preparedObj = {
+        "cust_ID": this.AppCode,
+        "Prc_ID": this.route.snapshot.params['idProduct'],
+        "ImageOrder": imgNumber,
+        "appCode": this.AppCode,
+        "cid": localStorage.getItem('userId')
       }
-    },err=>{
+      this.showSpinner = true;
+      this.mainService.deleteAdditionalImg(JSON.stringify(preparedObj)).subscribe((res: {result: boolean})=>{
       this.showSpinner = false;
-      console.error(err);
-      alert('cant delete additional image');
-    });
+        if(res.result){
+          if (index !== -1) this.urls.splice(index, 1);
+        }
+      },err=>{
+        this.showSpinner = false;
+        console.error(err);
+        alert('cant delete additional image');
+      });
+    } else{
+      if (index !== -1) this.urls.splice(index, 1);
+    }
   }
 
-  countAdditionalImgs: number = 0;
-  async uploadAdditionalImages(){
-    return new Promise((resolve, reject)=>{
-      this.mainService.uploadImagesArray(this.arrayOfAdditionalImages)
-      .subscribe(
-        () => {
-          this.countAdditionalImgs +=1;
-          if(this.countAdditionalImgs == this.arrayOfAdditionalImages.length)
-            resolve(true);
-        },
-        (error) => {
-          this.showMessage(error, 'danger',false)
-          reject(false)
-        }
-      );
-    })
+  getImageOrderId(name){
+    const res = this.urlsImages.filter(img => img.t_image == name);
+    return res ? res.length !==0 ? res[0].imageOrder : null : null;
   }
-  async onSubmit(){
+
+
+  subscriptionImages : Subscription;
+  onSubmit(){
     this.showMessage('Идет редактирование ', 'primary',false,true,false);
-    /*
-    if(this.arrayOfAdditionalImages.length > 0){
-      await this.uploadAdditionalImages();
-    }
-    */
-    const formData = this.form.value
-      this.cust_id = this.AppCode;
-      if(this.selectedFile == null){
-        this.data_form = {
-          "Catalog": this.cust_id,      //nomer catalog
-          "Id": this.idCategorie,         // post categories/
-          "Ctlg_Name": this.Ctlg_Name,     //Ctlg_Name
-          "TArticle": this.article, //Article
-          "TName": formData.TName, //input form
-          "TDescription": formData.TDescription, //input form
-          "TCost": formData.TCost, //input form
-          "TImageprev": this.srcImgName, // input form
-          "Appcode": this.cust_id,     //post Gallery/
-          "TypeProd": formData.TypeProd, //input form
-          "PrcNt": formData.PrcNt, //input form
-          "TransformMech": formData.TransformMech,  //input form
-          "CID": localStorage.getItem('userId'), // userId for auth,
-          "video": formData.youtube
-        };
-      }
-      else{
-        this.data_form = {
-          "Catalog": this.cust_id,      //nomer catalog
-          "Id": this.idCategorie,         // post categories/
-          "Ctlg_Name": this.Ctlg_Name,     //Ctlg_Name
-          "TArticle": this.article, //Article
-          "TName": formData.TName, //input form
-          "TDescription": formData.TDescription, //input form
-          "TCost": formData.TCost, //input form
-          "TImageprev": this.selectedFile.name, // input form
-          "Appcode": this.cust_id,     //post Gallery/
-          "TypeProd": formData.TypeProd, //input form
-          "PrcNt": formData.PrcNt, //input form
-          "TransformMech": formData.TransformMech,  //input form
-          "CID": localStorage.getItem('userId'), // userId for auth
-          "video": formData.youtube
+    this._imageNotLoaded.subscribe((res)=>{
+      if(!res){
+        const formData = this.form.value
+        this.cust_id = this.AppCode;
+        if(this.selectedFile == null){
+          this.data_form = {
+            "Catalog": this.cust_id,      //nomer catalog
+            "Id": this.idCategorie,         // post categories/
+            "Ctlg_Name": this.Ctlg_Name,     //Ctlg_Name
+            "TArticle": this.article, //Article
+            "TName": formData.TName, //input form
+            "TDescription": formData.TDescription, //input form
+            "TCost": formData.TCost, //input form
+            "TImageprev": this.srcImgName, // input form
+            "Appcode": this.cust_id,     //post Gallery/
+            "TypeProd": formData.TypeProd, //input form
+            "PrcNt": formData.PrcNt, //input form
+            "TransformMech": formData.TransformMech,  //input form
+            "CID": localStorage.getItem('userId'), // userId for auth,
+            "video": formData.youtube
+          };
         }
-        this.dataForm = new FormData();
-        this.dataForm.append('AppCode', this.cust_id);
-        this.dataForm.append('Img', this.selectedFile);
-        this.dataForm.append('TImageprev', this.selectedFile.name);
-      }
-          if(this.isCanPromo){
-            if(this.selectedFile == null){
-              this.mainService.editProduct(this.data_form)
-              .subscribe(
-                (res: any) => {
-                  if(res.result == true){
-                    if(this.filesImg.length != 0){
-                      for (let i in this.imageIndexList) {
-                        this.dataAddImg = {
-                          "Catalog": this.cust_id,
-                          "Id": this.idCategorie,
-                          "Prc_ID": this.route.snapshot.params['idProduct'],
-                          "ImageOrder": this.imageIndexList[i]+1,
-                          "TImage": this.filesImg[i],
-                          "Appcode": this.cust_id,
-                          "CID": localStorage.getItem('userId')
+        else{
+          this.data_form = {
+            "Catalog": this.cust_id,      //nomer catalog
+            "Id": this.idCategorie,         // post categories/
+            "Ctlg_Name": this.Ctlg_Name,     //Ctlg_Name
+            "TArticle": this.article, //Article
+            "TName": formData.TName, //input form
+            "TDescription": formData.TDescription, //input form
+            "TCost": formData.TCost, //input form
+            "TImageprev": this.selectedFile.name, // input form
+            "Appcode": this.cust_id,     //post Gallery/
+            "TypeProd": formData.TypeProd, //input form
+            "PrcNt": formData.PrcNt, //input form
+            "TransformMech": formData.TransformMech,  //input form
+            "CID": localStorage.getItem('userId'), // userId for auth
+            "video": formData.youtube
+          }
+          this.dataForm = new FormData();
+          this.dataForm.append('AppCode', this.cust_id);
+          this.dataForm.append('Img', this.selectedFile);
+          this.dataForm.append('TImageprev', this.selectedFile.name);
+        }
+            if(this.isCanPromo){
+              if(this.selectedFile == null){
+                this.mainService.editProduct(this.data_form)
+                .subscribe(
+                  (res: any) => {
+                    if(res.result == true){
+                      if(this.filesImg.length != 0){
+                        for (let i in this.imageIndexList) {
+                          this.dataAddImg = {
+                            "Catalog": this.cust_id,
+                            "Id": this.idCategorie,
+                            "Prc_ID": this.route.snapshot.params['idProduct'],
+                            "ImageOrder": this.imageIndexList[i],
+                            "TImage": this.filesImg[i],
+                            "Appcode": this.cust_id,
+                            "CID": localStorage.getItem('userId')
+                          }
+                          console.log(this.dataAddImg)
+                          this.mainService.editAdditionalImg(this.dataAddImg)
+                          .subscribe(
+                            () => {
+                              this.showMessage('Объявление было успешно отредактировано', 'success')
+                          })
                         }
-                        this.mainService.editAdditionalImg(this.dataAddImg)
-                        .subscribe(
-                          () => {
-                            this.showMessage('Объявление было успешно отредактировано', 'success')
-                        })
+                      }
+                      else{
+                        this.showMessage('Объявление было успешно отредактировано', 'success')
                       }
                     }
                     else{
-                      this.showMessage('Объявление было успешно отредактировано', 'success')
+                      this.showMessage( 'Объявление не было отредактировано', 'danger');
                     }
+                  },
+                  (error) => {
+                    this.showMessage( error, 'danger')
                   }
-                  else{
-                    this.showMessage( 'Объявление не было отредактировано', 'danger');
-                  }
-                },
-                (error) => {
-                  this.showMessage( error, 'danger')
-                }
-              )
-            }
-            else{
-              this.startTimer()
-              this.mainService.uploadImage(this.dataForm)
-              .subscribe(
-                (res: any) => {
-                  this.pauseTimer();
-                  if(res.result == true){
-                    this.mainService.editProduct(this.data_form)
-                    .subscribe(
-                      (res: any) => {
-                        if(res.result == true){
-                          if(this.filesImg.length != 0){
-                            for (let i in this.imageIndexList) {
-                              this.dataAddImg = {
-                                "Catalog": this.cust_id,
-                                "Id": this.idCategorie,
-                                "Prc_ID": this.route.snapshot.params['idProduct'],
-                                "ImageOrder": this.imageIndexList[i],
-                                "TImage": this.filesImg[i],
-                                "Appcode": this.cust_id,
-                                "CID": localStorage.getItem('userId')
+                )
+              }
+              else{
+                this.startTimer()
+                this.mainService.uploadImage(this.dataForm)
+                .subscribe(
+                  (res: any) => {
+                    this.pauseTimer();
+                    if(res.result == true){
+                      this.mainService.editProduct(this.data_form)
+                      .subscribe(
+                        (res: any) => {
+                          if(res.result == true){
+                            if(this.filesImg.length != 0){
+                              for (let i in this.imageIndexList) {
+                                this.dataAddImg = {
+                                  "Catalog": this.cust_id,
+                                  "Id": this.idCategorie,
+                                  "Prc_ID": this.route.snapshot.params['idProduct'],
+                                  "ImageOrder": this.imageIndexList[i],
+                                  "TImage": this.filesImg[i],
+                                  "Appcode": this.cust_id,
+                                  "CID": localStorage.getItem('userId')
+                                }
+                                console.log(this.dataAddImg)
+                                this.mainService.editAdditionalImg(this.dataAddImg)
+                                .subscribe(
+                                  (res) => {
+                                 //   this.showSpinner = false
+                                    this.showMessage('Объявление было успешно отредактировано', 'success')
+                                })
                               }
-                              this.mainService.editAdditionalImg(this.dataAddImg)
-                              .subscribe(
-                                (res) => {
-                               //   this.showSpinner = false
-                                  this.showMessage('Объявление было успешно отредактировано', 'success')
-                              })
+                            }
+                            else{
+                          //    this.showSpinner = false
+                              this.showMessage('Объявление было успешно отредактировано', 'success')
                             }
                           }
                           else{
-                        //    this.showSpinner = false
-                            this.showMessage('Объявление было успешно отредактировано', 'success')
+                            this.showMessage( 'Объявление не было отредактировано', 'danger')
                           }
+                        },
+                        (error) => {
+                      //    this.showSpinner = false
+                          this.showMessage( error, 'danger')
                         }
-                        else{
-                          this.showMessage( 'Объявление не было отредактировано', 'danger')
-                        }
-                      },
-                      (error) => {
-                    //    this.showSpinner = false
-                        this.showMessage( error, 'danger')
-                      }
-                    )
+                      )
+                    }
+                    else{
+                      this.showMessage( 'Объявление не было отредактировано', 'danger')
+                    }
+                  },
+                  (error) => {
+             //       this.showSpinner = false
+                    this.showMessage( error, 'danger')
                   }
-                  else{
-                    this.showMessage( 'Объявление не было отредактировано', 'danger')
-                  }
-                },
-                (error) => {
-           //       this.showSpinner = false
-                  this.showMessage( error, 'danger')
-                }
-              )
+                )
+              }
             }
-          }
-          else{
-            this.showMessage( 'Объявление не было отредактировано', 'danger')
-          }
+            else{
+              this.showMessage( 'Объявление не было отредактировано', 'danger')
+            }
+      }
+    });
+
   }
 
+
+  ngOnDestroy(){
+    console.log("unsubscr")
+    this.subscriptionImages.unsubscribe();
+  }
 
   timeLeft: number = 0;
   interval;
