@@ -26,7 +26,7 @@ export interface ImageDataInterface {
   templateUrl: './advertisement-page.component.html',
   styleUrls: ['./advertisement-page.component.scss']
 })
-export class AdvertisementPageComponent implements OnInit, OnDestroy{
+export class AdvertisementPageComponent implements OnInit{
   headers = new Headers({
     'Content-Type': 'application/json; charset=utf8',
     'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -272,15 +272,21 @@ export class AdvertisementPageComponent implements OnInit, OnDestroy{
     }
     this.additionalImagesData = []
   }
-  countUploadImgs: number = 0;
+  
   countAdditionalImgs: number = 0;
-  subscriptionImages : Subscription;
   onSubmit() {
     this.showMessage('Идет публикация ', 'primary',false,true,false);
     this.submitButton.nativeElement.disabled = true;
-    this._imageNotLoaded.subscribe((res)=>{
-      if(!res){
-        const formData = this.form.value
+    let intervalChecker = setInterval(()=>{
+      if(this._imageNotLoaded.value == false){
+        this.sendData();
+        clearInterval(intervalChecker);
+      }
+    },1000);
+  }
+
+  sendData(){
+    const formData = this.form.value
         this.data_form = {
           "Catalog": this.cust_id,      //nomer catalog
           "Id": this.idCategory,         // post categories/
@@ -322,19 +328,16 @@ export class AdvertisementPageComponent implements OnInit, OnDestroy{
                       this.countAdditionalImgs +=1;
                       if(this.countAdditionalImgs == this.additionalImagesData.length){
                         this.successAddedProduct(this.data_form.Ctlg_Name);
-                        setTimeout(()=>location.reload(),750);
+                      //  setTimeout(()=>location.reload(),750);
                       }
                     });
                     if(this.additionalImagesData.length == 0){
                       this.successAddedProduct(this.data_form.Ctlg_Name)
-                      setTimeout(()=>location.reload(),750);
                     }
                   })
           }else{
             alert("isCanPromo is false")
-          }       
-      }
-    })
+          }   
   }
   uploadedImageStatuses = new Map();
   showStatus(name,loaded,total){
@@ -396,10 +399,6 @@ export class AdvertisementPageComponent implements OnInit, OnDestroy{
     this.mainService.saveCategoriesToStorage(items)
     const item = items[items.length - 1]
     //this.router.navigate([`${window.location.pathname}/categories/${item.id}/products`])
-  }
-
-  ngOnDestroy(){
-    this.subscriptionImages.unsubscribe();
   }
 
 }
