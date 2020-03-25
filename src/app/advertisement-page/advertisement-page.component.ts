@@ -136,7 +136,6 @@ export class AdvertisementPageComponent implements OnInit{
   }
 
   redraw(element: ImageDataInterface, angle: number) {
-    console.log(element)
     const image: HTMLImageElement = new Image();
     image.onload = () => {
       const canvas = document.createElement('canvas');
@@ -202,12 +201,9 @@ export class AdvertisementPageComponent implements OnInit{
           name: name.replace(/(\.[\w\d_-]+)$/i, `${Math.round(Math.random() * 100)}$1`),
           file
         }
-        //  this.additionalImagesData.pop();
           this.additionalImagesData[this.additionalImagesData.length - 1] = item;
           this.uploadImages(item);
-       //   this.additionalImagesData.push(item)
            this.uploadStatus = false;
-        //   this.redraw(item, 0)
       });
     }, 500)
   }
@@ -272,7 +268,7 @@ export class AdvertisementPageComponent implements OnInit{
     }
     this.additionalImagesData = []
   }
-  
+
   countAdditionalImgs: number = 0;
   onSubmit() {
     this.showMessage('Идет публикация ', 'primary',false,true,false);
@@ -328,7 +324,6 @@ export class AdvertisementPageComponent implements OnInit{
                       this.countAdditionalImgs +=1;
                       if(this.countAdditionalImgs == this.additionalImagesData.length){
                         this.successAddedProduct(this.data_form.Ctlg_Name);
-                      //  setTimeout(()=>location.reload(),750);
                       }
                     });
                     if(this.additionalImagesData.length == 0){
@@ -360,21 +355,8 @@ export class AdvertisementPageComponent implements OnInit{
         element.style.display = "none";
       this._imageNotLoaded.next(!Array.from(this.uploadedImageStatuses.values()).every(obj=>obj))
     });
-    console.log(this.uploadedImageStatuses)
   }
-/*
-  timeLeft: number = 0;
-  interval;
-  startTimer() {
-    this.interval = setInterval(() => {
-        this.timeLeft++;
-    },1000)
-  }
-  pauseTimer() {
-    clearInterval(this.interval);
-    console.log('images request timer = '+this.timeLeft+' sec.')
-  }
-*/
+
   categorySelect(items: CategoryItem[]) {
     this.categories = items
     let item = items[items.length - 1]
@@ -397,8 +379,6 @@ export class AdvertisementPageComponent implements OnInit{
   onCategoriesClick(items: CategoryItem[]) {
     this.storageService.setCategories(items)
     this.mainService.saveCategoriesToStorage(items)
-    const item = items[items.length - 1]
-    //this.router.navigate([`${window.location.pathname}/categories/${item.id}/products`])
   }
 
 }

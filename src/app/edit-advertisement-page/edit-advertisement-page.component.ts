@@ -73,10 +73,9 @@ export class EditAdvertisementPageComponent implements OnInit, OnDestroy {
   fio
   userName
   phone
-  progress: any = "d";
+  progress: any = "";
   constructor(
     private router: Router,
-    private authService: AuthService,
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private mainService: MainService,
@@ -85,21 +84,10 @@ export class EditAdvertisementPageComponent implements OnInit, OnDestroy {
     this.is_edit = true;
     this.loadingSpinner = this.commonStore.loadingImageSpinner;
     this.loadingImage = this.commonStore.loadingLittleRedSpinner;
-    /*
-      this.commonStore.addImagesStackUploaded.subscribe((res:any)=> {
-        const loaded = Math.round((res / (this.commonStore.addImagesStack.value as any)) * 100)
-        this.commonStore.progress.next((Number.isNaN(loaded) ? 0 : loaded) + "%")
-      });
-      this.commonStore.progress.subscribe(res=>this.progress = (res))
-    */
   }
 
   ngOnInit() {
-    const headers = new Headers({
-      'Content-Type': 'application/json; charset=utf8',
-      'Authorization': 'Bearer ' + localStorage.getItem('token')
-    })
-    this.mainService.getUserInfo(headers).subscribe((res: any) => {
+    this.mainService.getUserInfo().subscribe((res: any) => {
       this.isCanPromo = res.isCanPromo;
     });
     this.fio = localStorage.getItem('fio')
@@ -264,7 +252,6 @@ loadFile(files: File, callback: (src: string, name: string) => any) {
         element.style.display = "none";
       this._imageNotLoaded.next(!Array.from(this.uploadedImageStatuses.values()).every(obj=>obj))
     });
-    console.log(this.uploadedImageStatuses)
   }
 
   deleteImages(url, i){
@@ -364,7 +351,6 @@ loadFile(files: File, callback: (src: string, name: string) => any) {
                             "Appcode": this.cust_id,
                             "CID": localStorage.getItem('userId')
                           }
-                          console.log(this.dataAddImg)
                           this.mainService.editAdditionalImg(this.dataAddImg)
                           .subscribe(
                             () => {
@@ -407,7 +393,6 @@ loadFile(files: File, callback: (src: string, name: string) => any) {
                                   "Appcode": this.cust_id,
                                   "CID": localStorage.getItem('userId')
                                 }
-                                console.log(this.dataAddImg)
                                 this.mainService.editAdditionalImg(this.dataAddImg)
                                 .subscribe(
                                   (res) => {
@@ -452,7 +437,6 @@ loadFile(files: File, callback: (src: string, name: string) => any) {
 
 
   ngOnDestroy(){
-    console.log("unsubscr")
     this.subscriptionImages.unsubscribe();
   }
 
