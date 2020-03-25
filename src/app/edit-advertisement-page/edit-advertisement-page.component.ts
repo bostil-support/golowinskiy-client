@@ -1,13 +1,11 @@
-import {Component, OnInit, AfterViewInit, OnDestroy} from '@angular/core';
-import {Headers} from '@angular/http';
-import {FormControl, FormGroup, FormBuilder} from '@angular/forms';
+import {Component, OnInit} from '@angular/core';
+import { FormGroup, FormBuilder} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 
 import {environment} from 'src/environments/environment';
 import {Message} from 'src/app/shared/models/message.model';
-import {AuthService} from 'src/app/shared/services/auth.service';
 import {MainService} from '../shared/services/main.service';
-import { BehaviorSubject, forkJoin, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject} from 'rxjs';
 import { CommonService } from '../shared/services/common.service';
 
 @Component({
@@ -15,7 +13,7 @@ import { CommonService } from '../shared/services/common.service';
   templateUrl: './edit-advertisement-page.component.html',
   styleUrls: ['./edit-advertisement-page.component.scss']
 })
-export class EditAdvertisementPageComponent implements OnInit, OnDestroy {
+export class EditAdvertisementPageComponent implements OnInit {
   public _imageNotLoaded = new BehaviorSubject<boolean>(false);
   AppCode: any;
   urlsImages = [];
@@ -287,157 +285,156 @@ loadFile(files: File, callback: (src: string, name: string) => any) {
   }
 
 
-  subscriptionImages : Subscription;
+
   onSubmit(){
     this.showMessage('Идет редактирование ', 'primary',false,true,false);
-    this._imageNotLoaded.subscribe((res)=>{
-      if(!res){
-        const formData = this.form.value
-        this.cust_id = this.AppCode;
-        if(this.selectedFile == null){
-          this.data_form = {
-            "Catalog": this.cust_id,      //nomer catalog
-            "Id": this.idCategorie,         // post categories/
-            "Ctlg_Name": this.Ctlg_Name,     //Ctlg_Name
-            "TArticle": this.article, //Article
-            "TName": formData.TName, //input form
-            "TDescription": formData.TDescription, //input form
-            "TCost": formData.TCost, //input form
-            "TImageprev": this.srcImgName, // input form
-            "Appcode": this.cust_id,     //post Gallery/
-            "TypeProd": formData.TypeProd, //input form
-            "PrcNt": formData.PrcNt, //input form
-            "TransformMech": formData.TransformMech,  //input form
-            "CID": localStorage.getItem('userId'), // userId for auth,
-            "video": formData.youtube
-          };
-        }
-        else{
-          this.data_form = {
-            "Catalog": this.cust_id,      //nomer catalog
-            "Id": this.idCategorie,         // post categories/
-            "Ctlg_Name": this.Ctlg_Name,     //Ctlg_Name
-            "TArticle": this.article, //Article
-            "TName": formData.TName, //input form
-            "TDescription": formData.TDescription, //input form
-            "TCost": formData.TCost, //input form
-            "TImageprev": this.selectedFile.name, // input form
-            "Appcode": this.cust_id,     //post Gallery/
-            "TypeProd": formData.TypeProd, //input form
-            "PrcNt": formData.PrcNt, //input form
-            "TransformMech": formData.TransformMech,  //input form
-            "CID": localStorage.getItem('userId'), // userId for auth
-            "video": formData.youtube
+    let intervalChecker = setInterval(()=>{
+      if(this._imageNotLoaded.value == false){
+        this.sendData();
+        clearInterval(intervalChecker);
+      }
+    },1000);
+  }
+
+  sendData(){
+    const formData = this.form.value
+    this.cust_id = this.AppCode;
+    if(this.selectedFile == null){
+      this.data_form = {
+        "Catalog": this.cust_id,      //nomer catalog
+        "Id": this.idCategorie,         // post categories/
+        "Ctlg_Name": this.Ctlg_Name,     //Ctlg_Name
+        "TArticle": this.article, //Article
+        "TName": formData.TName, //input form
+        "TDescription": formData.TDescription, //input form
+        "TCost": formData.TCost, //input form
+        "TImageprev": this.srcImgName, // input form
+        "Appcode": this.cust_id,     //post Gallery/
+        "TypeProd": formData.TypeProd, //input form
+        "PrcNt": formData.PrcNt, //input form
+        "TransformMech": formData.TransformMech,  //input form
+        "CID": localStorage.getItem('userId'), // userId for auth,
+        "video": formData.youtube
+      };
+    }
+    else{
+      this.data_form = {
+        "Catalog": this.cust_id,      //nomer catalog
+        "Id": this.idCategorie,         // post categories/
+        "Ctlg_Name": this.Ctlg_Name,     //Ctlg_Name
+        "TArticle": this.article, //Article
+        "TName": formData.TName, //input form
+        "TDescription": formData.TDescription, //input form
+        "TCost": formData.TCost, //input form
+        "TImageprev": this.selectedFile.name, // input form
+        "Appcode": this.cust_id,     //post Gallery/
+        "TypeProd": formData.TypeProd, //input form
+        "PrcNt": formData.PrcNt, //input form
+        "TransformMech": formData.TransformMech,  //input form
+        "CID": localStorage.getItem('userId'), // userId for auth
+        "video": formData.youtube
+      }
+      this.dataForm = new FormData();
+      this.dataForm.append('AppCode', this.cust_id);
+      this.dataForm.append('Img', this.selectedFile);
+      this.dataForm.append('TImageprev', this.selectedFile.name);
+    }
+        if(this.isCanPromo){
+          if(this.selectedFile == null){
+            this.mainService.editProduct(this.data_form)
+            .subscribe(
+              (res: any) => {
+                if(res.result == true){
+                  if(this.filesImg.length != 0){
+                    for (let i in this.imageIndexList) {
+                      this.dataAddImg = {
+                        "Catalog": this.cust_id,
+                        "Id": this.idCategorie,
+                        "Prc_ID": this.route.snapshot.params['idProduct'],
+                        "ImageOrder": this.imageIndexList[i],
+                        "TImage": this.filesImg[i],
+                        "Appcode": this.cust_id,
+                        "CID": localStorage.getItem('userId')
+                      }
+                      this.mainService.editAdditionalImg(this.dataAddImg)
+                      .subscribe(
+                        () => {
+                          this.showMessage('Объявление было успешно отредактировано', 'success')
+                      })
+                    }
+                  }
+                  else{
+                    this.showMessage('Объявление было успешно отредактировано', 'success')
+                  }
+                }
+                else{
+                  this.showMessage( 'Объявление не было отредактировано', 'danger');
+                }
+              },
+              (error) => {
+                this.showMessage( error, 'danger')
+              }
+            )
           }
-          this.dataForm = new FormData();
-          this.dataForm.append('AppCode', this.cust_id);
-          this.dataForm.append('Img', this.selectedFile);
-          this.dataForm.append('TImageprev', this.selectedFile.name);
-        }
-            if(this.isCanPromo){
-              if(this.selectedFile == null){
-                this.mainService.editProduct(this.data_form)
-                .subscribe(
-                  (res: any) => {
-                    if(res.result == true){
-                      if(this.filesImg.length != 0){
-                        for (let i in this.imageIndexList) {
-                          this.dataAddImg = {
-                            "Catalog": this.cust_id,
-                            "Id": this.idCategorie,
-                            "Prc_ID": this.route.snapshot.params['idProduct'],
-                            "ImageOrder": this.imageIndexList[i],
-                            "TImage": this.filesImg[i],
-                            "Appcode": this.cust_id,
-                            "CID": localStorage.getItem('userId')
+          else{
+            this.startTimer()
+            this.mainService.uploadImage(this.dataForm)
+            .subscribe(
+              (res: any) => {
+                this.pauseTimer();
+                if(res.result == true){
+                  this.mainService.editProduct(this.data_form)
+                  .subscribe(
+                    (res: any) => {
+                      if(res.result == true){
+                        if(this.filesImg.length != 0){
+                          for (let i in this.imageIndexList) {
+                            this.dataAddImg = {
+                              "Catalog": this.cust_id,
+                              "Id": this.idCategorie,
+                              "Prc_ID": this.route.snapshot.params['idProduct'],
+                              "ImageOrder": this.imageIndexList[i],
+                              "TImage": this.filesImg[i],
+                              "Appcode": this.cust_id,
+                              "CID": localStorage.getItem('userId')
+                            }
+                            this.mainService.editAdditionalImg(this.dataAddImg)
+                            .subscribe(
+                              (res) => {
+                              //   this.showSpinner = false
+                                this.showMessage('Объявление было успешно отредактировано', 'success')
+                            })
                           }
-                          this.mainService.editAdditionalImg(this.dataAddImg)
-                          .subscribe(
-                            () => {
-                              this.showMessage('Объявление было успешно отредактировано', 'success')
-                          })
+                        }
+                        else{
+                      //    this.showSpinner = false
+                          this.showMessage('Объявление было успешно отредактировано', 'success')
                         }
                       }
                       else{
-                        this.showMessage('Объявление было успешно отредактировано', 'success')
+                        this.showMessage( 'Объявление не было отредактировано', 'danger')
                       }
+                    },
+                    (error) => {
+                  //    this.showSpinner = false
+                      this.showMessage( error, 'danger')
                     }
-                    else{
-                      this.showMessage( 'Объявление не было отредактировано', 'danger');
-                    }
-                  },
-                  (error) => {
-                    this.showMessage( error, 'danger')
-                  }
-                )
+                  )
+                }
+                else{
+                  this.showMessage( 'Объявление не было отредактировано', 'danger')
+                }
+              },
+              (error) => {
+          //       this.showSpinner = false
+                this.showMessage( error, 'danger')
               }
-              else{
-                this.startTimer()
-                this.mainService.uploadImage(this.dataForm)
-                .subscribe(
-                  (res: any) => {
-                    this.pauseTimer();
-                    if(res.result == true){
-                      this.mainService.editProduct(this.data_form)
-                      .subscribe(
-                        (res: any) => {
-                          if(res.result == true){
-                            if(this.filesImg.length != 0){
-                              for (let i in this.imageIndexList) {
-                                this.dataAddImg = {
-                                  "Catalog": this.cust_id,
-                                  "Id": this.idCategorie,
-                                  "Prc_ID": this.route.snapshot.params['idProduct'],
-                                  "ImageOrder": this.imageIndexList[i],
-                                  "TImage": this.filesImg[i],
-                                  "Appcode": this.cust_id,
-                                  "CID": localStorage.getItem('userId')
-                                }
-                                this.mainService.editAdditionalImg(this.dataAddImg)
-                                .subscribe(
-                                  (res) => {
-                                 //   this.showSpinner = false
-                                    this.showMessage('Объявление было успешно отредактировано', 'success')
-                                })
-                              }
-                            }
-                            else{
-                          //    this.showSpinner = false
-                              this.showMessage('Объявление было успешно отредактировано', 'success')
-                            }
-                          }
-                          else{
-                            this.showMessage( 'Объявление не было отредактировано', 'danger')
-                          }
-                        },
-                        (error) => {
-                      //    this.showSpinner = false
-                          this.showMessage( error, 'danger')
-                        }
-                      )
-                    }
-                    else{
-                      this.showMessage( 'Объявление не было отредактировано', 'danger')
-                    }
-                  },
-                  (error) => {
-             //       this.showSpinner = false
-                    this.showMessage( error, 'danger')
-                  }
-                )
-              }
-            }
-            else{
-              this.showMessage( 'Объявление не было отредактировано', 'danger')
-            }
-      }
-    });
-
-  }
-
-
-  ngOnDestroy(){
-    this.subscriptionImages.unsubscribe();
+            )
+          }
+        }
+        else{
+          this.showMessage( 'Объявление не было отредактировано', 'danger')
+        }
   }
 
   timeLeft: number = 0;
