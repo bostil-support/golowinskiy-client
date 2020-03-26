@@ -62,16 +62,15 @@ export class EditAdvertisementPageComponent implements OnInit {
   formDataImages: any;
   imageName: string;
   filesImg = [];
-  apiRoot;
-
+  apiRoot: string = "";
   urlsAdd = [];
   dataAddImg;
   isCanPromo: boolean = false;
-  cust_id;
-  fio
-  userName
-  phone
-  progress: any = "";
+  cust_id: string = "";
+  fio: string = "";
+  userName: string = "";
+  phone: string = "";
+  progress: string = "";
   constructor(
     private router: Router,
     private fb: FormBuilder,
@@ -124,7 +123,7 @@ export class EditAdvertisementPageComponent implements OnInit {
           youtube: res.youtube,
         });
         this.showSpinner = false;
-        this.srcImg = {file:`${environment.api}Img?AppCode=${this.AppCode}&ImgFileName=${res.t_imageprev}`,name:res.t_imageprev};
+        this.srcImg = {file: `${environment.api}Img?AppCode=${this.AppCode}&ImgFileName=${res.t_imageprev}`,name: res.t_imageprev};
         this.srcImgName = res.t_imageprev
         this.element = res
         this.Ctlg_Name = res.ctlg_Name
@@ -137,7 +136,7 @@ export class EditAdvertisementPageComponent implements OnInit {
         this.additionalImagesArray = res.additionalImages;
         if(res.additionalImages != 0){
           for(let i in res.additionalImages){
-            this.urls[i] = {file:`${environment.api}Img?AppCode=${this.AppCode}&ImgFileName=${res.additionalImages[i].t_image}`, name:res.additionalImages[i].t_image};
+            this.urls[i] = {file: `${environment.api}Img?AppCode=${this.AppCode}&ImgFileName=${res.additionalImages[i].t_image}`, name: res.additionalImages[i].t_image};
             this.urlsImages.push(res.additionalImages[i]);
           }
         }
@@ -156,7 +155,6 @@ export class EditAdvertisementPageComponent implements OnInit {
     else{
       this.showPhone = false
     }
-
   }
 
   private showMessage( text: string, type:string = 'danger',redirect: boolean = true,showSpinner: boolean = false,hideMessage: boolean = true){
@@ -169,7 +167,7 @@ export class EditAdvertisementPageComponent implements OnInit {
       }
     }, 2000)
   }
-
+  
   onFileSelected(event){
     this.selectedFile = <File>event.target.files[0];
     document.getElementById(this.srcImg.name).style.display = "block";
@@ -184,26 +182,26 @@ export class EditAdvertisementPageComponent implements OnInit {
     reader.onload = (event: any) => {
       this.srcImg = {
         file: event.target.result, 
-        name: this.selectedFile.name
+        name: this.selectedFile.name.replace(/(\.[\w\d_-]+)$/i, `${Math.round(Math.random() * 100)}$1`)
       }
-      this.srcImgName = this.selectedFile.name;
-      this.uploadImages(this.srcImg);
+      this.srcImgName = this.srcImg.name;
+      this.uploadImages({file: this.selectedFile, name: this.srcImgName});
       this.uploadImg = false;
     }
     reader.readAsDataURL(this.selectedFile)
   }
 
-loadFile(files: File, callback: (src: string, name: string) => any) {
-  const file = files;
-  const reader = new FileReader();
-  reader.onload = () => callback(reader.result.toString(), file.name);
-  reader.readAsDataURL(file);
-}
+  loadFile(files: File, callback: (src: string, name: string) => any) {
+    const file = files;
+    const reader = new FileReader();
+    reader.onload = () => callback(reader.result.toString(), file.name);
+    reader.readAsDataURL(file);
+  }
 
   arrayOfAdditionalImages = new Array<FormData>();
   sizeCounter: number = 0;
   onFilesMultipleSelected(event, i){
-    const previousImgName = i ? this.urls[i].name : '';
+    const previousImgName = Number.isInteger(i) ? this.urls[i].name : '';
     this.selectedFiles = <File>event.target.files[0];
     const name = this.selectedFiles.name.replace(/(\.[\w\d_-]+)$/i, `${Math.round(Math.random() * 100)}$1`);
     this.sizeCounter +=event.target.files[0].size 
@@ -253,9 +251,9 @@ loadFile(files: File, callback: (src: string, name: string) => any) {
   }
 
   deleteImages(url, i){
-    const imgNumber = this.getImageOrderId(url);
+    const imgNumber = this.getImageOrderId(url.name);
     const index = this.urls.indexOf(url);
-    if(imgNumber){
+    if(Number.isInteger(imgNumber)){
       const preparedObj = {
         "cust_ID": this.AppCode,
         "Prc_ID": this.route.snapshot.params['idProduct'],
@@ -268,6 +266,8 @@ loadFile(files: File, callback: (src: string, name: string) => any) {
       this.showSpinner = false;
         if(res.result){
           if (index !== -1) this.urls.splice(index, 1);
+        }else{
+          alert('cant delete image (request result: false)');
         }
       },err=>{
         this.showSpinner = false;
@@ -299,7 +299,6 @@ loadFile(files: File, callback: (src: string, name: string) => any) {
   sendData(){
     const formData = this.form.value
     this.cust_id = this.AppCode;
-    if(this.selectedFile == null){
       this.data_form = {
         "Catalog": this.cust_id,      //nomer catalog
         "Id": this.idCategorie,         // post categories/
@@ -313,142 +312,30 @@ loadFile(files: File, callback: (src: string, name: string) => any) {
         "TypeProd": formData.TypeProd, //input form
         "PrcNt": formData.PrcNt, //input form
         "TransformMech": formData.TransformMech,  //input form
-        "CID": localStorage.getItem('userId'), // userId for auth,
-        "video": formData.youtube
-      };
-    }
-    else{
-      this.data_form = {
-        "Catalog": this.cust_id,      //nomer catalog
-        "Id": this.idCategorie,         // post categories/
-        "Ctlg_Name": this.Ctlg_Name,     //Ctlg_Name
-        "TArticle": this.article, //Article
-        "TName": formData.TName, //input form
-        "TDescription": formData.TDescription, //input form
-        "TCost": formData.TCost, //input form
-        "TImageprev": this.selectedFile.name, // input form
-        "Appcode": this.cust_id,     //post Gallery/
-        "TypeProd": formData.TypeProd, //input form
-        "PrcNt": formData.PrcNt, //input form
-        "TransformMech": formData.TransformMech,  //input form
         "CID": localStorage.getItem('userId'), // userId for auth
         "video": formData.youtube
       }
-      this.dataForm = new FormData();
-      this.dataForm.append('AppCode', this.cust_id);
-      this.dataForm.append('Img', this.selectedFile);
-      this.dataForm.append('TImageprev', this.selectedFile.name);
-    }
-        if(this.isCanPromo){
-          if(this.selectedFile == null){
-            this.mainService.editProduct(this.data_form)
-            .subscribe(
-              (res: any) => {
-                if(res.result == true){
-                  if(this.filesImg.length != 0){
-                    for (let i in this.imageIndexList) {
-                      this.dataAddImg = {
-                        "Catalog": this.cust_id,
-                        "Id": this.idCategorie,
-                        "Prc_ID": this.route.snapshot.params['idProduct'],
-                        "ImageOrder": this.imageIndexList[i],
-                        "TImage": this.filesImg[i],
-                        "Appcode": this.cust_id,
-                        "CID": localStorage.getItem('userId')
-                      }
-                      this.mainService.editAdditionalImg(this.dataAddImg)
-                      .subscribe(
-                        () => {
-                          this.showMessage('Объявление было успешно отредактировано', 'success')
-                      })
+      if(this.isCanPromo){
+          this.mainService.editProduct(this.data_form)
+          .subscribe(
+            (res: {result: boolean}) => {
+              if(res.result == true){
+                if(this.filesImg.length != 0){
+                  for (let i in this.imageIndexList) {
+                    this.dataAddImg = {
+                      "Catalog": this.cust_id,
+                      "Id": this.idCategorie,
+                      "Prc_ID": this.route.snapshot.params['idProduct'],
+                      "ImageOrder": this.imageIndexList[i],
+                      "TImage": this.filesImg[i],
+                      "Appcode": this.cust_id,
+                      "CID": localStorage.getItem('userId')
                     }
+                    this.mainService.editAdditionalImg(this.dataAddImg).subscribe(() => this.showMessage('Объявление было успешно отредактировано', 'success'))
                   }
-                  else{
-                    this.showMessage('Объявление было успешно отредактировано', 'success')
-                  }
-                }
-                else{
-                  this.showMessage( 'Объявление не было отредактировано', 'danger');
-                }
-              },
-              (error) => {
-                this.showMessage( error, 'danger')
-              }
-            )
-          }
-          else{
-            this.startTimer()
-            this.mainService.uploadImage(this.dataForm)
-            .subscribe(
-              (res: any) => {
-                this.pauseTimer();
-                if(res.result == true){
-                  this.mainService.editProduct(this.data_form)
-                  .subscribe(
-                    (res: any) => {
-                      if(res.result == true){
-                        if(this.filesImg.length != 0){
-                          for (let i in this.imageIndexList) {
-                            this.dataAddImg = {
-                              "Catalog": this.cust_id,
-                              "Id": this.idCategorie,
-                              "Prc_ID": this.route.snapshot.params['idProduct'],
-                              "ImageOrder": this.imageIndexList[i],
-                              "TImage": this.filesImg[i],
-                              "Appcode": this.cust_id,
-                              "CID": localStorage.getItem('userId')
-                            }
-                            this.mainService.editAdditionalImg(this.dataAddImg)
-                            .subscribe(
-                              (res) => {
-                              //   this.showSpinner = false
-                                this.showMessage('Объявление было успешно отредактировано', 'success')
-                            })
-                          }
-                        }
-                        else{
-                      //    this.showSpinner = false
-                          this.showMessage('Объявление было успешно отредактировано', 'success')
-                        }
-                      }
-                      else{
-                        this.showMessage( 'Объявление не было отредактировано', 'danger')
-                      }
-                    },
-                    (error) => {
-                  //    this.showSpinner = false
-                      this.showMessage( error, 'danger')
-                    }
-                  )
-                }
-                else{
-                  this.showMessage( 'Объявление не было отредактировано', 'danger')
-                }
-              },
-              (error) => {
-          //       this.showSpinner = false
-                this.showMessage( error, 'danger')
-              }
-            )
-          }
-        }
-        else{
-          this.showMessage( 'Объявление не было отредактировано', 'danger')
-        }
+                } else this.showMessage('Объявление было успешно отредактировано', 'success')
+              } else this.showMessage( 'Объявление не было отредактировано', 'danger');
+            },error => this.showMessage( error, 'danger'))
+      } else this.showMessage( 'Объявление не было отредактировано', 'danger')
   }
-
-  timeLeft: number = 0;
-  interval;
-  startTimer() {
-    this.interval = setInterval(() => {
-        this.timeLeft++;
-    },1000)
-  }
-  pauseTimer() {
-    clearInterval(this.interval);
-    console.log('update image request timer = '+this.timeLeft+' sec.')
-  }
-
-  
-
 }
