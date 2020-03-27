@@ -16,7 +16,8 @@ export class HeaderComponent implements OnInit {
   hideCabinet = false
   showMenu = false
   hideOnMainPage = false
-
+  welcomeMsgCMS: string = null;
+  welcomeMsgMobile: Object = null
   constructor(public router: Router,
     private route: ActivatedRoute,
     private mainService: MainService,
@@ -24,13 +25,25 @@ export class HeaderComponent implements OnInit {
     public orderService: OrderService
   ) {}
 
+
   ngOnInit() {
-    if(window.location.pathname.includes('cabinet')){
+    const isThatCabinetPage = window.location.pathname.includes('cabinet');
+    if(isThatCabinetPage){
+      this.welcomeMsgCMS = "Личный кабинет";
+      this.welcomeMsgMobile = {
+        header: "Личный кабинет",
+        underText: ""
+      }
       this.showBasket = false
       this.hideCabinet = false
       this.hideOnMainPage = true
     }
     else{
+      this.welcomeMsgCMS = "Добро пожаловать!";
+      this.welcomeMsgMobile = {
+        header: "Добро пожаловать в",
+        underText: "Портал Головинского района"
+      }
       this.showBasket = true
       this.hideCabinet = true
       this.hideOnMainPage = false

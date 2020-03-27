@@ -72,8 +72,8 @@ export class AuthService {
         }
     }
 
-    recovery(){
-        return this.http.post(`${environment.api}password`, this.user)
+    recovery(body){
+        return this.http.post(`${environment.api}password`, body)
     }
     getUserId(): string{
         return localStorage.getItem('userId')

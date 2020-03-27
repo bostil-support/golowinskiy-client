@@ -5,6 +5,7 @@ import { Router, ActivatedRoute, Params } from '@angular/router'
 
 import { Message } from 'src/app/shared/models/message.model'
 import { AuthService } from '../../../shared/services/auth.service'
+import { environment } from 'src/environments/environment'
 
 
 @Component({
@@ -16,7 +17,6 @@ export class RecoveryComponent implements OnInit {
 
   form: FormGroup
   message: Message
-  sub: Subscription  
   params
   showSpinner = false
 
@@ -52,19 +52,17 @@ export class RecoveryComponent implements OnInit {
     }, 2000);
   }
 
-  ngOnDestroy(){
-    if(this.sub){
-      this.sub.unsubscribe()
-    }    
-  }  
-
   onSubmit(){
 
     this.showSpinner = true
 
     this.form.disable()
-
-    this.authService.recovery().subscribe(
+    const recoveryData = {
+      'Cust_ID_Main': environment.idPortal,
+      'Email': this.form.value.email
+    }
+    console.log(recoveryData)
+    this.authService.recovery(recoveryData).subscribe(
       (res: any) => {
         this.showSpinner = false   
         if(res.founded == false){
@@ -81,7 +79,6 @@ export class RecoveryComponent implements OnInit {
         this.form.enable()
       }
     )
-
   }
 
 }
