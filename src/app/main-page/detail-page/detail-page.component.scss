@@ -326,10 +326,12 @@
                 }
             }
             .contact_info{
+                display: flex;
+                margin-bottom: 20px;
                 @media screen and (max-width: 1078px){
-                    display: flex;
+                    flex-direction: row;
                 }
-                display: none;
+                flex-direction: column;
                 height: 40px;
                 color: #ffffff;
                 justify-content: center;

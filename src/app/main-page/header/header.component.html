@@ -80,11 +80,11 @@
   <li class="menu_list__item--close">
     <i (click)="closeMenu()" class="fa fa-times" aria-hidden="true"></i>
   </li>
-  <li class="menu_list__item menu_list__item--cabinet" *ngIf="hideCabinet" routerLink="/cabinet">
+  <li class="menu_list__item menu_list__item--cabinet" (click)="closeMenu()" *ngIf="hideCabinet" routerLink="/cabinet">
     <i class="fa fa-user" aria-hidden="true"></i>
     <span>Личный кабинет</span>
   </li>
-  <li routerLink="/addProduct" class="menu_list__item">
+  <li routerLink="/addProduct" (click)="closeMenu()" class="menu_list__item">
     <span>Подать объявление</span>
   </li>
   <li class="menu_list__item" *ngIf="hideOnMainPage" (click)="back()">
