@@ -308,6 +308,7 @@
                     }
                 }
             }
+
             .description.show{
                 @media screen and (max-width: 1078px){
                     overflow-y: scroll;
@@ -322,6 +323,58 @@
                 margin-top: 0;
                 @media screen and (max-width: 1078px){
                     display: block;
+                }
+            }
+            .contact_info{
+                @media screen and (max-width: 1078px){
+                    display: flex;
+                }
+                display: none;
+                height: 40px;
+                color: #ffffff;
+                justify-content: center;
+                .phone{
+                    height: 40px;
+                    margin-right: 20px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    @media screen and (max-width: 1078px){
+                        margin-bottom: 5px;
+                    }
+                    i{
+                        background: #f1173a;
+                        width: 23px;
+                        height: 23px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        border-radius: 50%;
+                        margin-right: 6px;
+                        font-size: 13px;
+                    }
+                    span{
+                        font-size: 19px;
+                    }
+                }
+                .email {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    i{
+                        background: #f1173a;
+                        width: 23px;
+                        height: 23px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        border-radius: 50%;
+                        margin-right: 6px;
+                        font-size: 13px;
+                    }
+                    span{
+                        font-size: 19px;
+                    }
                 }
             }
             .application{

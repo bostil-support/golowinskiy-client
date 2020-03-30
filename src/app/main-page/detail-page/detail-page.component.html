@@ -111,7 +111,8 @@
     <div class="description" id="show_description">
       <p *ngIf="element.tDescription"
         [innerHtml]="element.tDescription"
-      >{{ element.tDescription }}</p>
+      >{{ element.tDescription }}
+    </p>
       <h6>Контакты</h6>
       <div class="phone">
         <i class="fa fa-phone" aria-hidden="true"></i>
@@ -124,7 +125,18 @@
     </div>
     <!-- begin show only for mobile fersion-->
       <p *ngIf="showDescription" (click)="showDetail(element)" class="detail">Смотреть полное описание</p>
+
     <!-- end -->
+    <div class="contact_info">
+      <div class="phone">
+        <i class="fa fa-phone" aria-hidden="true"></i>
+        <span>8-916-1616146</span>
+      </div>
+      <div class="email">
+        <i class="fa fa-envelope-o" aria-hidden="true"></i>
+        <span>golovinskiy-rf@mail.ru</span>
+      </div>
+    </div>
     <div class="application">
       <img src="assets/images/app1.png">
       <img src="assets/images/app2.png">

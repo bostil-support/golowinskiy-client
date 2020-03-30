@@ -61,7 +61,6 @@ export class RecoveryComponent implements OnInit {
       'Cust_ID_Main': environment.idPortal,
       'Email': this.form.value.email
     }
-    console.log(recoveryData)
     this.authService.recovery(recoveryData).subscribe(
       (res: any) => {
         this.showSpinner = false   
@@ -71,7 +70,6 @@ export class RecoveryComponent implements OnInit {
         else if(res.founded == true){          
           this.showMessage('success', `${res.message}`)          
         }
-        
       },
       (error) => {        
         this.showMessage('danger', 'Неверные данные')
