@@ -133,7 +133,7 @@
                       <div class="col-lg-4">
                           <label>Основная фотография</label>
                       </div>
-                      <div class="col-lg-4">
+                      <div class="col-lg-4 upload-main">
                           <input
                               style="display: none;"
                               type="file"
@@ -148,9 +148,10 @@
                                   [src]="mainImageData.src"
                                   style="width:100px; height:70px" alt=""
                               >
-                              <i *ngIf="!mainImageData.blob" class="fa fa-upload arrow" aria-hidden="true"></i>
-                              <i *ngIf="mainImageData.blob" class="fa fa-rotate-right" (click)="redraw(mainImageData, 90)"></i>
+                              <i *ngIf="!mainImageData.src" #mainResizer class="fa fa-upload arrow" aria-hidden="true"></i>
+                              
                           </div>
+                          <i *ngIf="mainImageData.src" class="fa fa-times fa-repeat repeater" (click)="redraw(mainImageData, 90, -1)"></i>
                           <progress class="aprogress" #mainImage [id]="mainImageData.name" value="0" max="100"></progress>
                       </div>
                   </div>
@@ -193,7 +194,7 @@
                                 >
                                 <progress class="aprogress" [id]="image.name" value="0" max="100"></progress>
                                 <i class="fa fa-times delete" (click)="removeAdditionalImage(i)" aria-hidden="true"></i>
-                                <i class="fa fa-times fa-repeat repeat" (click)="redraw(image, 90)" aria-hidden="true"></i>
+                                <i class="fa fa-times fa-repeat repeat" (click)="redraw(image, 90,i)" aria-hidden="true"></i>
                                   </div>
                               </div>
                               <i class="fa fa-upload arrow" aria-hidden="true"

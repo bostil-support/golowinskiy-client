@@ -69,6 +69,7 @@ export class AdvertisementPageComponent implements OnInit{
   
   @ViewChild('submitButton') submitButton: ElementRef
   @ViewChild('mainImage') mainImg: ElementRef
+  @ViewChild('mainResizer') mainResizer: ElementRef
    advertId: string = "1";
   constructor(
     private router: Router,
@@ -135,7 +136,7 @@ export class AdvertisementPageComponent implements OnInit{
     reader.readAsDataURL(file);
   }
 
-  redraw(element: ImageDataInterface, angle: number) {
+  redraw(element: ImageDataInterface, angle: number, image_id?: number) {
     const image: HTMLImageElement = new Image();
     image.onload = () => {
       const canvas = document.createElement('canvas');
@@ -151,9 +152,15 @@ export class AdvertisementPageComponent implements OnInit{
       context.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2);
       context.restore();
       element.src = canvas.toDataURL();
+      const isMainLogoRotate = image_id == -1
+      const name = isMainLogoRotate ? this.mainImageData.file.name : this.additionalImagesData[image_id].file.name ;
+      const type = isMainLogoRotate ? this.mainImageData.file.type : this.additionalImagesData[image_id].file.type ;
+      fetch(element.src).then(res => res.blob()).then(blob => {
+        const file = new File([blob], name, {type})
+        isMainLogoRotate ? this.mainFileSelected(file, true) : this.additionalImagesChange(file, image_id, true);
+      });
     };
     image.src = element.src;
-    
   }
 
   removeAdditionalImage(index: number) {
@@ -164,8 +171,8 @@ export class AdvertisementPageComponent implements OnInit{
     this.itemName = el.txt
   }
   selectedFile: File = null;
-  mainFileSelected(event){
-    const file = this.selectedFile = <File>event.target.files[0];
+  mainFileSelected(event, isTurning: boolean = false){
+    const file = this.selectedFile = isTurning ? event : <File>event.target.files[0];
     if(this.mainImageData.name){
       this.uploadedImageStatuses.delete(this.mainImageData.name);
       document.getElementById(this.mainImageData.name).style.display = "block";
@@ -179,7 +186,6 @@ export class AdvertisementPageComponent implements OnInit{
         this.mainImageData = {src, name: name.replace(/(\.[\w\d_-]+)$/i, `${Math.round(Math.random() * 100)}$1`), file}
         this.uploadStatus = false;
         this.uploadImages(this.mainImageData);
-    //   this.redraw(this.mainImageData, 0)
         this.isDisabled = false
       })
     },500)
@@ -208,7 +214,7 @@ export class AdvertisementPageComponent implements OnInit{
     }, 500)
   }
 
-  additionalImagesChange(event, index){
+  additionalImagesChange(event, index,isTurning: boolean = false){
     this.showSpinner = true;
     if(this.additionalImagesData[index].name){
       this.uploadedImageStatuses.delete(this.additionalImagesData[index].name);
@@ -219,7 +225,7 @@ export class AdvertisementPageComponent implements OnInit{
       name: null,
       file: null
     };
-    const file = <File>event.target.files[0];
+    const file = isTurning? event : <File>event.target.files[0];
     setTimeout(()=>{
       this.loadFile(file, (src, name) => {
         const item = this.additionalImagesData[index];
@@ -227,7 +233,6 @@ export class AdvertisementPageComponent implements OnInit{
         item.name = name.replace(/(\.[\w\d_-]+)$/i, `${Math.round(Math.random() * 100)}$1`);
         item.file = file;
         this.showSpinner = false;
-      //  this.redraw(item, 0)
       this.uploadImages(item);
       });
     }, 500);
