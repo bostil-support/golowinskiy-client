@@ -137,7 +137,10 @@ export class AdvertisementPageComponent implements OnInit{
   }
 
   redraw(element: ImageDataInterface, angle: number, image_id?: number) {
+    if(image_id == -1)
+    this.mainResizer.nativeElement.style.display = "none";
     const image: HTMLImageElement = new Image();
+    image.src = this.loadingSpinner;
     image.onload = () => {
       const canvas = document.createElement('canvas');
       [canvas.width, canvas.height] = [image.width, image.height];
@@ -168,7 +171,8 @@ export class AdvertisementPageComponent implements OnInit{
   }
 
   Validators(el){
-    this.itemName = el.txt
+  //  this.itemName = el.txt
+    this.form.controls['Categories'].setValue(el.txt)
   }
   selectedFile: File = null;
   mainFileSelected(event, isTurning: boolean = false){
@@ -263,7 +267,8 @@ export class AdvertisementPageComponent implements OnInit{
     this.showSpinner = false
     this.showMessage('Объявление было успешно размещено', 'success')
     this.createForm()
-    this.itemName = Ctlg_Name
+  //  this.itemName = Ctlg_Name
+    this.form.controls['Categories'].setValue(Ctlg_Name)
     this.isDisabled = true
     this.mainImageData = {
       src: '',
@@ -343,7 +348,8 @@ export class AdvertisementPageComponent implements OnInit{
   showStatus(name,loaded,total){
     const percent = Math.ceil(loaded / total * 100);
     const element = document.getElementById(name);
-    element ? (element as any).value = percent: '';
+    if(element)
+      (element as any).value = percent
   }
   uploadImages(additionalImagesData){
     const name = additionalImagesData.name;
@@ -356,8 +362,16 @@ export class AdvertisementPageComponent implements OnInit{
     this.mainService.uploadImageXHR(formData,name,this.showStatus).subscribe(() => {
       this.uploadedImageStatuses.set(name,true);
       const element = document.getElementById(name);
-      if(element)
+      const rotateElement = document.getElementById(`rotate_${name}`)
+      if(rotateElement){
+        rotateElement.style.display = "none";
+      }
+      if(element){
         element.style.display = "none";
+        if(rotateElement){
+          rotateElement.style.display = "block";
+        }
+      }
       this._imageNotLoaded.next(!Array.from(this.uploadedImageStatuses.values()).every(obj=>obj))
     });
   }
@@ -365,14 +379,16 @@ export class AdvertisementPageComponent implements OnInit{
   categorySelect(items: CategoryItem[]) {
     this.categories = items
     let item = items[items.length - 1]
-    this.itemName = item.txt
+  //  this.itemName = item.txt
+    this.form.controls['Categories'].setValue(item.txt)
     this.idCategory = item.id
     this.showCatalog = false
   }
 
   breadcrumbsClick() {
     this.categories = []
-    this.itemName = ''
+  //  this.itemName = ''
+    this.form.controls['Categories'].setValue('');
     this.idCategory = ''
     this.showCatalog = true
   }
