@@ -121,16 +121,17 @@
                             capture="camera"
                         >
                         <div class="upload btn-file" (click)="fileInput.click()">
-                            <img *ngIf="srcImg.file" id="img" 
-                                [src]="srcImg.file" 
+                            <img *ngIf="srcImg.src" id="img" 
+                                [src]="srcImg.src" 
                                 style="width:100px; height:70px" alt=""
                             >
-                            <img *ngIf="!srcImg.file" id="img" 
+                            <img *ngIf="!srcImg.src" id="img" 
                             [src]="loadingSpinner" 
                             style="width:100px; height:70px" alt=""
                         >
                             <i *ngIf="uploadImg" class="fa fa-upload arrow" aria-hidden="true"></i>                                                        
-                        </div>              
+                        </div>   
+                        <i style="display: block;" #mainResizer id="rotate_{{srcImg.name}}" class="fa fa-times fa-repeat resizer" (click)="redraw(srcImg, 90, -1)"></i>           
                         <progress [id]="srcImg.name" style="width: 99px; display: none" class="aprogress"  value="0" max="100"></progress>                                     
                     </div>
                 </div>                                            
@@ -165,11 +166,12 @@
                                 <div class="upload_image_container">
                                 <img (click)="filesInput.click()"               
                                     alt=""                                    
-                                    [src]="url.file"
+                                    [src]="url.src"
                                     style="width:90%; height: 90%; padding: 1px;"
                                 >
                                <progress [id]="url.name" class="aprogress"  value="0" max="100"></progress>
                                 <i class="fa fa-times delete" (click)="deleteImages(url, i)" aria-hidden="true"></i>
+                                <i id="rotate_{{url.name}}" class="fa fa-times fa-repeat resizer" (click)="redraw(url, 90, i)"></i>
                             </div>
                             </div> 
                             <i class="fa fa-upload arrow" aria-hidden="true"

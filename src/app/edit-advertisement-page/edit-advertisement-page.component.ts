@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
 import { FormGroup, FormBuilder} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 
@@ -7,6 +7,13 @@ import {Message} from 'src/app/shared/models/message.model';
 import {MainService} from '../shared/services/main.service';
 import { BehaviorSubject} from 'rxjs';
 import { CommonService } from '../shared/services/common.service';
+
+export interface ImageDataInterface {
+  src: string;
+  name: string;
+  blob?: Blob;
+  file: File
+}
 
 @Component({
   selector: 'app-edit-advertisement-page',
@@ -41,9 +48,8 @@ export class EditAdvertisementPageComponent implements OnInit {
 
   is_edit: boolean;
 
-  srcImg: any = {file: null, name: null};
+  srcImg: any = {src: null, name: null};
   srcAddImg = '';
-  selectedFile: File = null;
 
   TName;
   TDescription;
@@ -71,6 +77,7 @@ export class EditAdvertisementPageComponent implements OnInit {
   userName: string = "";
   phone: string = "";
   progress: string = "";
+  @ViewChild('mainResizer') mainResizer: ElementRef
   constructor(
     private router: Router,
     private fb: FormBuilder,
@@ -123,7 +130,7 @@ export class EditAdvertisementPageComponent implements OnInit {
           youtube: res.youtube,
         });
         this.showSpinner = false;
-        this.srcImg = {file: `${environment.api}Img?AppCode=${this.AppCode}&ImgFileName=${res.t_imageprev}`,name: res.t_imageprev};
+        this.srcImg = {src: `${environment.api}Img?AppCode=${this.AppCode}&ImgFileName=${res.t_imageprev}`,name: res.t_imageprev};
         this.srcImgName = res.t_imageprev
         this.element = res
         this.Ctlg_Name = res.ctlg_Name
@@ -136,7 +143,7 @@ export class EditAdvertisementPageComponent implements OnInit {
         this.additionalImagesArray = res.additionalImages;
         if(res.additionalImages != 0){
           for(let i in res.additionalImages){
-            this.urls[i] = {file: `${environment.api}Img?AppCode=${this.AppCode}&ImgFileName=${res.additionalImages[i].t_image}`, name: res.additionalImages[i].t_image};
+            this.urls[i] = {src: `${environment.api}Img?AppCode=${this.AppCode}&ImgFileName=${res.additionalImages[i].t_image}`, name: res.additionalImages[i].t_image};
             this.urlsImages.push(res.additionalImages[i]);
           }
         }
@@ -168,27 +175,27 @@ export class EditAdvertisementPageComponent implements OnInit {
     }, 2000)
   }
   
-  onFileSelected(event){
-    this.selectedFile = <File>event.target.files[0];
+  onFileSelected(event, isTurning: boolean = false){
+    const selectedFile = isTurning ? event : <File>event.target.files[0];
     document.getElementById(this.srcImg.name).style.display = "block";
     if(this.srcImg.name){
       this.uploadedImageStatuses.delete(this.srcImg.name);
     }
     var reader = new FileReader();
     this.srcImg = {
-      file: this.loadingSpinner, 
-      name: this.selectedFile.name
+      src: this.loadingSpinner, 
+      name: selectedFile.name
     };
     reader.onload = (event: any) => {
       this.srcImg = {
-        file: event.target.result, 
-        name: this.selectedFile.name.replace(/(\.[\w\d_-]+)$/i, `${Math.round(Math.random() * 100)}$1`)
+        src: event.target.result, 
+        name: selectedFile.name.replace(/(\.[\w\d_-]+)$/i, `${Math.round(Math.random() * 100)}$1`)
       }
       this.srcImgName = this.srcImg.name;
-      this.uploadImages({file: this.selectedFile, name: this.srcImgName});
+      this.uploadImages({file: selectedFile, name: this.srcImgName});
       this.uploadImg = false;
     }
-    reader.readAsDataURL(this.selectedFile)
+    reader.readAsDataURL(selectedFile)
   }
 
   loadFile(files: File, callback: (src: string, name: string) => any) {
@@ -200,19 +207,19 @@ export class EditAdvertisementPageComponent implements OnInit {
 
   arrayOfAdditionalImages = new Array<FormData>();
   sizeCounter: number = 0;
-  onFilesMultipleSelected(event, i){
+  onFilesMultipleSelected(event, i, isTurning: boolean = false){
     const previousImgName = Number.isInteger(i) ? this.urls[i].name : '';
-    this.selectedFiles = <File>event.target.files[0];
-    const name = this.selectedFiles.name.replace(/(\.[\w\d_-]+)$/i, `${Math.round(Math.random() * 100)}$1`);
-    this.sizeCounter +=event.target.files[0].size 
+    this.selectedFiles = isTurning? event : <File>event.target.files[0];
+    const name = isTurning? this.selectedFiles.name : this.selectedFiles.name.replace(/(\.[\w\d_-]+)$/i, `${Math.round(Math.random() * 100)}$1`);
+    this.sizeCounter += isTurning ? event.size : event.target.files[0].size 
     this.commonStore.addImagesStack.next(this.sizeCounter);
     var reader = new FileReader()
-    const obj = {file: this.loadingSpinner, name: null}
+    const obj = {src: this.loadingSpinner, name: null}
     Number.isInteger(i) ? this.urls[i] = obj : this.urls.push(obj);
     setTimeout(()=>{
       reader.onload = (event: any) => {
         const obj = {
-          file: event.target.result, 
+          src: event.target.result, 
           name}
         Number.isInteger(i) ? this.urls[i] = obj : this.urls[this.urls.length -1] = obj;
         this.imageIndex = Number.isInteger(i) ? this.getImageOrderId(previousImgName) : this.urls.length;
@@ -244,8 +251,12 @@ export class EditAdvertisementPageComponent implements OnInit {
     this.mainService.uploadImageXHR(formData,additionalImagesData.name,this.showStatus).subscribe(() => {
       this.uploadedImageStatuses.set(additionalImagesData.name,true);
       const element = document.getElementById(additionalImagesData.name);
-      if(element)
+      const rotateElement = document.getElementById(`rotate_${additionalImagesData.name}`);
+      if(rotateElement)
+        rotateElement.style.display = "block";
+      if(element){
         element.style.display = "none";
+      } 
       this._imageNotLoaded.next(!Array.from(this.uploadedImageStatuses.values()).every(obj=>obj))
     });
   }
@@ -337,5 +348,53 @@ export class EditAdvertisementPageComponent implements OnInit {
               } else this.showMessage( 'Объявление не было отредактировано', 'danger');
             },error => this.showMessage( error, 'danger'))
       } else this.showMessage( 'Объявление не было отредактировано', 'danger')
+  }
+
+
+  redraw(element: any, angle: number, image_id?: number) { 
+    document.getElementById(`rotate_${element.name}`).style.display="none";
+    const type = element.src.includes('http') ? element.src.split('.')[element.src.split('.').length -1] : element.src.includes('data') ? element.src.split(";")[0].split("/")[1] : 'jpeg';
+        fetch(element.src).then(res => res.blob()).then(blob => {
+        const file =  new File([blob], element.name, {type: `image/${type}`});
+        if(image_id == -1){
+          this.srcImg.file = file;
+          this.srcImg.src = null;
+          this.mainResizer.nativeElement.style.display = "none";
+        }else{
+          this.urls[image_id].file = file;
+          this.urls[image_id].src = this.showSpinner;
+        } 
+      this.loadFile(file, (src, name) => {
+        element = {src, name, file}
+      const image: HTMLImageElement = new Image();
+      image.onload = () => {
+        const canvas = document.createElement('canvas');
+        [canvas.width, canvas.height] = [image.width, image.height];
+        if (angle === Math.abs(90)) {
+          [canvas.width, canvas.height] = [canvas.height, canvas.width];
+        }
+        const context = canvas.getContext('2d');
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.save();
+        context.translate(canvas.width / 2, canvas.height / 2);
+        context.rotate(angle * Math.PI / 180);
+        context.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2);
+        context.restore();
+        element.src = canvas.toDataURL();
+        const isMainLogoRotate = image_id == -1;
+        const name = isMainLogoRotate ? this.srcImg.name : this.urls[image_id].name ;
+        const type = isMainLogoRotate ? this.srcImg.file.type : this.urls[image_id].file.type ;
+        fetch(element.src).then(res => res.blob()).then(blob => {
+          const file = new File([blob], name, {type})
+          isMainLogoRotate ? this.onFileSelected(file, true) : this.onFilesMultipleSelected(file, image_id, true);
+        });
+        
+      };
+      image.src = element.src;
+      if(image_id != -1){
+        this.urls[image_id] = element;
+      }
+      })
+    });    
   }
 }

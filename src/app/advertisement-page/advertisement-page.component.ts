@@ -137,6 +137,7 @@ export class AdvertisementPageComponent implements OnInit{
   }
 
   redraw(element: ImageDataInterface, angle: number, image_id?: number) {
+    console.log(element)
     if(image_id == -1)
     this.mainResizer.nativeElement.style.display = "none";
     const image: HTMLImageElement = new Image();
