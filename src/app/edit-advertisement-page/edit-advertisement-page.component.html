@@ -170,7 +170,7 @@
                                     style="width:90%; height: 90%; padding: 1px;"
                                 >
                                <progress [id]="url.name" class="aprogress"  value="0" max="100"></progress>
-                                <i class="fa fa-times delete" (click)="deleteImages(url, i)" aria-hidden="true"></i>
+                                <i id="delete_{{url.name}}" class="fa fa-times delete" (click)="deleteImages(url)" aria-hidden="true"></i>
                                 <i id="rotate_{{url.name}}" class="fa fa-times fa-repeat resizer" (click)="redraw(url, 90, i)"></i>
                             </div>
                             </div> 

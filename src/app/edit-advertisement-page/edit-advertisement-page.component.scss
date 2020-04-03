@@ -106,14 +106,16 @@ textarea{
     text-align: center;
     border: 1px solid #189691;
     position: relative;
-    margin: 5px 25px 14px 0;
+    margin: 5px 25px 12px 0;
     cursor: pointer;
 }
 .upload-images > div img {
     max-width: 100%;
     width: auto;
     height: auto;
-    max-height: 70px;
+    max-height: 68px;
+    margin-left: auto;
+    margin-right: auto;
 }
 .upload-images > div i.delete {
     position: absolute;

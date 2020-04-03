@@ -189,7 +189,7 @@ export class EditAdvertisementPageComponent implements OnInit {
     reader.onload = (event: any) => {
       this.srcImg = {
         src: event.target.result, 
-        name: selectedFile.name.replace(/(\.[\w\d_-]+)$/i, `${Math.round(Math.random() * 100)}$1`)
+        name: isTurning ? selectedFile.name : selectedFile.name.replace(/(\.[\w\d_-]+)$/i, `${Math.round(Math.random() * 100)}$1`) 
       }
       this.srcImgName = this.srcImg.name;
       this.uploadImages({file: selectedFile, name: this.srcImgName});
@@ -213,15 +213,16 @@ export class EditAdvertisementPageComponent implements OnInit {
     const name = isTurning? this.selectedFiles.name : this.selectedFiles.name.replace(/(\.[\w\d_-]+)$/i, `${Math.round(Math.random() * 100)}$1`);
     this.sizeCounter += isTurning ? event.size : event.target.files[0].size 
     this.commonStore.addImagesStack.next(this.sizeCounter);
-    var reader = new FileReader()
+    var reader = new FileReader();
     const obj = {src: this.loadingSpinner, name: null}
-    Number.isInteger(i) ? this.urls[i] = obj : this.urls.push(obj);
+    if(!isTurning)
+      Number.isInteger(i) ? this.urls[i] = obj : this.urls.push(obj);
     setTimeout(()=>{
       reader.onload = (event: any) => {
         const obj = {
           src: event.target.result, 
           name}
-        Number.isInteger(i) ? this.urls[i] = obj : this.urls[this.urls.length -1] = obj;
+        Number.isInteger(i) ? (!isTurning) ? this.urls[i] = obj : this.urls[i].src = obj.src : this.urls[this.urls.length -1] = obj;
         this.imageIndex = Number.isInteger(i) ? this.getImageOrderId(previousImgName) : this.urls.length;
         const preparedObj = {
           file: this.selectedFiles,
@@ -233,6 +234,7 @@ export class EditAdvertisementPageComponent implements OnInit {
       }
       reader.readAsDataURL(this.selectedFiles)
     },500)
+    
   }
  
   uploadedImageStatuses = new Map();
@@ -241,27 +243,33 @@ export class EditAdvertisementPageComponent implements OnInit {
     const element = document.getElementById(name);
     element ? (element as any).value = percent: '';
   }
+
   uploadImages(additionalImagesData){
+    const progressBar = document.getElementById(additionalImagesData.name);
+    const rotateButton = document.getElementById(`rotate_${additionalImagesData.name}`);
+    const deleteButton = document.getElementById(`delete_${additionalImagesData.name}`);
+    if(progressBar){
+      progressBar.style.display = "block";
+    } 
     const formData = new FormData();
     formData.append('AppCode', this.AppCode)
     formData.append('Img', additionalImagesData.file)
     formData.append('TImageprev', additionalImagesData.name)
     this.uploadedImageStatuses.set(additionalImagesData.name,false);
-    this._imageNotLoaded.next(true)
+    this._imageNotLoaded.next(true);
     this.mainService.uploadImageXHR(formData,additionalImagesData.name,this.showStatus).subscribe(() => {
       this.uploadedImageStatuses.set(additionalImagesData.name,true);
-      const element = document.getElementById(additionalImagesData.name);
-      const rotateElement = document.getElementById(`rotate_${additionalImagesData.name}`);
-      if(rotateElement)
-        rotateElement.style.display = "block";
-      if(element){
-        element.style.display = "none";
-      } 
+      if(rotateButton)
+        rotateButton.style.display = "block";
+      if(deleteButton)
+        deleteButton.style.display = "block";
+      if(progressBar)
+        progressBar.style.display = "none"; 
       this._imageNotLoaded.next(!Array.from(this.uploadedImageStatuses.values()).every(obj=>obj))
     });
   }
 
-  deleteImages(url, i){
+  deleteImages(url){
     const imgNumber = this.getImageOrderId(url.name);
     const index = this.urls.indexOf(url);
     if(Number.isInteger(imgNumber)){
@@ -310,91 +318,96 @@ export class EditAdvertisementPageComponent implements OnInit {
   sendData(){
     const formData = this.form.value
     this.cust_id = this.AppCode;
-      this.data_form = {
-        "Catalog": this.cust_id,      //nomer catalog
-        "Id": this.idCategorie,         // post categories/
-        "Ctlg_Name": this.Ctlg_Name,     //Ctlg_Name
-        "TArticle": this.article, //Article
-        "TName": formData.TName, //input form
-        "TDescription": formData.TDescription, //input form
-        "TCost": formData.TCost, //input form
-        "TImageprev": this.srcImgName, // input form
-        "Appcode": this.cust_id,     //post Gallery/
-        "TypeProd": formData.TypeProd, //input form
-        "PrcNt": formData.PrcNt, //input form
-        "TransformMech": formData.TransformMech,  //input form
-        "CID": localStorage.getItem('userId'), // userId for auth
-        "video": formData.youtube
-      }
-      if(this.isCanPromo){
-          this.mainService.editProduct(this.data_form)
-          .subscribe(
-            (res: {result: boolean}) => {
-              if(res.result == true){
-                if(this.filesImg.length != 0){
-                  for (let i in this.imageIndexList) {
-                    this.dataAddImg = {
-                      "Catalog": this.cust_id,
-                      "Id": this.idCategorie,
-                      "Prc_ID": this.route.snapshot.params['idProduct'],
-                      "ImageOrder": this.imageIndexList[i],
-                      "TImage": this.filesImg[i],
-                      "Appcode": this.cust_id,
-                      "CID": localStorage.getItem('userId')
-                    }
-                    this.mainService.editAdditionalImg(this.dataAddImg).subscribe(() => this.showMessage('Объявление было успешно отредактировано', 'success'))
+    this.data_form = {
+      "Catalog": this.cust_id,      //nomer catalog
+      "Id": this.idCategorie,         // post categories/
+      "Ctlg_Name": this.Ctlg_Name,     //Ctlg_Name
+      "TArticle": this.article, //Article
+      "TName": formData.TName, //input form
+      "TDescription": formData.TDescription, //input form
+      "TCost": formData.TCost, //input form
+      "TImageprev": this.srcImgName, // input form
+      "Appcode": this.cust_id,     //post Gallery/
+      "TypeProd": formData.TypeProd, //input form
+      "PrcNt": formData.PrcNt, //input form
+      "TransformMech": formData.TransformMech,  //input form
+      "CID": localStorage.getItem('userId'), // userId for auth
+      "video": formData.youtube
+    }
+    if(this.isCanPromo){
+        this.mainService.editProduct(this.data_form)
+        .subscribe(
+          (res: {result: boolean}) => {
+            if(res.result == true){
+              if(this.filesImg.length != 0){
+                for (let i in this.imageIndexList) {
+                  this.dataAddImg = {
+                    "Catalog": this.cust_id,
+                    "Id": this.idCategorie,
+                    "Prc_ID": this.route.snapshot.params['idProduct'],
+                    "ImageOrder": this.imageIndexList[i],
+                    "TImage": this.filesImg[i],
+                    "Appcode": this.cust_id,
+                    "CID": localStorage.getItem('userId')
                   }
-                } else this.showMessage('Объявление было успешно отредактировано', 'success')
-              } else this.showMessage( 'Объявление не было отредактировано', 'danger');
-            },error => this.showMessage( error, 'danger'))
-      } else this.showMessage( 'Объявление не было отредактировано', 'danger')
+                  this.mainService.editAdditionalImg(this.dataAddImg).subscribe(() => this.showMessage('Объявление было успешно отредактировано', 'success'))
+                }
+              } else this.showMessage('Объявление было успешно отредактировано', 'success')
+            } else this.showMessage( 'Объявление не было отредактировано', 'danger');
+          },error => this.showMessage( error, 'danger'))
+    } else this.showMessage( 'Объявление не было отредактировано', 'danger')
   }
 
-
   redraw(element: any, angle: number, image_id?: number) { 
-    document.getElementById(`rotate_${element.name}`).style.display="none";
+    const rotateButton = document.getElementById(`rotate_${element.name}`);
+    if(rotateButton)
+      rotateButton.style.display="none";
+    const deleteButton = document.getElementById(`delete_${element.name}`);
+    if(deleteButton) 
+      deleteButton.style.display="none";
     const type = element.src.includes('http') ? element.src.split('.')[element.src.split('.').length -1] : element.src.includes('data') ? element.src.split(";")[0].split("/")[1] : 'jpeg';
         fetch(element.src).then(res => res.blob()).then(blob => {
-        const file =  new File([blob], element.name, {type: `image/${type}`});
-        if(image_id == -1){
-          this.srcImg.file = file;
-          this.srcImg.src = null;
-          this.mainResizer.nativeElement.style.display = "none";
-        }else{
-          this.urls[image_id].file = file;
-          this.urls[image_id].src = this.showSpinner;
-        } 
-      this.loadFile(file, (src, name) => {
-        element = {src, name, file}
-      const image: HTMLImageElement = new Image();
-      image.onload = () => {
-        const canvas = document.createElement('canvas');
-        [canvas.width, canvas.height] = [image.width, image.height];
-        if (angle === Math.abs(90)) {
-          [canvas.width, canvas.height] = [canvas.height, canvas.width];
-        }
-        const context = canvas.getContext('2d');
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        context.save();
-        context.translate(canvas.width / 2, canvas.height / 2);
-        context.rotate(angle * Math.PI / 180);
-        context.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2);
-        context.restore();
-        element.src = canvas.toDataURL();
-        const isMainLogoRotate = image_id == -1;
-        const name = isMainLogoRotate ? this.srcImg.name : this.urls[image_id].name ;
-        const type = isMainLogoRotate ? this.srcImg.file.type : this.urls[image_id].file.type ;
-        fetch(element.src).then(res => res.blob()).then(blob => {
-          const file = new File([blob], name, {type})
-          isMainLogoRotate ? this.onFileSelected(file, true) : this.onFilesMultipleSelected(file, image_id, true);
-        });
-        
-      };
-      image.src = element.src;
-      if(image_id != -1){
-        this.urls[image_id] = element;
-      }
-      })
+          const file =  new File([blob], element.name, {type: `image/${type}`});
+          if(image_id == -1){
+            this.srcImg.file = file;
+            this.srcImg.src = null;
+            this.mainResizer.nativeElement.style.display = "none";
+          }else{
+            this.urls[image_id].file = file;
+            this.urls[image_id].src = this.loadingSpinner;
+          } 
+        this.loadFile(file, (src, name) => {
+          element = {src, name, file}
+          const image: HTMLImageElement = new Image();
+          image.onload = () => {
+            const canvas = document.createElement('canvas');
+            [canvas.width, canvas.height] = [image.width, image.height];
+            if (angle === Math.abs(90)) {
+              [canvas.width, canvas.height] = [canvas.height, canvas.width];
+            }
+            const context = canvas.getContext('2d');
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.save();
+            context.translate(canvas.width / 2, canvas.height / 2);
+            context.rotate(angle * Math.PI / 180);
+            context.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2);
+            context.restore();
+            element.src = canvas.toDataURL();
+            const isMainLogoRotate = image_id == -1;
+            const name = isMainLogoRotate ? this.srcImg.name : this.urls[image_id].name ;
+            const type = isMainLogoRotate ? this.srcImg.file.type : this.urls[image_id].file.type ;
+            fetch(element.src).then(res => res.blob()).then(blob => {
+              const file = new File([blob], name, {type})
+              isMainLogoRotate ? this.onFileSelected(file, true) : this.onFilesMultipleSelected(file, image_id, true);
+            });
+          };
+        image.src = element.src;
+        })
     });    
+  }
+  setControlButton(buttonVariable: string, name: string, status: boolean){
+    const rotateButton = document.getElementById(`${buttonVariable}_${name}`);
+    if(rotateButton)
+      rotateButton.style.display = status ? "block" : "none"
   }
 }
