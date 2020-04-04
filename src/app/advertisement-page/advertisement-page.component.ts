@@ -18,7 +18,7 @@ export interface ImageDataInterface {
   src: string;
   name: string;
   blob?: Blob;
-  file: File
+  file: File | any
 }
 
 @Component({
@@ -190,12 +190,36 @@ export class AdvertisementPageComponent implements OnInit{
       this.loadFile(file, (src, name) => {
         this.mainImageData = {src, name: name.replace(/(\.[\w\d_-]+)$/i, `${Math.round(Math.random() * 100)}$1`), file}
         this.uploadStatus = false;
-        this.uploadImages(this.mainImageData);
+        this.redrawAndUpload(this.mainImageData,0);
         this.isDisabled = false
       })
     },500)
   }
   
+  redrawAndUpload(element: ImageDataInterface, angle: number) {
+    const image: HTMLImageElement = new Image();
+    image.onload = () => {
+      const canvas = document.createElement('canvas');
+      [canvas.width, canvas.height] = [image.width, image.height];
+      if (angle === Math.abs(90)) {
+        [canvas.width, canvas.height] = [canvas.height, canvas.width];
+      }
+      const context = canvas.getContext('2d');
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.save();
+      context.translate(canvas.width / 2, canvas.height / 2);
+      context.rotate(angle * Math.PI / 180);
+      context.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2);
+      context.restore();
+      canvas.toBlob((blob: Blob) => {
+        element.file = blob;
+      });
+      element.src = canvas.toDataURL();
+      this.uploadImages(element);
+    };
+    image.src = element.src;
+  }
+
   selectedFiles: File = null;
   additionalImagesAdd(event){
     this.uploadStatus = true;
@@ -213,7 +237,8 @@ export class AdvertisementPageComponent implements OnInit{
           file
         }
           this.additionalImagesData[this.additionalImagesData.length - 1] = item;
-          this.uploadImages(item);
+        //  this.uploadImages(item);
+          this.redrawAndUpload(item,0);
            this.uploadStatus = false;
       });
     }, 500)
@@ -238,7 +263,7 @@ export class AdvertisementPageComponent implements OnInit{
         item.name = name.replace(/(\.[\w\d_-]+)$/i, `${Math.round(Math.random() * 100)}$1`);
         item.file = file;
         this.showSpinner = false;
-      this.uploadImages(item);
+        this.redrawAndUpload(item,0);
       });
     }, 500);
   };
@@ -270,7 +295,8 @@ export class AdvertisementPageComponent implements OnInit{
     this.createForm()
   //  this.itemName = Ctlg_Name
     this.form.controls['Categories'].setValue(Ctlg_Name)
-    this.isDisabled = true
+    this.isDisabled = true;
+    this.mainResizer.nativeElement.style.display = "none";
     this.mainImageData = {
       src: '',
       name: '',
