@@ -296,7 +296,7 @@ export class AdvertisementPageComponent implements OnInit{
   //  this.itemName = Ctlg_Name
     this.form.controls['Categories'].setValue(Ctlg_Name)
     this.isDisabled = true;
-    this.mainResizer.nativeElement.style.display = "none";
+    this.mainResizer.nativeElement.display = "none";
     this.mainImageData = {
       src: '',
       name: '',

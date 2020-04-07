@@ -72,7 +72,6 @@ export class DetailPageComponent implements OnInit {
     this.apiRoot = environment.api
     this.message = new Message('danger', '')
     this.prc_ID = this.route.snapshot.params.idProduct
-
     let cid
 
     if(window.location.pathname.includes('cabinet')){
@@ -88,9 +87,8 @@ export class DetailPageComponent implements OnInit {
 
     this.mainService.getShopInfo().subscribe((res) => {
       this.appCode = res.cust_id
-
       this.mainService.getProducts(this.route.snapshot.params['id'], res.cust_id, cid).subscribe((res) => {
-        this.allGallery = res
+        this.allGallery = res;
         this.showPrevElementId = this.route.snapshot.params['idProduct'] != this.allGallery[0].prc_ID;
 
         this.showNextElementId = this.route.snapshot.params['idProduct'] != this.allGallery[this.allGallery.length - 1].prc_ID;
@@ -189,7 +187,7 @@ export class DetailPageComponent implements OnInit {
   }
 
   routeNextProduct(el){
-
+    console.log(this.allGallery)
     this.showPrevElementId = true
 
     this.showSpinner = true
@@ -201,6 +199,7 @@ export class DetailPageComponent implements OnInit {
       if(this.elCurrentId == this.allGallery[i].prc_ID){
         this.nextElementId = this.allGallery[i+1].prc_ID
         if(window.location.href.includes('cabinet')){
+          this.showNextElementId =  !!this.allGallery[i+2];
           this.router.navigate(['/cabinet', 'categories', this.allGallery[i+1].id, 'products', this.allGallery[i+1].prc_ID])
         }
         else{
@@ -230,28 +229,23 @@ export class DetailPageComponent implements OnInit {
   }
 
   routePrewProduct(el){
-
     this.showNextElementId = true
     this.showSpinner = true
-
     if(this.elCurrentId == undefined){
       this.elCurrentId = el.prc_ID
     }
     for(var i=0; i<this.allGallery.length; i++){
       if(this.elCurrentId == this.allGallery[i].prc_ID){
-
-        this.prevElementId = this.allGallery[i-1].prc_ID
+        this.prevElementId = this.allGallery[i-1].prc_ID;
+        this.showPrevElementId = !!this.allGallery[i-2];
         if(window.location.href.includes('cabinet')){
           this.router.navigate(['/cabinet', 'categories', this.allGallery[i-1].id, 'products', this.allGallery[i-1].prc_ID]);
         }
-        else{
+        else
           this.router.navigate(['/categories', this.allGallery[i-1].id, 'products', this.allGallery[i-1].prc_ID]);
-        }
-
       }
     }
     this.elCurrentId = this.prevElementId
-
     this.mainService.getProduct(this.prevElementId, this.appCode, this.appCode).subscribe(
       (res: any) => {
         console.log(res)
@@ -268,7 +262,6 @@ export class DetailPageComponent implements OnInit {
           this.showSpinner = false
       }
     )
-
   }
 
   addToCart(el){

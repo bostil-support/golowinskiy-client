@@ -35,9 +35,8 @@ const routes: Routes = [
         { path: ':idProduct', component: DetailPageComponent },
     ]},
     { path: 'cabinet', component: MainPageComponent, canActivate: [AuthGuard] },
-    { path: 'cabinet/categories/:id/products', component: ProductsPageComponent, canActivate: [AuthGuard], children: [
-        { path: ':idProduct', component: DetailPageComponent }
-    ]},
+    { path: 'cabinet/categories/:id/products', component: ProductsPageComponent, canActivate: [AuthGuard]},
+    { path: 'cabinet/categories/:id/products/:idProduct', component: DetailPageComponent, canActivate: [AuthGuard]},
     { path: 'addProduct', component: AdvertisementPageComponent, canActivate: [AuthGuard] },
     { path: 'cabinet/categories/:id/products/:idProduct/edit', component: EditAdvertisementPageComponent }
 ]

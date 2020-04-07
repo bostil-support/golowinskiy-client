@@ -81,7 +81,7 @@
                 font-size: 34px;
                 cursor: pointer;
                 @media screen and (max-width: 1078px){
-                    display: none;
+                //    display: none;
                 }
             }
         }
@@ -256,7 +256,7 @@
                     overflow: hidden;
                 }
                 p{
-                    font-size: 17px;
+                    font-size: 20px;
                 }
                 h6{
                     font-size: 20px;
@@ -408,4 +408,11 @@
 .showMessage i{
     font-size: 60px;
     color: #5c646b;
+}
+
+.prew{
+    margin-right: 7px;
+}
+.next{
+    margin-left: 7px;
 }
