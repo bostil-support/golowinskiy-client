@@ -20,7 +20,7 @@
       <div class="arrows prew"
       [attr.data-next]="prevElementId"
       (click)="routePrewProduct(element)">
-        <i *ngIf="showPrevElementId" class="fa fa-chevron-left" aria-hidden="true"></i>
+        <i *ngIf="showPrevElementId && showProduct" class="fa fa-chevron-left" aria-hidden="true"></i>
       </div>
       <div *ngIf="showProduct" class="image">
         <img [src]="apiRoot + 'Img?AppCode=' + appCode + '&ImgFileName=' + elementImage_Base">
@@ -30,10 +30,10 @@
           <i class="fa fa-spinner" aria-hidden="true"></i>
         </div>
       </div>
-      <div class="arrows next"
+      <div  class="arrows next"
           [attr.data-next]="nextElementId"
           (click)="routeNextProduct(element)">
-        <i *ngIf="showNextElementId" class="fa fa-chevron-right" aria-hidden="true"></i>
+        <i *ngIf="showNextElementId && showProduct" class="fa fa-chevron-right" aria-hidden="true"></i>
       </div>
     </div>
 
@@ -113,10 +113,9 @@
         [innerHtml]="element.tDescription"
       >{{ element.tDescription }}
     </p>
-      <h6>Контакты</h6>
     </div>
     <!-- begin show only for mobile fersion-->
-      <p *ngIf="showDescription" (click)="showDetail(element)" class="detail">Смотреть полное описание</p>
+      <p *ngIf="showDescription" (click)="showDetail(element)" class="detail">ПОДРОБНЕЕ</p>
     <!-- end -->
     <div class="contact_info">
       <div class="phone">

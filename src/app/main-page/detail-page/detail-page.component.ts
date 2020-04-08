@@ -82,38 +82,43 @@ export class DetailPageComponent implements OnInit {
     else{
       this.showEdit = false
       this.showBasket = true
-      cid = ''
+      cid = '' //localStorage.getItem('userId')
     }
 
-    this.mainService.getShopInfo().subscribe((res) => {
-      this.appCode = res.cust_id
-      this.mainService.getProducts(this.route.snapshot.params['id'], res.cust_id, cid).subscribe((res) => {
+   // this.mainService.getShopInfo().subscribe((res) => {
+   //   this.appCode = res.cust_id
+   this.appCode = environment.idPortal;
+      this.mainService.getProducts(this.route.snapshot.params['id'], this.appCode, cid).subscribe((res) => {
         this.allGallery = res;
         this.showPrevElementId = this.route.snapshot.params['idProduct'] != this.allGallery[0].prc_ID;
-
         this.showNextElementId = this.route.snapshot.params['idProduct'] != this.allGallery[this.allGallery.length - 1].prc_ID;
       })
       this.showSpinner = true;
-      this.mainService.getProduct(this.route.snapshot.params.idProduct, res.cust_id, res.cust_id).subscribe(
-        (res: any) => {
-          this.element = res
-          this.elementImage_Base = res.t_imageprev
-          this.showProduct = true
-          if(this.element.additionalImages.length > 3 ){
-            this.showAdditionalImages = true
-            this.additionalImages = this.element.additionalImages.slice(0,3)
-          }
-          else{
-            this.showAdditionalImages = false
-            this.additionalImages = this.element.additionalImages
-          }
-          this.showSpinner = false
-        })
-      })
-
-
-
+      this.getProduct(this.route.snapshot.params.idProduct);
+   //   })
   }
+
+  getProduct(productId){
+    this.showSpinner = true;
+    this.showProduct = false;
+    this.mainService.getProduct(productId, this.appCode, this.appCode).subscribe(
+      (res: any) => {
+        this.element = res
+        this.elementImage_Base = res.t_imageprev
+        this.showProduct = true
+        if(this.element.additionalImages.length > 3 ){
+          this.showAdditionalImages = true
+          this.additionalImages = this.element.additionalImages.slice(0,3)
+        }
+        else{
+          this.showAdditionalImages = false
+          this.additionalImages = this.element.additionalImages
+        }
+        this.showSpinner = false
+    });
+  }
+
+
   currentPosition: number = 0;
   goLeft(){
     this.currentPosition = this.currentPosition >=0 ? this.currentPosition-=1 : 0;
@@ -187,10 +192,8 @@ export class DetailPageComponent implements OnInit {
   }
 
   routeNextProduct(el){
-    console.log(this.allGallery)
-    this.showPrevElementId = true
-
-    this.showSpinner = true
+    this.showPrevElementId = true;
+    this.showSpinner = true;
     if(this.elCurrentId == undefined){
       this.elCurrentId = el.prc_ID
     }
@@ -210,21 +213,7 @@ export class DetailPageComponent implements OnInit {
 
     this.elCurrentId = this.nextElementId
 
-    this.mainService.getProduct(this.nextElementId, this.appCode, this.appCode).subscribe(
-      (res: any) => {
-          this.element = res
-          this.elementImage_Base = res.t_imageprev
-          if(this.element.additionalImages.length > 3 ){
-            this.showAdditionalImages = true
-            this.additionalImages = this.element.additionalImages.slice(0,3)
-          }
-          else{
-            this.showAdditionalImages = false
-            this.additionalImages = this.element.additionalImages
-          }
-          this.showSpinner = false
-      }
-    )
+    this.getProduct(this.nextElementId)
 
   }
 
@@ -246,22 +235,7 @@ export class DetailPageComponent implements OnInit {
       }
     }
     this.elCurrentId = this.prevElementId
-    this.mainService.getProduct(this.prevElementId, this.appCode, this.appCode).subscribe(
-      (res: any) => {
-        console.log(res)
-          this.element = res
-          this.elementImage_Base = res.t_imageprev
-          if(this.element.additionalImages.length > 3 ){
-            this.showAdditionalImages = true
-            this.additionalImages = this.element.additionalImages.slice(0,3)
-          }
-          else{
-            this.showAdditionalImages = false
-            this.additionalImages = this.element.additionalImages
-          }
-          this.showSpinner = false
-      }
-    )
+    this.getProduct(this.prevElementId);
   }
 
   addToCart(el){

@@ -70,7 +70,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
 
   request() {
     this.mainService.getProducts(this.route.snapshot.params['id'], this.mainService.getCustId(), this.cid).subscribe((res) => {
-      this.Gallery = res
+      this.Gallery = res;
       this.showSpinner = false
     })
     this.mainService.getFonPictures()
