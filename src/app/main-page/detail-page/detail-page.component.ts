@@ -201,8 +201,8 @@ export class DetailPageComponent implements OnInit {
     for(var i=0; i<this.allGallery.length-1; i++){
       if(this.elCurrentId == this.allGallery[i].prc_ID){
         this.nextElementId = this.allGallery[i+1].prc_ID
+        this.showNextElementId =  !!this.allGallery[i+2];
         if(window.location.href.includes('cabinet')){
-          this.showNextElementId =  !!this.allGallery[i+2];
           this.router.navigate(['/cabinet', 'categories', this.allGallery[i+1].id, 'products', this.allGallery[i+1].prc_ID])
         }
         else{
@@ -216,6 +216,9 @@ export class DetailPageComponent implements OnInit {
     this.getProduct(this.nextElementId)
 
   }
+  showFullDescription: boolean = false;
+  limiter = (text: string) => text.length >= 120 && !this.showFullDescription ? text.substring(0, 120) + '...' : text;
+  showDescrButton = () => this.showFullDescription = !this.showFullDescription;
 
   routePrewProduct(el){
     this.showNextElementId = true

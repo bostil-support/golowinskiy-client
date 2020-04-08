@@ -107,16 +107,20 @@
           <i (click)="goRight()" class="fa fa-chevron-right" aria-hidden="true"></i>
         </div>
       </div>
-    <!-- end -->
-    <div class="description" id="show_description">
+    <div *ngIf="element.tDescription" class="description" id="show_description">
       <p *ngIf="element.tDescription"
         [innerHtml]="element.tDescription"
       >{{ element.tDescription }}
     </p>
     </div>
-    <!-- begin show only for mobile fersion-->
-      <p *ngIf="showDescription" (click)="showDetail(element)" class="detail">ПОДРОБНЕЕ</p>
-    <!-- end -->
+      <p *ngIf="showDescription && false" (click)="showDetail(element)" class="detail">ПОДРОБНЕЕ</p>
+    <div class="description_mobile">
+      <img *ngIf="!element.tDescription" [src]="loadingImage" alt="" class="description_mobile-loader">
+      <div (click)="showDescrButton()" class="description_mobile-text">
+        {{limiter(element.tDescription)}}
+      </div>
+      <div (click)="showDescrButton()" *ngIf="!showFullDescription && element.tDescription" class="description_mobile-detail">ПОДРОБНЕЕ</div>
+    </div>
     <div class="contact_info">
       <div class="phone">
         <i class="fa fa-phone" aria-hidden="true"></i>
