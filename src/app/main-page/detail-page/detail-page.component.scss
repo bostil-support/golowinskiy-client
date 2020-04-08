@@ -3,7 +3,7 @@
     padding: 0;
 }
 .showSpinner{
-    position: fixed;
+  //  position: fixed;
     top: 47%;
     left: 47%;
     right: 48%;
@@ -29,13 +29,13 @@
     align-items: flex-start;
     width: 98%;
     margin: 1%;
-    position: fixed;
+  //  position: fixed;
     z-index: 100;
     top: 0;
     //height: calc(50vh);
     @media screen and (max-width: 1078px){
         flex-wrap: wrap;
-        height: calc(98vh);
+     //   height: calc(98vh);
     }
     .close{
         position: absolute;
@@ -90,7 +90,7 @@
             color: #ffffff;
             padding: 11px 30px 9px;
             height: calc(9vh);
-            overflow: hidden;
+        //    overflow: hidden;
             @media screen and (max-width: 1078px){
                 display: flex;
                 justify-content: center;
@@ -204,7 +204,7 @@
             @media screen and (max-width: 1078px){
                 flex-basis: 100%;
                 min-height: calc(25vh);
-                height: calc(29vh);
+                height: auto;
             }
             > h4{
                 text-align: center;
@@ -362,6 +362,9 @@
                     }
                     span{
                         font-size: 19px;
+                        @media screen and (max-width: 1130px){
+                            font-size: 12px;
+                        }
                     }
                 }
                 .email {
@@ -386,6 +389,7 @@
             }
             .application{
                 text-align: center;
+                margin-bottom: 25px;
                 img{
                     margin: 0 5px;
                 }
