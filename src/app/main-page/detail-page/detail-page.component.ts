@@ -86,13 +86,13 @@ export class DetailPageComponent implements OnInit {
     }
 
     this.mainService.getShopInfo().subscribe((res) => {
+      this.appCode = res.cust_id;
       this.dataForDeleteItem = {
         cid: this.authService.getUserId(),
         appCode: this.appCode,
         cust_ID: res.cust_id,
         prc_ID: this.prc_ID,
       }
-      this.appCode = res.cust_id
       this.mainService.getProducts(this.route.snapshot.params['id'], this.appCode, cid).subscribe((res) => {
         this.allGallery = res;
         this.showPrevElementId = this.route.snapshot.params['idProduct'] != this.allGallery[0].prc_ID;
@@ -142,12 +142,12 @@ export class DetailPageComponent implements OnInit {
     }, 2000)
   }
 
-  close(el){
+  close(){
     if(window.location.pathname.includes('cabinet')){
-      this.router.navigate([`/cabinet/categories/${el.id}/products`])
+      this.router.navigate([`/cabinet/categories/${this.route.snapshot.params['id']}/products`])
     }
     else{
-      this.router.navigate([`/categories/${el.id}/products`])
+      this.router.navigate([`/categories/${this.route.snapshot.params['id']}/products`])
     }
   }
 
@@ -170,13 +170,7 @@ export class DetailPageComponent implements OnInit {
             this.showMessage('Товар был успешно удален', 'success')
           else
             this.showMessage('Произошла ошибка удаления товара', 'success')
-          // navigate to products page
-          let url = this.router.url
-          let index = url.lastIndexOf('/')
-          this.router.navigate([url.substr(0, index)]).then(() => {
-            // todo refresh data on product page, solution: bring loading to service
-            window.location.reload()
-          })
+          this.close();
         }
       )
   }

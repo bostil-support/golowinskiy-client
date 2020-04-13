@@ -39,7 +39,6 @@ export class MainService {
   getIdPortal = () => this.idPortal;
 
   getShopInfo() {
-    console.log(this.getPortal())
     return this.http.get<ShopInfoModel>(`${environment.api}shopinfo/${this.getPortal()}`)
       .pipe(
         tap(
