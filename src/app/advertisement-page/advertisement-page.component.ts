@@ -106,10 +106,10 @@ export class AdvertisementPageComponent implements OnInit{
       (res) => {
         this.cust_id = res.cust_id;
         this.userId = this.authService.getUserId()
-        this.showSpinner = false
-      }
+        this.showSpinner = false;
+        this.categoriesService.fetchCategoriesAll(this.cust_id,null,this.advertId);
+      }, error=>alert(error.error.message)
     )
-    this.categoriesService.fetchCategoriesAll(null,this.advertId);
     this.initialCategories = this.storageService.getCategories();
     this.storageService.breadcrumbFlag = false;
     this.mainService.getUserInfo().subscribe((res: any) => {
@@ -160,7 +160,8 @@ export class AdvertisementPageComponent implements OnInit{
       const name = isMainLogoRotate ? this.mainImageData.file.name : this.additionalImagesData[image_id].file.name ;
       const type = isMainLogoRotate ? this.mainImageData.file.type : this.additionalImagesData[image_id].file.type ;
       fetch(element.src).then(res => res.blob()).then(blob => {
-        const file = new File([blob], name, {type})
+      //  const file = new File([blob], name, {type})
+        const file = {name, file: blob}
         isMainLogoRotate ? this.mainFileSelected(file, true) : this.additionalImagesChange(file, image_id, true);
       });
     };

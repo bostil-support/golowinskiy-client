@@ -61,7 +61,7 @@ export class DetailPageComponent implements OnInit {
   kolItems;
   ord_Id: string;
   loadingImage = "data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==";
-
+  dataForDeleteItem: DeleteProduct = null;
   constructor(private mainService: MainService,
     private route: ActivatedRoute,
     private router: Router,
@@ -85,9 +85,14 @@ export class DetailPageComponent implements OnInit {
       cid = '' //localStorage.getItem('userId')
     }
 
-   // this.mainService.getShopInfo().subscribe((res) => {
-   //   this.appCode = res.cust_id
-   this.appCode = environment.idPortal;
+    this.mainService.getShopInfo().subscribe((res) => {
+      this.dataForDeleteItem = {
+        cid: this.authService.getUserId(),
+        appCode: this.appCode,
+        cust_ID: res.cust_id,
+        prc_ID: this.prc_ID,
+      }
+      this.appCode = res.cust_id
       this.mainService.getProducts(this.route.snapshot.params['id'], this.appCode, cid).subscribe((res) => {
         this.allGallery = res;
         this.showPrevElementId = this.route.snapshot.params['idProduct'] != this.allGallery[0].prc_ID;
@@ -95,7 +100,8 @@ export class DetailPageComponent implements OnInit {
       })
       this.showSpinner = true;
       this.getProduct(this.route.snapshot.params.idProduct);
-   //   })
+      }, error=>alert(error.error.message))
+
   }
 
   getProduct(productId){
@@ -157,14 +163,7 @@ export class DetailPageComponent implements OnInit {
 
   deleteProduct(){
     this.showSpinner = true
-    this.mainService.getShopInfo().subscribe(res => {
-      let data: DeleteProduct = {
-        cid: this.authService.getUserId(),
-        appCode: this.appCode,
-        cust_ID: res.cust_id,
-        prc_ID: this.prc_ID,
-      }
-      this.mainService.deleteProduct(data).subscribe(
+      this.mainService.deleteProduct(this.dataForDeleteItem).subscribe(
         (res) => {
           this.showSpinner = false
           if(res)
@@ -180,7 +179,6 @@ export class DetailPageComponent implements OnInit {
           })
         }
       )
-    })
   }
 
   mouseOverImg(el){
@@ -217,7 +215,8 @@ export class DetailPageComponent implements OnInit {
 
   }
   showFullDescription: boolean = false;
-  limiter = (text: string) => text.length >= 120 && !this.showFullDescription ? text.substring(0, 120) + '...' : text;
+  limitDescription: number = 120;
+  limiter = (text: string) => text ? text.length > this.limitDescription && !this.showFullDescription ? text.substring(0, this.limitDescription) + '...' : text : '';
   showDescrButton = () => this.showFullDescription = !this.showFullDescription;
 
   routePrewProduct(el){
@@ -303,7 +302,7 @@ export class DetailPageComponent implements OnInit {
                     }
                   })
             })
-      })
+      }, error=>alert(error.error.message))
     })
   }
 

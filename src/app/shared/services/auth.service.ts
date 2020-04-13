@@ -7,6 +7,7 @@ import { environment } from "../../../environments/environment"
 import { User } from "../interfaces"
 import { Router } from "@angular/router";
 import {OrderService} from './order.service';
+import { MainService } from "./main.service"
 
 @Injectable({
     providedIn: 'root'
@@ -15,25 +16,26 @@ export class AuthService {
 
     private token = null
     private userId = null
-
+    private appCode: string = null;
     private Account = {}
 
     constructor(private http: HttpClient,
         private router: Router,
+        private mainService: MainService,
         private orderService: OrderService
-                ){
-
-    }
+        ){
+        }
 
     public user = {
-        'Cust_ID_Main': environment.idPortal
+        'Cust_ID_Main': null
     }
 
-    registration(){
+    registration(shopId: string){
+        this.user.Cust_ID_Main = shopId;
         return this.http.put(`${environment.api}Authorization`, this.user)
     }
 
-    login(): Observable<{
+    login(shopId: string): Observable<{
         accessToken: string,
         userId: string,
         role: string,
@@ -41,6 +43,7 @@ export class AuthService {
         userName: string,
         phone: string
     }>{
+        this.user.Cust_ID_Main = shopId;
         return this.http.post<{
             accessToken: string,
             userId: string,

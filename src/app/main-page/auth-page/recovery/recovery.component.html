@@ -2,32 +2,31 @@
 <div class="showSpinner" *ngIf="showSpinner">
     <i class="fa fa-spinner fa-spin"></i>
 </div>
-<div class="showMessage" *ngIf="message.text">            
+<div class="showMessage" *ngIf="show">            
     <div class="alert alert-{{message.type}}">            
-        {{ message.text }}
+        {{message.text}}
     </div>
 </div>    
 <form [formGroup]="form" (ngSubmit)="onSubmit()">    
     <div  
         class="form-group"    
-        [ngClass]="{'has-error': form.controls['email'].invalid &&  form.controls['email'].touched}"            
+        [ngClass]="{'has-error': form.controls['phone'].invalid &&  form.controls['phone'].touched}"            
     >
         <input 
-            type="email" 
-            placeholder="Ваш e-mail"
-            id="email"
-            formControlName="email"
-            [(ngModel)]="authService.user.EMail"
+            type="text" 
+            placeholder="Ваш мобильный номер"
+            id="phone"
+            formControlName="phone"
         >
         <span 
             class="error-msg"
-            *ngIf="form.controls['email'].errors && form.controls['email'].touched"
+            *ngIf="form.controls['phone'].errors && form.controls['phone'].touched"
         >
-            <span *ngIf="form.controls['email'].errors.required">
-                Заполните Email 
+            <span *ngIf="form.controls['phone'].errors.required">
+                Заполните phone 
             </span>     
-            <span *ngIf="form.controls['email'].errors.pattern">
-                Введите корректный Email
+            <span *ngIf="form.controls['phone'].errors.pattern">
+                Введите корректный номер телефона.
             </span>                     
         </span>               
     </div>            

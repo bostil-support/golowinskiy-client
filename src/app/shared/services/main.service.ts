@@ -5,8 +5,7 @@ import {mergeMap, switchMap, tap} from 'rxjs/operators';
 
 import {environment} from 'src/environments/environment';
 import {CategoryItem} from '../../categories/categories.component';
-import {AdditionalImagesData, AdditionalImagesRequest, DeleteProduct, Product} from '../interfaces';
-import {AuthService} from './auth.service';
+import {AdditionalImagesData, AdditionalImagesRequest, DeleteProduct} from '../interfaces';
 import {OrderService} from './order.service';
 import {ShopInfoModel} from '../models/shop-info.model';
 import { CommonService } from './common.service';
@@ -16,17 +15,13 @@ import { CommonService } from './common.service';
   providedIn: 'root'
 })
 export class MainService {
-
-  urlPortal = location.hostname.split('.')[0];
-
-  idPortal: string = environment.idPortal;
+  idPortal: string = null;
   private cust_id = null;
   private mainImage = null;
   private mainPictureAccountUser = null;
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService,
     private orderService: OrderService,
     public commonService: CommonService
   ) {
@@ -35,26 +30,17 @@ export class MainService {
   public getUserId() {
     return this.http.get(`${environment.api}Load/${this.cust_id}`);
   }
-
+  zeroDomains = ['localhost','головинский'];
   public getPortal() {
-    return this.urlPortal;
+    return (location.hostname.split('.')[0] || this.zeroDomains.includes(location.hostname.split('.')[0])) ? 'golowinskiy' : location.hostname.split('.')[0];
   }
 
-  public getIdPortal() {
-   // var n = parseInt(this.urlPortal);
-
-  //  if (location.hostname.split('.').length == 2 || location.hostname == environment.domain) {
-      return this.idPortal;
-
-  /*  } else {
-      return this.urlPortal;
-    }
-    */
-
-  }
+  setIdPortal = (id: any) => this.idPortal = id;
+  getIdPortal = () => this.idPortal;
 
   getShopInfo() {
-    return this.http.get<ShopInfoModel>(`${environment.api}shopinfo/${this.getIdPortal()}`)
+    console.log(this.getPortal())
+    return this.http.get<ShopInfoModel>(`${environment.api}shopinfo/${this.getPortal()}`)
       .pipe(
         tap(
           ({cust_id, mainImage, mainPictureAccountUser}) => {
@@ -100,9 +86,9 @@ export class MainService {
     return this.http.get(`${environment.api}userinfo/${localStorage.getItem('userId')}/`);
   }
 
-  getCategories(userId?: string, advert?: string) {
+  getCategories(idPortal:any,userId?: string, advert?: string) {
     let prepatedObject = {
-      cust_ID_Main: environment.idPortal,
+      cust_ID_Main: idPortal,
       cid: userId,
       advert: advert
     };
@@ -208,9 +194,7 @@ export class MainService {
   additionalImagesGroup(data: AdditionalImagesData[]) {
     return from(data).pipe(
       mergeMap(item =>
-        forkJoin(this.uploadImage(item.imageData),
-        //  this.additionalImageUpload(item.request),
-        //  of(console.log('hello'))
+        forkJoin(this.uploadImage(item.imageData)
         )
       )
     );

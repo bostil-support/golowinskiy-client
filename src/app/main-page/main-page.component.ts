@@ -44,15 +44,16 @@ export class MainPageComponent implements OnInit, OnDestroy {
     this.sub = this.mainService.getShopInfo()
       .subscribe(
         (res) => {
-          this.mainService.getFonPictures()
+          this.mainService.getFonPictures();
           if (this.isCabinet()) {
-            this.categoriesService.fetchCategoriesUser()
+            this.categoriesService.fetchCategoriesUser(res.cust_id)
           } else {
-            this.categoriesService.fetchCategoriesAll()
+            this.categoriesService.fetchCategoriesAll(res.cust_id)
           }
         },
         (error) => {
-          this.mainService.getErrorFonPicture()
+          alert(error.error.message)
+        //  this.mainService.getErrorFonPicture()
         }
       )
 

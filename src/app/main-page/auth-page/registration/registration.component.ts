@@ -5,6 +5,7 @@ import { Router, ActivatedRoute, Params } from '@angular/router'
 
 import { Message } from 'src/app/shared/models/message.model'
 import { AuthService } from '../../../shared/services/auth.service'
+import { MainService } from 'src/app/shared/services/main.service'
 
 
 @Component({
@@ -17,13 +18,19 @@ export class RegistrationComponent implements OnInit {
   form: FormGroup
   message: Message
   sub: Subscription
-  params  
+  params;
+  shopId: string = null;  
   showSpinner = false
   
 
   constructor(private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute) { }
+    private mainService: MainService,
+    private route: ActivatedRoute) {
+      this.mainService.getShopInfo().subscribe((res) => {
+        this.shopId = res.cust_id;
+      }, error=>alert(error.error.message));
+     }
 
   ngOnInit() {
 
@@ -69,7 +76,7 @@ export class RegistrationComponent implements OnInit {
 
     this.form.disable()
 
-    this.sub = this.authService.registration().subscribe(
+    this.sub = this.authService.registration(this.shopId).subscribe(
       (res: any) => {
         this.showSpinner = false   
         if(res.result == false){

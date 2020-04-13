@@ -3,5 +3,6 @@ export class Message{
         public type: string,
         public text: string,
         public spinner?: boolean,
+        public show?: boolean,
     ){}
 }

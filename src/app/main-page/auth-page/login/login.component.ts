@@ -5,6 +5,7 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 
 import { Message } from 'src/app/shared/models/message.model'
 import { AuthService } from '../../../shared/services/auth.service'
+import { MainService } from 'src/app/shared/services/main.service';
 
 @Component({
   selector: 'app-login',
@@ -18,10 +19,15 @@ export class LoginComponent implements OnInit, OnDestroy {
   sub: Subscription  
   params
   showSpinner = false
-
+  shopId: string = null;
   constructor(private authService: AuthService,
               private router: Router,
-              private route : ActivatedRoute) { }
+              private mainService : MainService,
+              private route : ActivatedRoute) { 
+                this.mainService.getShopInfo().subscribe((res) => {
+                  this.shopId = res.cust_id;
+              }, error=>console.log(error.error.message));
+              }
 
   ngOnInit() {
     
@@ -60,7 +66,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     
     this.form.disable()
 
-    this.sub = this.authService.login().subscribe(
+    this.sub = this.authService.login(this.shopId).subscribe(
       (res) => {
         this.showSpinner = false
         if(res.role == 'customer'){

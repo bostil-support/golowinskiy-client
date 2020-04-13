@@ -1,33 +1,53 @@
 import { Component, OnInit } from '@angular/core'
-import { FormGroup, FormControl, Validators } from '@angular/forms'
+import { FormGroup, FormControl, Validators, AbstractControl } from '@angular/forms'
 import { Subscription } from 'rxjs'
 import { Router, ActivatedRoute, Params } from '@angular/router'
 
 import { Message } from 'src/app/shared/models/message.model'
 import { AuthService } from '../../../shared/services/auth.service'
 import { environment } from 'src/environments/environment'
+import { MainService } from 'src/app/shared/services/main.service'
 
+export class CustomValidator{
+  // Number only validation
+  static numeric(control: AbstractControl) {
+    let val = control.value;
+
+    if (val === null || val === '') return null;
+
+    if (!val.toString().match(/^[0-9]+(\.?[0-9]+)?$/)) return { 'invalidNumber': true };
+
+    return null;
+  }
+}
 
 @Component({
   selector: 'app-recovery',
   templateUrl: './recovery.component.html',
   styleUrls: ['./recovery.component.scss']
 })
+
 export class RecoveryComponent implements OnInit {
 
   form: FormGroup
   message: Message
   params
-  showSpinner = false
-
+  showSpinner = false;
+  private appCode: string = null;
+  phoneNumber = "^(\+\d{1,3}[- ]?)?\d{10}$";
   constructor(private authService: AuthService,
               private router: Router,
-              private route : ActivatedRoute) { }
+              private mainService: MainService,
+              private route : ActivatedRoute) {
+                this.mainService.getShopInfo().subscribe((res) => {
+                  this.appCode = res.cust_id;
+              }, error=>alert(error.error.message));
+               }
 
   ngOnInit() {
 
     this.form = new FormGroup({
-      'email': new FormControl(null, [Validators.required,Validators.email])   
+      'phone': new FormControl('', [Validators.required])   
     }); 
 
     this.message = new Message('danger', '')
@@ -37,44 +57,47 @@ export class RecoveryComponent implements OnInit {
     })
 
   }
-
-  private showMessage(type: string = 'danger', text: string){
-    this.message = new Message(type, text)
-    window.setTimeout(() => {
+  show: boolean = false;
+  private showMessage(type: string = 'danger', text: string, redirect: boolean = false){
+    this.show = true;
+    this.message = new Message(type, text);
+    setTimeout(() => {
       if(this.message.type == 'success'){
-        this.message.text = ''
+        this.message.text = null;
+        this.show = false;
+        if(redirect)
         this.router.navigate([`/auth/login`], {
           queryParams: {
               route: this.params.route
           }
         })
       }
-    }, 2000);
+    }, 5000);
   }
 
   onSubmit(){
 
     this.showSpinner = true
 
-    this.form.disable()
+ //   this.form.disable()
     const recoveryData = {
-      'Cust_ID_Main': environment.idPortal,
-      'Email': this.form.value.email
+      'Cust_ID_Main': this.appCode,
+      'phone': this.form.value.phone
     }
     this.authService.recovery(recoveryData).subscribe(
       (res: any) => {
-        this.showSpinner = false   
+        this.showSpinner = false;   
         if(res.founded == false){
           this.showMessage('danger', `${res.message}`)
         }
         else if(res.founded == true){          
-          this.showMessage('success', `${res.message}`)          
+          this.showMessage('success', `${res.message}`, true)          
         }
       },
-      (error) => {        
-        this.showMessage('danger', 'Неверные данные')
-        this.showSpinner = false
-        this.form.enable()
+      (error) => {    
+    //    this.form.reset();    
+        this.showMessage('danger', error.message)
+        this.showSpinner = false;
       }
     )
   }

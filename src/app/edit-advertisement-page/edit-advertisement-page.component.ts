@@ -154,7 +154,7 @@ export class EditAdvertisementPageComponent implements OnInit {
           });
         });
       })
-    })
+    },error=>alert(error.error.message))
     this.message = new Message('danger', '')
     if(localStorage.getItem('phone')){
       this.showPhone = true

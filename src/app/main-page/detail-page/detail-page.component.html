@@ -1,5 +1,3 @@
-
-
 <div class="showMessageTxt" *ngIf="message.text">
   <div
       class="alert alert-{{message.type}}"
@@ -112,12 +110,12 @@
     </p>
     </div>
       <p *ngIf="showDescription && false" (click)="showDetail(element)" class="detail">ПОДРОБНЕЕ</p>
-    <div class="description_mobile">
+    <div *ngIf="element.tDescription" class="description_mobile">
       <img *ngIf="!element.tDescription" [src]="loadingImage" alt="" class="description_mobile-loader">
       <div (click)="showDescrButton()" class="description_mobile-text">
         {{limiter(element.tDescription)}}
       </div>
-      <div (click)="showDescrButton()" *ngIf="!showFullDescription && element.tDescription" class="description_mobile-detail">ПОДРОБНЕЕ</div>
+      <div (click)="showDescrButton()" *ngIf="!showFullDescription && element.tDescription && (limiter(element.tDescription).length > limitDescription)" class="description_mobile-detail">ПОДРОБНЕЕ</div>
     </div>
     <div class="contact_info">
       <div class="phone">

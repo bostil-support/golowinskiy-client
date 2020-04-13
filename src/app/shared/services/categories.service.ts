@@ -20,17 +20,17 @@ export class CategoriesService {
     private authService: AuthService,
   ) { }
 
-  fetchCategoriesAll(userId?:string, advertId?:string) {
+  fetchCategoriesAll(idPortal,userId?:string, advertId?:string) {
     this._isCategoriesLoaded.next(true)
-    this.mainService.getCategories(userId,advertId).subscribe(res => {
+    this.mainService.getCategories(idPortal,userId,advertId).subscribe(res => {
       this._mainCategories$.next(res);
       this._isCategoriesLoaded.next(false)
     });
   }
 
-  fetchCategoriesUser() {
+  fetchCategoriesUser(idPortal) {
     this._isCategoriesLoaded.next(true)
-    this.mainService.getCategories(this.authService.getUserId()).subscribe(res => {
+    this.mainService.getCategories(idPortal,this.authService.getUserId()).subscribe(res => {
       this._userCategories$.next(res);
       this._isCategoriesLoaded.next(false)
     });
@@ -38,10 +38,12 @@ export class CategoriesService {
 
   fetchCategoriesCreate() {
     this._isCategoriesLoaded.next(true)
-    this.mainService.getCategories(this.authService.getUserId()).subscribe(res => {
-      this._createCategories$.next(res);
-      this._isCategoriesLoaded.next(false)
-    });
+    this.mainService.getShopInfo().subscribe((res) => {
+      this.mainService.getCategories(res.cust_id, this.authService.getUserId()).subscribe(res => {
+        this._createCategories$.next(res);
+        this._isCategoriesLoaded.next(false)
+      });
+    }, error=>alert(error.error.message));
   }
 
   public isCategoriesLoaded(): Observable<boolean> {

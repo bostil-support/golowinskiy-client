@@ -22,8 +22,9 @@ export class HeaderComponent implements OnInit {
     private route: ActivatedRoute,
     private mainService: MainService,
     public authService: AuthService,
-    public orderService: OrderService
-  ) {}
+    public orderService: OrderService,
+  ) {
+  }
 
 
   ngOnInit() {

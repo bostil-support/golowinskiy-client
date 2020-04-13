@@ -61,23 +61,25 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
     this.apiRoot = environment.api
     this.cid = this.isCabinet()? localStorage.getItem('userId'): ''
     this.sub = this.mainService.getShopInfo().subscribe(
-      () => this.request(),
-      () => {
+      (res) => this.request(res.cust_id),
+      (error) => {
+        alert(error.error.message)
         this.mainService.getErrorFonPicture()
       }
     )
   }
-
-  request() {
+  idPortal = null;
+  request(idPortal) {
+    this.idPortal = idPortal;
     this.mainService.getProducts(this.route.snapshot.params['id'], this.mainService.getCustId(), this.cid).subscribe((res) => {
       this.Gallery = res;
       this.showSpinner = false
     })
     this.mainService.getFonPictures()
     if(this.isCabinet()) {
-      this.categoriesService.fetchCategoriesUser()
+      this.categoriesService.fetchCategoriesUser(idPortal)
     } {
-      this.categoriesService.fetchCategoriesAll()
+      this.categoriesService.fetchCategoriesAll(idPortal)
     }
   }
 
@@ -162,7 +164,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
                     })
 
               })
-        })
+        }, error=>alert(error.error.message))
     })
   }
 
@@ -173,7 +175,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
     this.router.navigate([`${cabinet}/categories/${item.id}/products`]).then(succeeded => {
       if (succeeded) {
         this.showSpinner = true
-        this.request()
+        this.request(this.idPortal);
       }
     })
   }
