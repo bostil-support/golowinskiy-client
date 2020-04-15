@@ -2,7 +2,7 @@ import {Component, ElementRef, OnInit, ViewChild, OnDestroy} from '@angular/core
 import {Headers} from '@angular/http';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
-
+import * as EXIF from 'exif-js';
 import {environment} from 'src/environments/environment';
 import {Message} from 'src/app/shared/models/message.model';
 import {AuthService} from 'src/app/shared/services/auth.service';
@@ -15,7 +15,7 @@ import {CategoriesService} from '../shared/services/categories.service';
 import { CommonService } from '../shared/services/common.service';
 
 export interface ImageDataInterface {
-  src: string;
+  src: string | any;
   name: string;
   blob?: Blob;
   file: File | any
@@ -191,12 +191,13 @@ export class AdvertisementPageComponent implements OnInit{
       this.loadFile(file, (src, name) => {
         this.mainImageData = {src, name: name.replace(/(\.[\w\d_-]+)$/i, `${Math.round(Math.random() * 100)}$1`), file}
         this.uploadStatus = false;
-        this.redrawAndUpload(this.mainImageData,0);
+        this.setImgOrientation(this.mainImageData).then(result => this.uploadImages(result))
+      //  this.redrawAndUpload(this.mainImageData,0);
         this.isDisabled = false
       })
     },500)
   }
-  
+
   redrawAndUpload(element: ImageDataInterface, angle: number) {
     const image: HTMLImageElement = new Image();
     image.onload = () => {
@@ -221,6 +222,51 @@ export class AdvertisementPageComponent implements OnInit{
     image.src = element.src;
   }
 
+  setImgOrientation(img) {
+    console.log(img)
+    return new Promise((resolve, reject) => {
+     const that = this;
+     EXIF.getData(img.file, function () {
+       if (this && this.exifdata && this.exifdata.Orientation) {
+         that.resetOrientation(img.src, this.exifdata.Orientation, function 
+        (resetBase64Image) {
+          console.log(resetBase64Image == img.src);
+          img.src = resetBase64Image;
+          fetch(resetBase64Image).then(res => res.blob()).then(blob => {
+            img.file = blob;
+            resolve(img);
+          });
+         });
+       } else {
+         resolve(img);
+       }
+       });
+      });
+  }
+
+  resetOrientation(srcBase64, srcOrientation, callback) {
+    const img = new Image();
+    img.onload = function () {
+    const width = img.width,
+      height = img.height,
+      canvas = document.createElement('canvas'),
+      ctx = canvas.getContext('2d');
+
+    if (srcOrientation === 6) {
+      canvas.width = height;
+      canvas.height = width;
+      ctx.transform(0, 1, -1, 0, height, 1);
+      ctx.drawImage(img, 1, 1);
+    } else {
+      return;
+    }
+
+    callback(canvas.toDataURL());
+  };
+  
+    img.src = srcBase64;
+  }
+
   selectedFiles: File = null;
   additionalImagesAdd(event){
     this.uploadStatus = true;
@@ -239,7 +285,8 @@ export class AdvertisementPageComponent implements OnInit{
         }
           this.additionalImagesData[this.additionalImagesData.length - 1] = item;
         //  this.uploadImages(item);
-          this.redrawAndUpload(item,0);
+        //  this.redrawAndUpload(item,0);
+          this.setImgOrientation(item).then(result => this.uploadImages(result));
            this.uploadStatus = false;
       });
     }, 500)
@@ -264,7 +311,8 @@ export class AdvertisementPageComponent implements OnInit{
         item.name = name.replace(/(\.[\w\d_-]+)$/i, `${Math.round(Math.random() * 100)}$1`);
         item.file = file;
         this.showSpinner = false;
-        this.redrawAndUpload(item,0);
+        this.setImgOrientation(item).then(result => this.uploadImages(result))
+      //  this.redrawAndUpload(item,0);
       });
     }, 500);
   };
