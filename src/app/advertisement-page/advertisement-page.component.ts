@@ -223,25 +223,32 @@ export class AdvertisementPageComponent implements OnInit{
   }
 
   setImgOrientation(img) {
-    console.log(img)
     return new Promise((resolve, reject) => {
-     const that = this;
-     EXIF.getData(img.file, function () {
-       if (this && this.exifdata && this.exifdata.Orientation) {
-         that.resetOrientation(img.src, this.exifdata.Orientation, function 
-        (resetBase64Image) {
-          console.log(resetBase64Image == img.src);
-          img.src = resetBase64Image;
-          fetch(resetBase64Image).then(res => res.blob()).then(blob => {
-            img.file = blob;
-            resolve(img);
-          });
-         });
-       } else {
-         resolve(img);
-       }
-       });
+      const that = this;
+      EXIF.getData(img.file, function () {
+          if (this && this.exifdata && this.exifdata.Orientation) {
+            that.resetOrientation(img.src, this.exifdata.Orientation, function 
+            (resetBase64Image,blob) {
+              console.log(resetBase64Image == img.src);
+              img.src = resetBase64Image;
+           //   fetch(resetBase64Image).then(res => res.blob()).then(blob => {
+                img.file = blob;
+                resolve(img);
+            //  });
+            });
+          } else{
+            that.resetOrientation(img.src, this.exifdata.Orientation, function 
+              (resetBase64Image,blob) {
+           //     console.log(resetBase64Image == img.src);
+                img.src = resetBase64Image;
+             //   fetch(resetBase64Image).then(res => res.blob()).then(blob => {
+                  img.file = blob;
+                  resolve(img);
+             //   });
+              });
+          } 
       });
+    });
   }
 
   resetOrientation(srcBase64, srcOrientation, callback) {
@@ -251,19 +258,27 @@ export class AdvertisementPageComponent implements OnInit{
       height = img.height,
       canvas = document.createElement('canvas'),
       ctx = canvas.getContext('2d');
-
     if (srcOrientation === 6) {
       canvas.width = height;
       canvas.height = width;
+     /* canvas.toBlob(function(blob) {
+        console.log(blob)
+      }); */
       ctx.transform(0, 1, -1, 0, height, 1);
       ctx.drawImage(img, 1, 1);
+      canvas.toBlob(function(blob) {
+        callback(canvas.toDataURL(),blob);
+      });
     } else {
-      return;
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 1, 1)
+      canvas.toBlob(function(blob) {
+        callback(canvas.toDataURL(),blob);
+      });
+    //  ctx.transform(0, 1, -1, 0, height, 1);
     }
-
-    callback(canvas.toDataURL());
   };
-  
     img.src = srcBase64;
   }
 
@@ -427,9 +442,26 @@ export class AdvertisementPageComponent implements OnInit{
     if(element)
       (element as any).value = percent
   }
+
+  dataURIToBlob(dataURI) {
+    dataURI = dataURI.replace(/^data:/, '');
+
+    const type = dataURI.match(/image\/[^;]+/);
+    const base64 = dataURI.replace(/^[^,]+,/, '');
+    const arrayBuffer = new ArrayBuffer(base64.length);
+    const typedArray = new Uint8Array(arrayBuffer);
+
+    for (let i = 0; i < base64.length; i++) {
+        typedArray[i] = base64.charCodeAt(i);
+    }
+
+    return new Blob([arrayBuffer], {type});
+}
   uploadImages(additionalImagesData){
+
     const name = additionalImagesData.name;
     const formData = new FormData();
+    console.log(additionalImagesData.file)
     formData.append('AppCode', this.cust_id)
     formData.append('Img', additionalImagesData.file)
     formData.append('TImageprev', name)
