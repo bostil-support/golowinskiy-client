@@ -19,7 +19,7 @@ export class MainService {
   private cust_id = null;
   private mainImage = null;
   private mainPictureAccountUser = null;
-
+  public productsByCategoryId = new Array();
   constructor(
     private http: HttpClient,
     private orderService: OrderService,

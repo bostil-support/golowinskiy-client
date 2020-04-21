@@ -8,7 +8,7 @@ import {of, Subscription} from 'rxjs';
 import {DeleteProduct, Product} from '../../shared/interfaces';
 import {OrderService} from '../../shared/services/order.service';
 import {AuthService} from '../../shared/services/auth.service';
-
+import {Location} from '@angular/common';
 @Component({
   selector: 'app-detail-page',
   templateUrl: './detail-page.component.html',
@@ -66,7 +66,8 @@ export class DetailPageComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     public orderService: OrderService,
-              private authService: AuthService) {}
+    private location : Location,
+    private authService: AuthService) {}
 
   ngOnInit() {
     this.apiRoot = environment.api
@@ -82,7 +83,7 @@ export class DetailPageComponent implements OnInit {
     else{
       this.showEdit = false
       this.showBasket = true
-      cid = '' //localStorage.getItem('userId')
+      cid = '';
     }
 
     this.mainService.getShopInfo().subscribe((res) => {
@@ -93,11 +94,22 @@ export class DetailPageComponent implements OnInit {
         cust_ID: res.cust_id,
         prc_ID: this.prc_ID,
       }
-      this.mainService.getProducts(this.route.snapshot.params['id'], this.appCode, cid).subscribe((res) => {
-        this.allGallery = res;
+      if(this.mainService.productsByCategoryId.length == 0){
+        this.mainService.getProducts(this.route.snapshot.params['id'], this.appCode, cid).subscribe((res) => {
+        //  this.allGallery = res;
+          res.forEach((element,i) => {
+            this.allGallery.push({i, prc_ID: element.prc_ID, src: this.apiRoot + 'Img?AppCode=' + this.appCode + '&ImgFileName=' + element.image_Base, default: this.apiRoot + 'Img?AppCode=' + this.appCode + '&ImgFileName=' + element.image_Base, name: element.image_Base})
+          });
+          this.setSliderImageById(this.route.snapshot.params['idProduct']);
+          this.showPrevElementId = this.route.snapshot.params['idProduct'] != this.allGallery[0].prc_ID;
+          this.showNextElementId = this.route.snapshot.params['idProduct'] != this.allGallery[this.allGallery.length - 1].prc_ID;
+        })
+      }else{
+        this.allGallery = this.mainService.productsByCategoryId;
+        this.setSliderImageById(this.route.snapshot.params['idProduct']);
         this.showPrevElementId = this.route.snapshot.params['idProduct'] != this.allGallery[0].prc_ID;
         this.showNextElementId = this.route.snapshot.params['idProduct'] != this.allGallery[this.allGallery.length - 1].prc_ID;
-      })
+      }
       this.showSpinner = true;
       this.getProduct(this.route.snapshot.params.idProduct);
       }, error=>alert(error.error.message))
@@ -110,7 +122,6 @@ export class DetailPageComponent implements OnInit {
     this.mainService.getProduct(productId, this.appCode, this.appCode).subscribe(
       (res: any) => {
         this.element = res
-        this.elementImage_Base = res.t_imageprev
         this.showProduct = true
         if(this.element.additionalImages.length > 3 ){
           this.showAdditionalImages = true
@@ -124,6 +135,17 @@ export class DetailPageComponent implements OnInit {
     });
   }
 
+  mainImageIndex: number = 0;
+  setSliderImageById(id){
+    this.elementImage_Base = this.allGallery.filter(item => item.prc_ID == id)[0].name;
+    this.updateUrl(id);
+  }
+
+  updateUrl(productId: number){
+    const replacePatch = window.location.pathname.includes('cabinet') ? `/cabinet/categories/${this.route.snapshot.params['id']}/products/${productId}` : `/categories/${this.route.snapshot.params['id']}/products/${productId}`;
+    const url = this.location.path().replace(this.location.path(), replacePatch);
+    this.location.go(url);
+  }
 
   currentPosition: number = 0;
   goLeft(){
@@ -194,18 +216,14 @@ export class DetailPageComponent implements OnInit {
       if(this.elCurrentId == this.allGallery[i].prc_ID){
         this.nextElementId = this.allGallery[i+1].prc_ID
         this.showNextElementId =  !!this.allGallery[i+2];
-        if(window.location.href.includes('cabinet')){
-          this.router.navigate(['/cabinet', 'categories', this.allGallery[i+1].id, 'products', this.allGallery[i+1].prc_ID])
-        }
-        else{
-          this.router.navigate(['/categories', this.allGallery[i+1].id, 'products', this.allGallery[i+1].prc_ID])
-        }
+        this.setSliderImageById(this.nextElementId)
+        this.getProduct(this.nextElementId);
       }
     }
 
     this.elCurrentId = this.nextElementId
 
-    this.getProduct(this.nextElementId)
+  //  this.getProduct(this.nextElementId)
 
   }
   showFullDescription: boolean = false;
@@ -223,15 +241,13 @@ export class DetailPageComponent implements OnInit {
       if(this.elCurrentId == this.allGallery[i].prc_ID){
         this.prevElementId = this.allGallery[i-1].prc_ID;
         this.showPrevElementId = !!this.allGallery[i-2];
-        if(window.location.href.includes('cabinet')){
-          this.router.navigate(['/cabinet', 'categories', this.allGallery[i-1].id, 'products', this.allGallery[i-1].prc_ID]);
-        }
-        else
-          this.router.navigate(['/categories', this.allGallery[i-1].id, 'products', this.allGallery[i-1].prc_ID]);
+        this.setSliderImageById(this.prevElementId)
+        this.getProduct(this.prevElementId);
       }
+      
     }
     this.elCurrentId = this.prevElementId
-    this.getProduct(this.prevElementId);
+  //  this.getProduct(this.prevElementId);
   }
 
   addToCart(el){

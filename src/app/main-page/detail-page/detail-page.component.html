@@ -13,28 +13,28 @@
   </div>
   <div class="detail_product__item detail_product__item--left">
     <div class="detail_product__item--images">
-      <div class="arrows prew"
+      <div class="arrows arrows__prew"
       [attr.data-next]="prevElementId"
       (click)="routePrewProduct(element)">
-        <i *ngIf="showPrevElementId && showProduct" class="fa fa-chevron-left" aria-hidden="true"></i>
+        <i *ngIf="showPrevElementId" class="fa fa-chevron-left" aria-hidden="true"></i>
       </div>
-      <div *ngIf="showProduct" class="image">
+      <div *ngIf="elementImage_Base" class="image">
         <img [src]="apiRoot + 'Img?AppCode=' + appCode + '&ImgFileName=' + elementImage_Base">
       </div>
-      <div *ngIf="!showProduct" class="image">
+      <div *ngIf="elementImage_Base == null" class="image">
         <div class="loadingItem">
           <i class="fa fa-spinner" aria-hidden="true"></i>
         </div>
       </div>
-      <div  class="arrows next"
+      <div  class="arrows arrows__next"
           [attr.data-next]="nextElementId"
           (click)="routeNextProduct(element)">
-        <i *ngIf="showNextElementId && showProduct" class="fa fa-chevron-right" aria-hidden="true"></i>
+        <i *ngIf="showNextElementId" class="fa fa-chevron-right" aria-hidden="true"></i>
       </div>
     </div>
 
     <!-- begin show only for mobile fersion-->
-      <div *ngIf="showProduct && element.additionalImages" class="detail_product__item--additional_images">
+      <div *ngIf="element.additionalImages" class="detail_product__item--additional_images">
         <div *ngIf="showAdditionalImages && currentPosition !==0" class="arrows prew">
           <i (click)="goLeft()" class="fa fa-chevron-left mr-2" aria-hidden="true"></i>
         </div>
@@ -88,7 +88,7 @@
     <h4 *ngIf="element">{{ element.tName }}</h4>
     <p *ngIf="element.catalog">{{ element.catalog }}</p>
     <!-- begin show only for desktop fersion-->
-      <div *ngIf="showProduct && element.additionalImages" class="additional_images">
+      <div *ngIf="true" class="additional_images">
         <div *ngIf="showAdditionalImages && currentPosition !==0" class="arrows prew">
           <i (click)="goLeft()" class="fa fa-chevron-left" aria-hidden="true"></i>
         </div>
