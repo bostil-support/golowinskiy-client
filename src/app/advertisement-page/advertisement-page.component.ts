@@ -71,6 +71,7 @@ export class AdvertisementPageComponent implements OnInit{
   @ViewChild('mainImage') mainImg: ElementRef
   @ViewChild('mainResizer') mainResizer: ElementRef
    advertId: string = "1";
+   useRotate: boolean = false;
   constructor(
     private router: Router,
     private authService: AuthService,
@@ -84,6 +85,7 @@ export class AdvertisementPageComponent implements OnInit{
   }
 
   ngOnInit() {
+    this.useRotate = (/Android/i.test(navigator.userAgent)) ? false : true;
     this.apiRoot = environment.api
     this.form = new FormGroup({
       'Article': new FormControl(null),
@@ -191,7 +193,10 @@ export class AdvertisementPageComponent implements OnInit{
       this.loadFile(file, (src, name) => {
         this.mainImageData = {src, name: name.replace(/(\.[\w\d_-]+)$/i, `${Math.round(Math.random() * 100)}$1`), file}
         this.uploadStatus = false;
-        this.setImgOrientation(this.mainImageData).then(result => this.uploadImages(result))
+        if(this.useRotate)
+          this.setImgOrientation(this.mainImageData).then(result => this.uploadImages(result))
+        else
+          this.redrawAndUpload(this.mainImageData,0);
       //  this.redrawAndUpload(this.mainImageData,0);
         this.isDisabled = false
       })
@@ -301,8 +306,11 @@ export class AdvertisementPageComponent implements OnInit{
           this.additionalImagesData[this.additionalImagesData.length - 1] = item;
         //  this.uploadImages(item);
         //  this.redrawAndUpload(item,0);
+        if(this.useRotate)
           this.setImgOrientation(item).then(result => this.uploadImages(result));
-           this.uploadStatus = false;
+          else
+            this.redrawAndUpload(item,0);
+        this.uploadStatus = false;
       });
     }, 500)
   }
@@ -326,7 +334,10 @@ export class AdvertisementPageComponent implements OnInit{
         item.name = name.replace(/(\.[\w\d_-]+)$/i, `${Math.round(Math.random() * 100)}$1`);
         item.file = file;
         this.showSpinner = false;
-        this.setImgOrientation(item).then(result => this.uploadImages(result))
+        if(this.useRotate)
+          this.setImgOrientation(item).then(result => this.uploadImages(result))
+          else
+            this.redrawAndUpload(item,0);
       //  this.redrawAndUpload(item,0);
       });
     }, 500);
