@@ -41,11 +41,12 @@ export class MainPageComponent implements OnInit, OnDestroy {
     private categoriesService: CategoriesService,
     private env: EnvService
   ) {
+    window.scrollTo(0,0); 
    }
 
   @HostListener('document:scroll', ['$event']) 
     onWindowScroll(event){
-    // console.log(event)
+  //   console.log(event)
   }
   ngOnInit() {
     this.sub = this.mainService.getShopInfo()
