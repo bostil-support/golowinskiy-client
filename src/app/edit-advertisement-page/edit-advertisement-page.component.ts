@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
 import { FormGroup, FormBuilder} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-
+import * as EXIF from 'exif-js';
 import {environment} from 'src/environments/environment';
 import {Message} from 'src/app/shared/models/message.model';
 import {MainService} from '../shared/services/main.service';
@@ -78,6 +78,7 @@ export class EditAdvertisementPageComponent implements OnInit {
   userName: string = "";
   phone: string = "";
   progress: string = "";
+  useRotate: boolean = false;
   @ViewChild('mainResizer') mainResizer: ElementRef
   constructor(
     private router: Router,
@@ -94,6 +95,7 @@ export class EditAdvertisementPageComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.useRotate = (/Android/i.test(navigator.userAgent)) ? false : true;
     this.mainService.getUserInfo().subscribe((res: any) => {
       this.isCanPromo = res.isCanPromo;
     });
@@ -194,6 +196,9 @@ export class EditAdvertisementPageComponent implements OnInit {
         name: isTurning ? selectedFile.name : selectedFile.name.replace(/(\.[\w\d_-]+)$/i, `${Math.round(Math.random() * 100)}$1`) 
       }
       this.srcImgName = this.srcImg.name;
+      if(this.useRotate)
+      this.setImgOrientation({file: selectedFile, name: this.srcImgName, src: this.srcImg.src}).then(result => this.uploadImages(result))
+    else
       this.uploadImages({file: selectedFile, name: this.srcImgName});
       this.uploadImg = false;
     }
@@ -232,6 +237,9 @@ export class EditAdvertisementPageComponent implements OnInit {
         }
         this.imageIndexList.push(this.imageIndex)
         this.filesImg.push(name)
+        if(this.useRotate)
+        this.setImgOrientation({file: preparedObj.file, name: preparedObj.name, src: obj.src}).then(result => this.uploadImages(result))
+      else
         this.uploadImages(preparedObj);
       }
       reader.readAsDataURL(this.selectedFiles)
@@ -411,5 +419,59 @@ export class EditAdvertisementPageComponent implements OnInit {
     const rotateButton = document.getElementById(`${buttonVariable}_${name}`);
     if(rotateButton)
       rotateButton.style.display = status ? "block" : "none"
+  }
+
+
+
+
+  setImgOrientation(img) {
+    return new Promise((resolve, reject) => {
+      const that = this;
+      EXIF.getData(img.file, function () {
+          if (this && this.exifdata && this.exifdata.Orientation) {
+            that.resetOrientation(img.src, this.exifdata.Orientation, function 
+            (resetBase64Image,blob) {
+              img.src = resetBase64Image;
+                img.file = blob;
+                resolve(img);
+            });
+          } else{
+            that.resetOrientation(img.src, this.exifdata.Orientation, function 
+              (resetBase64Image,blob) {
+                img.src = resetBase64Image;
+                  img.file = blob;
+                  resolve(img);
+              });
+          } 
+      });
+    });
+  }
+
+  resetOrientation(srcBase64, srcOrientation, callback) {
+    const img = new Image();
+    img.onload = function () {
+    const width = img.width,
+      height = img.height,
+      canvas = document.createElement('canvas'),
+      ctx = canvas.getContext('2d');
+    if (srcOrientation === 6) {
+      canvas.width = height;
+      canvas.height = width;
+      ctx.transform(0, 1, -1, 0, height, 1);
+      ctx.drawImage(img, 1, 1);
+      canvas.toBlob(function(blob) {
+        callback(canvas.toDataURL(),blob);
+      });
+    } else {
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 1, 1)
+      canvas.toBlob(function(blob) {
+        callback(canvas.toDataURL(),blob);
+      });
+    //  ctx.transform(0, 1, -1, 0, height, 1);
+    }
+  };
+    img.src = srcBase64;
   }
 }
