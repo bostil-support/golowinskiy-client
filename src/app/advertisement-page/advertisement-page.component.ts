@@ -13,6 +13,7 @@ import {of, BehaviorSubject, Subscription} from 'rxjs';
 import {StorageService} from '../shared/services/storage.service';
 import {CategoriesService} from '../shared/services/categories.service';
 import { CommonService } from '../shared/services/common.service';
+import { EnvService } from '../env.service';
 
 export interface ImageDataInterface {
   src: string | any;
@@ -78,15 +79,16 @@ export class AdvertisementPageComponent implements OnInit{
     private mainService: MainService,
     public storageService: StorageService,
     private categoriesService: CategoriesService,
-    private commonStore : CommonService
+    private commonStore : CommonService,
+    private env: EnvService
   ) { 
     this.loadingMini = this.loadingImage = this.commonStore.loadingLittleRedSpinner;
     this.loadingSpinner = this.commonStore.loadingImageSpinner;
+    this.apiRoot = this.env.apiUrl;
   }
 
   ngOnInit() {
     this.useRotate = (/Android/i.test(navigator.userAgent)) ? false : true;
-    this.apiRoot = environment.api
     this.form = new FormGroup({
       'Article': new FormControl(null),
       'TName': new FormControl(null, [Validators.required]),

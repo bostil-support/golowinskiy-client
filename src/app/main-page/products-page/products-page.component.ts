@@ -9,6 +9,7 @@ import {StorageService} from '../../shared/services/storage.service';
 import {AuthService} from '../../shared/services/auth.service';
 import {CategoryItem} from '../../categories/categories.component';
 import {CategoriesService} from '../../shared/services/categories.service';
+import { EnvService } from 'src/app/env.service';
 
 @Component({
   selector: 'app-products-page',
@@ -50,7 +51,9 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
               private storageService: StorageService,
               private authService: AuthService,
               private categoriesService: CategoriesService,
+              private env: EnvService
   ) {
+    this.apiRoot = this.env.apiUrl;
     this.orderService.onClickSum.subscribe(cnt=>this.clickSum = cnt)
     this.orderService.onClick.subscribe(cnt=>this.clickCount = cnt)
   }
@@ -58,7 +61,6 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.categories = this.mainService.loadCategoriesFromStorage()
     this.message = new Message('danger', '')
-    this.apiRoot = environment.api
     this.cid = this.isCabinet()? localStorage.getItem('userId'): ''
     this.sub = this.mainService.getShopInfo().subscribe(
       (res) => this.request(res.cust_id),
@@ -75,7 +77,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
       this.Gallery = res;
       if(this.mainService.productsByCategoryId.length == 0)
       res.forEach((element, i) => {
-        this.mainService.productsByCategoryId.push({i, prc_ID: element.prc_ID, src: this.apiRoot + 'Img?AppCode=' + this.mainService.getCustId() + '&ImgFileName=' + element.image_Base, default: this.apiRoot + 'Img?AppCode=' + this.mainService.getCustId() + '&ImgFileName=' + element.image_Base, name: element.image_Base})
+        this.mainService.productsByCategoryId.push({i, prc_ID: element.prc_ID, src: this.apiRoot + '/api/Img?AppCode=' + this.mainService.getCustId() + '&ImgFileName=' + element.image_Base, default: this.apiRoot + '/api/Img?AppCode=' + this.mainService.getCustId() + '&ImgFileName=' + element.image_Base, name: element.image_Base})
       });
       this.showSpinner = false
     })

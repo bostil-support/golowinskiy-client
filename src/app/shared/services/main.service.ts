@@ -9,7 +9,8 @@ import {AdditionalImagesData, AdditionalImagesRequest, DeleteProduct} from '../i
 import {OrderService} from './order.service';
 import {ShopInfoModel} from '../models/shop-info.model';
 import { CommonService } from './common.service';
-
+import { EnvService } from 'src/app/env.service';
+const punycode = require('punycode');
 
 @Injectable({
   providedIn: 'root'
@@ -23,23 +24,30 @@ export class MainService {
   constructor(
     private http: HttpClient,
     private orderService: OrderService,
-    public commonService: CommonService
+    public commonService: CommonService,
+    private env: EnvService,
   ) {
+    if(this.env.enableDebug)
+    console.log("хост: "+this.env.enableToUnicode ? punycode.toUnicode(location.hostname.split('.')[0]) : location.hostname.split('.')[0]);
   }
 
   public getUserId() {
-    return this.http.get(`${environment.api}Load/${this.cust_id}`);
+    return this.http.get(`${this.env.apiUrl}/api/Load/${this.cust_id}`);
   }
   zeroDomains = ['localhost','головинский'];
   public getPortal() {
-    return (location.hostname.split('.')[0] || this.zeroDomains.includes(location.hostname.split('.')[0])) ? 'golowinskiy' : location.hostname.split('.')[0];
-  }
+    const host = this.env.enableToUnicode ? punycode.toUnicode(location.hostname.split('.')[0]) : location.hostname.split('.')[0];
+    if(host)
+      return this.zeroDomains.includes(host) ? 'golowinskiy' : host;
+    else
+      alert('не могу определить ID магазина');
+  };
 
   setIdPortal = (id: any) => this.idPortal = id;
   getIdPortal = () => this.idPortal;
 
   getShopInfo() {
-    return this.http.get<ShopInfoModel>(`${environment.api}shopinfo/${this.getPortal()}`)
+    return this.http.get<ShopInfoModel>(`${this.env.apiUrl}/api/shopinfo/${this.getPortal()}`)
       .pipe(
         tap(
           ({cust_id, mainImage, mainPictureAccountUser}) => {
@@ -82,7 +90,7 @@ export class MainService {
   }
 
   getUserInfo(headers?) {
-    return this.http.get(`${environment.api}userinfo/${localStorage.getItem('userId')}/`);
+    return this.http.get(`${this.env.apiUrl}/api/userinfo/${localStorage.getItem('userId')}/`);
   }
 
   getCategories(idPortal:any,userId?: string, advert?: string) {
@@ -94,11 +102,11 @@ export class MainService {
       if(!prepatedObject.advert)
       delete prepatedObject.advert   
     return this.http.post<CategoryItem[]>(
-      `${environment.api}categories`, prepatedObject);
+      `${this.env.apiUrl}/api/categories`, prepatedObject);
   }
 
   getProducts(id, cust_id, userId): Observable<any> {
-    return this.http.post(`${environment.api}Gallery/`,
+    return this.http.post(`${this.env.apiUrl}/api/Gallery/`,
       {
         Cust_ID: cust_id,
         ID: id,
@@ -108,7 +116,7 @@ export class MainService {
   }
 
   getProduct(prc_ID: any, cust_id, appCode) {
-    return this.http.post(`${environment.api}Img`,
+    return this.http.post(`${this.env.apiUrl}/api/Img`,
       {
         'prc_ID': prc_ID,
         'cust_ID': cust_id,
@@ -118,17 +126,17 @@ export class MainService {
   }
 /*
   uploadImage(data: any) {
-    return this.http.post(`${environment.api}img/upload/`, data);
+    return this.http.post(`${this.env.apiUrl}/api/img/upload/`, data);
   }
 */
 
 
   uploadImage(data: any){
-  //  return this.postImagesXHR(`${environment.api}img/upload/`,data)
-    return this.http.post(`${environment.api}img/upload/`, data);
+  //  return this.postImagesXHR(`${this.env.apiUrl}/api/img/upload/`,data)
+    return this.http.post(`${this.env.apiUrl}/api/img/upload/`, data);
   }
   uploadImageXHR(data: any,i?,callback?){
-      return this.postImagesXHR(`${environment.api}img/upload/`,data,i,callback)
+      return this.postImagesXHR(`${this.env.apiUrl}/api/img/upload/`,data,i,callback)
     }
 
   sizeCounter: number = 0;
@@ -160,7 +168,7 @@ export class MainService {
   }
 
   addProduct(data: any, headers) {
-    return this.http.post(`${environment.api}product`, data, headers);
+    return this.http.post(`${this.env.apiUrl}/api/product`, data, headers);
   }
 
   deleteProduct(data: DeleteProduct) {
@@ -170,15 +178,15 @@ export class MainService {
       }),
       body: data
     };
-    return this.http.delete(`${environment.api}product`, options);
+    return this.http.delete(`${this.env.apiUrl}/api/product`, options);
   }
 
   editProduct(data: any) {
-    return this.http.put(`${environment.api}product`, data);
+    return this.http.put(`${this.env.apiUrl}/api/product`, data);
   }
 
   editAdditionalImg(data: any) {
-    return this.http.put(`${environment.api}AdditionalImg/api/AdditionalImg`, data);
+    return this.http.put(`${this.env.apiUrl}/api/AdditionalImg/api/AdditionalImg`, data);
   }
   deleteAdditionalImg(data: any) {
     let options = {
@@ -187,7 +195,7 @@ export class MainService {
       }),
       body: data
     };
-    return this.http.delete(`${environment.api}AdditionalImg/api/AdditionalImg`, options);
+    return this.http.delete(`${this.env.apiUrl}/api/AdditionalImg/api/AdditionalImg`, options);
   }
 
   additionalImagesGroup(data: AdditionalImagesData[]) {
@@ -212,7 +220,7 @@ export class MainService {
   }
 
   additionalImageUpload(additionalData: AdditionalImagesRequest) {
-    return this.http.post(`${environment.api}AdditionalImg`, additionalData);
+    return this.http.post(`${this.env.apiUrl}/api/AdditionalImg`, additionalData);
   }
 
   saveCategoriesToStorage(categories) {
@@ -224,16 +232,16 @@ export class MainService {
   }
 
   changeQty(data: {}) {
-    return this.http.post(`${environment.api}order/changeqty/ `, data);
+    return this.http.post(`${this.env.apiUrl}/api/order/changeqty/ `, data);
   }
 
   saveOrder(data: {}, headers) {
-    return this.http.post(`${environment.api}order/save/ `, data, headers);
+    return this.http.post(`${this.env.apiUrl}/api/order/save/ `, data, headers);
   }
 
   registerOrder() {
     return this.getUserId().pipe(
-      switchMap(res => this.http.post(`${environment.api}order/`, {Cust_ID: res, Cur_Code: 810})),
+      switchMap(res => this.http.post(`${this.env.apiUrl}/api/order/`, {Cust_ID: res, Cur_Code: 810})),
       switchMap((res: any) => {
         localStorage.setItem('ord_No', res.ord_No);
         this.orderService.setOrderId(res.ord_ID);
@@ -243,6 +251,6 @@ export class MainService {
   }
 
   addToCart(data) {
-    return this.http.post(`${environment.api}addtocart `, data);
+    return this.http.post(`${this.env.apiUrl}/api/addtocart `, data);
   }
 }

@@ -9,6 +9,7 @@ import {DeleteProduct, Product} from '../../shared/interfaces';
 import {OrderService} from '../../shared/services/order.service';
 import {AuthService} from '../../shared/services/auth.service';
 import {Location} from '@angular/common';
+import { EnvService } from 'src/app/env.service';
 @Component({
   selector: 'app-detail-page',
   templateUrl: './detail-page.component.html',
@@ -67,10 +68,12 @@ export class DetailPageComponent implements OnInit {
     private router: Router,
     public orderService: OrderService,
     private location : Location,
-    private authService: AuthService) {}
+    private authService: AuthService,
+    private env: EnvService) {
+      this.apiRoot = this.env.apiUrl;
+    }
 
   ngOnInit() {
-    this.apiRoot = environment.api
     this.message = new Message('danger', '')
     this.prc_ID = this.route.snapshot.params.idProduct
     let cid
@@ -98,7 +101,7 @@ export class DetailPageComponent implements OnInit {
         this.mainService.getProducts(this.route.snapshot.params['id'], this.appCode, cid).subscribe((res) => {
         //  this.allGallery = res;
           res.forEach((element,i) => {
-            this.allGallery.push({i, prc_ID: element.prc_ID, src: this.apiRoot + 'Img?AppCode=' + this.appCode + '&ImgFileName=' + element.image_Base, default: this.apiRoot + 'Img?AppCode=' + this.appCode + '&ImgFileName=' + element.image_Base, name: element.image_Base})
+            this.allGallery.push({i, prc_ID: element.prc_ID, src: this.apiRoot + '/api/Img?AppCode=' + this.appCode + '&ImgFileName=' + element.image_Base, default: this.apiRoot + '/api/Img?AppCode=' + this.appCode + '&ImgFileName=' + element.image_Base, name: element.image_Base})
           });
           this.setSliderImageById(this.route.snapshot.params['idProduct']);
           this.showPrevElementId = this.route.snapshot.params['idProduct'] != this.allGallery[0].prc_ID;

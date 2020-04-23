@@ -7,6 +7,7 @@ import {Message} from 'src/app/shared/models/message.model';
 import {MainService} from '../shared/services/main.service';
 import { BehaviorSubject} from 'rxjs';
 import { CommonService } from '../shared/services/common.service';
+import { EnvService } from '../env.service';
 
 export interface ImageDataInterface {
   src: string;
@@ -83,11 +84,13 @@ export class EditAdvertisementPageComponent implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private mainService: MainService,
-    public commonStore: CommonService
+    public commonStore: CommonService,
+    private env: EnvService
   ) {
     this.is_edit = true;
     this.loadingSpinner = this.commonStore.loadingImageSpinner;
     this.loadingImage = this.commonStore.loadingLittleRedSpinner;
+    this.apiRoot = this.env.apiUrl;
   }
 
   ngOnInit() {
@@ -97,7 +100,6 @@ export class EditAdvertisementPageComponent implements OnInit {
     this.fio = localStorage.getItem('fio')
     this.userName = localStorage.getItem('userName')
     this.phone = localStorage.getItem('phone')
-    this.apiRoot = environment.api
     this.id = this.route.snapshot.params['id']
     this.prc_ID = this.route.snapshot.params['idProduct']
     this.form = this.fb.group({
@@ -130,7 +132,7 @@ export class EditAdvertisementPageComponent implements OnInit {
           youtube: res.youtube,
         });
         this.showSpinner = false;
-        this.srcImg = {src: `${environment.api}Img?AppCode=${this.AppCode}&ImgFileName=${res.t_imageprev}`,name: res.t_imageprev};
+        this.srcImg = {src: `${this.env.apiUrl}/api/Img?AppCode=${this.AppCode}&ImgFileName=${res.t_imageprev}`,name: res.t_imageprev};
         this.srcImgName = res.t_imageprev
         this.element = res
         this.Ctlg_Name = res.ctlg_Name
@@ -143,7 +145,7 @@ export class EditAdvertisementPageComponent implements OnInit {
         this.additionalImagesArray = res.additionalImages;
         if(res.additionalImages != 0){
           for(let i in res.additionalImages){
-            this.urls[i] = {src: `${environment.api}Img?AppCode=${this.AppCode}&ImgFileName=${res.additionalImages[i].t_image}`, name: res.additionalImages[i].t_image};
+            this.urls[i] = {src: `${this.env.apiUrl}/api/Img?AppCode=${this.AppCode}&ImgFileName=${res.additionalImages[i].t_image}`, name: res.additionalImages[i].t_image};
             this.urlsImages.push(res.additionalImages[i]);
           }
         }

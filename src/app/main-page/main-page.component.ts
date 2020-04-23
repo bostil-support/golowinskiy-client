@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, HostListener} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {Subscription} from 'rxjs';
 import {MainService} from '../shared/services/main.service';
@@ -8,6 +8,7 @@ import {CategoryItem} from '../categories/categories.component';
 import {StorageService} from '../shared/services/storage.service';
 import {AuthService} from '../shared/services/auth.service';
 import {CategoriesService} from '../shared/services/categories.service';
+import { EnvService } from '../env.service';
 
 @Component({
   selector: 'main-page.component',
@@ -38,8 +39,14 @@ export class MainPageComponent implements OnInit, OnDestroy {
     public storageService: StorageService,
     private authService: AuthService,
     private categoriesService: CategoriesService,
-  ) { }
+    private env: EnvService
+  ) {
+   }
 
+  @HostListener('document:scroll', ['$event']) 
+    onWindowScroll(event){
+    // console.log(event)
+  }
   ngOnInit() {
     this.sub = this.mainService.getShopInfo()
       .subscribe(

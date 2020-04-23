@@ -8,6 +8,7 @@ import { User } from "../interfaces"
 import { Router } from "@angular/router";
 import {OrderService} from './order.service';
 import { MainService } from "./main.service"
+import { EnvService } from "src/app/env.service"
 
 @Injectable({
     providedIn: 'root'
@@ -22,7 +23,8 @@ export class AuthService {
     constructor(private http: HttpClient,
         private router: Router,
         private mainService: MainService,
-        private orderService: OrderService
+        private orderService: OrderService,
+        private env: EnvService
         ){
         }
 
@@ -32,7 +34,7 @@ export class AuthService {
 
     registration(shopId: string){
         this.user.Cust_ID_Main = shopId;
-        return this.http.put(`${environment.api}Authorization`, this.user)
+        return this.http.put(`${this.env.apiUrl}/api/Authorization`, this.user)
     }
 
     login(shopId: string): Observable<{
@@ -52,7 +54,7 @@ export class AuthService {
             userName: string,
             phone: string
 
-        }>(`${environment.api}Authorization`, this.user)
+        }>(`${this.env.apiUrl}/api/Authorization`, this.user)
             .pipe(
                 tap(
                     ({accessToken, userId, role, fio, userName, phone}) => {
@@ -76,7 +78,7 @@ export class AuthService {
     }
 
     recovery(body){
-        return this.http.post(`${environment.api}password`, body)
+        return this.http.post(`${this.env.apiUrl}/api/password`, body)
     }
     getUserId(): string{
         return localStorage.getItem('userId')

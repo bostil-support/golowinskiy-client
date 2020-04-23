@@ -29,7 +29,7 @@ import {DetailPageComponent} from './main-page/detail-page/detail-page.component
 import {BreadcrumbsComponent} from './breadcrumbs/breadcrumbs.component';
 import { OrderComponent } from './main-page/order/order.component';
 import { MobileCategoriesComponent } from './categories/mobile-categories/mobile-categories.component';
-
+import { EnvServiceProvider } from './env.service.provider';
 @NgModule({
   declarations: [
     AppComponent,
@@ -61,6 +61,7 @@ import { MobileCategoriesComponent } from './categories/mobile-categories/mobile
     NgxPaginationModule,
   ],
   providers: [
+    EnvServiceProvider,
     {
       provide: HTTP_INTERCEPTORS,
       multi: true,

@@ -19,7 +19,7 @@
         <i *ngIf="showPrevElementId" class="fa fa-chevron-left" aria-hidden="true"></i>
       </div>
       <div *ngIf="elementImage_Base" class="image">
-        <img [src]="apiRoot + 'Img?AppCode=' + appCode + '&ImgFileName=' + elementImage_Base">
+        <img [src]="apiRoot + '/api/Img?AppCode=' + appCode + '&ImgFileName=' + elementImage_Base">
       </div>
       <div *ngIf="elementImage_Base == null" class="image">
         <div class="loadingItem">
@@ -42,7 +42,7 @@
           <img
             *ngFor="let item of additionalImages"
             (mouseenter)="mouseOverImg(item)" (mouseleave)="mouseLeaveImg(element)"
-            [src]="apiRoot + 'Img?AppCode=' + appCode + '&ImgFileName=' + item.t_image"
+            [src]="apiRoot + '/api/Img?AppCode=' + appCode + '&ImgFileName=' + item.t_image"
           >
         </div>
         <div *ngIf="showAdditionalImages && currentPosition !== (element.additionalImages.length - 3)" class="arrows next">
@@ -96,7 +96,7 @@
           <img
             *ngFor="let item of additionalImages"
             (mouseenter)="mouseOverImg(item)" (mouseleave)="mouseLeaveImg(element)"
-            [src]="apiRoot + 'Img?AppCode=' + appCode + '&ImgFileName=' + item.t_image"
+            [src]="apiRoot + '/api/Img?AppCode=' + appCode + '&ImgFileName=' + item.t_image"
           >
         </div>
         <div *ngIf="showAdditionalImages && currentPosition !== (element.additionalImages.length - 3)" class="arrows next">

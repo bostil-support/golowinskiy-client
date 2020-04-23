@@ -28,6 +28,7 @@
     "font-awesome": "^4.7.0",
     "materialize-css": "^1.0.0-rc.2",
     "ngx-pagination": "^3.2.1",
+    "punycode": "^2.1.1",
     "rxjs": "^6.0.0",
     "validate": "^4.5.1",
     "zone.js": "^0.8.26"
