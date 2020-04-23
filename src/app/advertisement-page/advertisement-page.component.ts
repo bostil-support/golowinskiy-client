@@ -236,22 +236,16 @@ export class AdvertisementPageComponent implements OnInit{
           if (this && this.exifdata && this.exifdata.Orientation) {
             that.resetOrientation(img.src, this.exifdata.Orientation, function 
             (resetBase64Image,blob) {
-              console.log(resetBase64Image == img.src);
               img.src = resetBase64Image;
-           //   fetch(resetBase64Image).then(res => res.blob()).then(blob => {
                 img.file = blob;
                 resolve(img);
-            //  });
             });
           } else{
             that.resetOrientation(img.src, this.exifdata.Orientation, function 
               (resetBase64Image,blob) {
-           //     console.log(resetBase64Image == img.src);
                 img.src = resetBase64Image;
-             //   fetch(resetBase64Image).then(res => res.blob()).then(blob => {
                   img.file = blob;
                   resolve(img);
-             //   });
               });
           } 
       });
@@ -268,9 +262,6 @@ export class AdvertisementPageComponent implements OnInit{
     if (srcOrientation === 6) {
       canvas.width = height;
       canvas.height = width;
-     /* canvas.toBlob(function(blob) {
-        console.log(blob)
-      }); */
       ctx.transform(0, 1, -1, 0, height, 1);
       ctx.drawImage(img, 1, 1);
       canvas.toBlob(function(blob) {

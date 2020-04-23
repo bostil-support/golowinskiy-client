@@ -2,7 +2,6 @@ import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
 import { FormGroup, FormBuilder} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import * as EXIF from 'exif-js';
-import {environment} from 'src/environments/environment';
 import {Message} from 'src/app/shared/models/message.model';
 import {MainService} from '../shared/services/main.service';
 import { BehaviorSubject} from 'rxjs';
@@ -92,6 +91,7 @@ export class EditAdvertisementPageComponent implements OnInit {
     this.loadingSpinner = this.commonStore.loadingImageSpinner;
     this.loadingImage = this.commonStore.loadingLittleRedSpinner;
     this.apiRoot = this.env.apiUrl;
+    this.mainService.productsByCategoryId.length = 0;
   }
 
   ngOnInit() {

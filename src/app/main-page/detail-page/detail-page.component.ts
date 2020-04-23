@@ -116,7 +116,6 @@ export class DetailPageComponent implements OnInit {
       this.showSpinner = true;
       this.getProduct(this.route.snapshot.params.idProduct);
       }, error=>alert(error.error.message))
-
   }
 
   getProduct(productId){
