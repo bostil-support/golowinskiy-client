@@ -24,11 +24,15 @@ export class MobileCategoriesComponent implements OnInit {
   ngOnInit() {
     // load selected categories if redirect over breadcrumbs
     this.selectedCategories = this.initialCategories;
+   setTimeout(()=>console.log(this.categories),2000);
   }
 
   click(level: number, item: CategoryItem) {
     const oldCategory = this.selectedCategories[level]
     if (oldCategory !== undefined) {
+      if(level == 0)
+      this.selectedCategories.splice(level, 10, item);
+      else
       this.selectedCategories.splice(level, 10);
     } else {
       this.selectedCategories.splice(level, 10, item);
@@ -43,9 +47,15 @@ export class MobileCategoriesComponent implements OnInit {
     this.storageService.selectedCategories.next(this.selectedCategories);
   }
 
-  isShowItem(level: number, item: CategoryItem): boolean {
+  firstLoad: boolean  = false;
+  isShowItem(level: number, item: CategoryItem): boolean {  
     const selected = this.selectedCategories[level];
-    return selected === undefined || this.isEqual(selected, item);
+    const res = selected === undefined || this.isEqual(selected, item);
+    if(level !==0){
+      return res
+    }else{
+      return true  
+    }
   }
 
   isShowSubitems(level: number, item: CategoryItem): boolean {
