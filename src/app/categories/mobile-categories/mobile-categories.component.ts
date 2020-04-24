@@ -30,9 +30,9 @@ export class MobileCategoriesComponent implements OnInit {
   click(level: number, item: CategoryItem) {
     const oldCategory = this.selectedCategories[level]
     if (oldCategory !== undefined) {
-      if(level == 0)
-      this.selectedCategories.splice(level, 10, item);
-      else
+   //   if(level == 0)
+   //   this.selectedCategories.splice(level, 10, item);
+   //   else
       this.selectedCategories.splice(level, 10);
     } else {
       this.selectedCategories.splice(level, 10, item);
