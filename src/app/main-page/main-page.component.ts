@@ -41,7 +41,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
     private categoriesService: CategoriesService,
     private env: EnvService
   ) {
-    window.scrollTo(0,0); 
+  
    }
 
   @HostListener('document:scroll', ['$event']) 
@@ -70,6 +70,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
   }
 
   ngAfterViewInit() {
+    setTimeout(()=>window.scrollTo(0,0), 500); 
     let action = () => {
       let header = document.getElementsByTagName('header')[0]
       const height = header.clientHeight
