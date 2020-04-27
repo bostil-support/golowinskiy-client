@@ -462,7 +462,6 @@ export class AdvertisementPageComponent implements OnInit{
     return new Blob([arrayBuffer], {type});
 }
   uploadImages(additionalImagesData){
-
     const name = additionalImagesData.name;
     const formData = new FormData();
     console.log(additionalImagesData.file)

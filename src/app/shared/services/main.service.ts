@@ -34,13 +34,18 @@ export class MainService {
   public getUserId() {
     return this.http.get(`${this.env.apiUrl}/api/Load/${this.cust_id}`);
   }
-  zeroDomains = ['localhost','головинский'];
+  zeroDomains = ['localhost','головинский','www'];
   public getPortal() {
-    const host = this.env.enableToUnicode ? punycode.toUnicode(location.hostname.split('.')[0]) : location.hostname.split('.')[0];
-    if(host)
-      return this.zeroDomains.includes(host) ? 'golowinskiy' : host;
-    else
-      alert('не могу определить ID магазина');
+    const shopName = this.env.shopName;
+    if(shopName && shopName.trim().length !== 0){
+      return shopName
+    }else{
+      const host = this.env.enableToUnicode ? punycode.toUnicode(location.hostname.split('.')[0]) : location.hostname.split('.')[0];
+      if(host)
+        return this.zeroDomains.includes(host) ? 'golowinskiy' : host;
+      else
+        alert('не могу определить ID магазина');
+    }
   };
 
   setIdPortal = (id: any) => this.idPortal = id;

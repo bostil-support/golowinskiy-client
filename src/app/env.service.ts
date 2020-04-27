@@ -10,6 +10,7 @@ export class EnvService {
 
   // API url
   public apiUrl = '';
+  public shopName = '';
   public enableDebug = true;
   public enableToUnicode = true;
   constructor() {
