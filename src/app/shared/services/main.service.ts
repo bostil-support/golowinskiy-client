@@ -2,8 +2,6 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {forkJoin, from, Observable, of} from 'rxjs';
 import {mergeMap, switchMap, tap} from 'rxjs/operators';
-
-import {environment} from 'src/environments/environment';
 import {CategoryItem} from '../../categories/categories.component';
 import {AdditionalImagesData, AdditionalImagesRequest, DeleteProduct} from '../interfaces';
 import {OrderService} from './order.service';
@@ -80,9 +78,9 @@ export class MainService {
     let fonPicture;
     if (document.getElementById('fon-image')) {
       if (window.location.pathname.includes('cabinet')) {
-        fonPicture = document.getElementById('fon-image').style.background = `url('${environment.images}${this.mainPictureAccountUser}') no-repeat 50% 50%`;
+        fonPicture = document.getElementById('fon-image').style.background = `url('${this.env.apiUrl}${this.mainPictureAccountUser}') no-repeat 50% 50%`;
       } else {
-        fonPicture = document.getElementById('fon-image').style.background = `url('${environment.images}${this.mainImage}') no-repeat 50% 50%`;
+        fonPicture = document.getElementById('fon-image').style.background = `url('${this.env.apiUrl}${this.mainImage}') no-repeat 50% 50%`;
       }
     }
     return fonPicture;
