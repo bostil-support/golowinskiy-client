@@ -229,6 +229,9 @@ export class MainService {
   saveCategoriesToStorage(categories) {
     localStorage.setItem('categories', JSON.stringify(categories));
   }
+  clearCategoriesToStorage() {
+    localStorage.removeItem('categories');
+  }
 
   loadCategoriesFromStorage() {
     return JSON.parse(localStorage.getItem('categories')) || [];

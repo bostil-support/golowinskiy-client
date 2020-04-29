@@ -85,6 +85,8 @@ export class AdvertisementPageComponent implements OnInit{
     this.loadingMini = this.loadingImage = this.commonStore.loadingLittleRedSpinner;
     this.loadingSpinner = this.commonStore.loadingImageSpinner;
     this.apiRoot = this.env.apiUrl;
+    this.storageService.setCategories([])
+    this.mainService.clearCategoriesToStorage();
   }
 
   ngOnInit() {
