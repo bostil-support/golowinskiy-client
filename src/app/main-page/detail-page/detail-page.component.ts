@@ -97,9 +97,8 @@ export class DetailPageComponent implements OnInit {
         cust_ID: res.cust_id,
         prc_ID: this.prc_ID,
       }
-    //  if(this.mainService.productsByCategoryId.length == 0){
+      if(this.mainService.productsByCategoryId.length == 0){
         this.mainService.getProducts(this.route.snapshot.params['id'], this.appCode, cid).subscribe((res) => {
-        //  this.allGallery = res;
           res.forEach((element,i) => {
             this.allGallery.push({i, prc_ID: element.prc_ID, src: this.apiRoot + '/api/Img?AppCode=' + this.appCode + '&ImgFileName=' + element.image_Base, default: this.apiRoot + '/api/Img?AppCode=' + this.appCode + '&ImgFileName=' + element.image_Base, name: element.image_Base})
           });
@@ -107,13 +106,13 @@ export class DetailPageComponent implements OnInit {
           this.showPrevElementId = this.route.snapshot.params['idProduct'] != this.allGallery[0].prc_ID;
           this.showNextElementId = this.route.snapshot.params['idProduct'] != this.allGallery[this.allGallery.length - 1].prc_ID;
         })
-    /*  }else{
+      }else{
         this.allGallery = this.mainService.productsByCategoryId;
         this.setSliderImageById(this.route.snapshot.params['idProduct']);
         this.showPrevElementId = this.route.snapshot.params['idProduct'] != this.allGallery[0].prc_ID;
         this.showNextElementId = this.route.snapshot.params['idProduct'] != this.allGallery[this.allGallery.length - 1].prc_ID;
       }
-      */
+      
       this.showSpinner = true;
       this.getProduct(this.route.snapshot.params.idProduct);
       }, error=>alert(error.error.message))
@@ -140,9 +139,12 @@ export class DetailPageComponent implements OnInit {
 
   mainImageIndex: number = 0;
   setSliderImageById(id){
-    this.elementImage_Base = this.allGallery.filter(item => item.prc_ID == id)[0].name;
-    console.log(this.elementImage_Base)
     this.updateUrl(id);
+    const mainImageName = this.allGallery.filter(item => item.prc_ID == id)[0].name;
+    if(mainImageName)
+      this.elementImage_Base = mainImageName;
+    else
+      alert('main image not found in stack');
   }
 
   updateUrl(productId: number){

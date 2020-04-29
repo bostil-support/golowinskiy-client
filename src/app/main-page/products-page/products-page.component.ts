@@ -75,7 +75,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
     this.idPortal = idPortal;
     this.mainService.getProducts(this.route.snapshot.params['id'], this.mainService.getCustId(), this.cid).subscribe((res) => {
       this.Gallery = res;
-      if(this.mainService.productsByCategoryId.length == 0)
+      this.mainService.productsByCategoryId.length = 0;
       res.forEach((element, i) => {
         this.mainService.productsByCategoryId.push({i, prc_ID: element.prc_ID, src: this.apiRoot + '/api/Img?AppCode=' + this.mainService.getCustId() + '&ImgFileName=' + element.image_Base, default: this.apiRoot + '/api/Img?AppCode=' + this.mainService.getCustId() + '&ImgFileName=' + element.image_Base, name: element.image_Base})
       });
