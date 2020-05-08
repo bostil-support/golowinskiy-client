@@ -4,7 +4,6 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {NgxPaginationModule} from 'ngx-pagination';
-
 import {TokenInterceptor} from './shared/classes/token.interceptor';
 
 import {AppRoutingModule} from './app-routing.module';
@@ -30,6 +29,8 @@ import {BreadcrumbsComponent} from './breadcrumbs/breadcrumbs.component';
 import { OrderComponent } from './main-page/order/order.component';
 import { MobileCategoriesComponent } from './categories/mobile-categories/mobile-categories.component';
 import { EnvServiceProvider } from './env.service.provider';
+import { YoutubePlayerComponent } from './youtube-player/youtube-player.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -50,6 +51,7 @@ import { EnvServiceProvider } from './env.service.provider';
     BreadcrumbsComponent,
     OrderComponent,
     MobileCategoriesComponent,
+    YoutubePlayerComponent
   ],
   imports: [
     HttpClientModule,

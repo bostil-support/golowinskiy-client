@@ -1,0 +1,15 @@
+div{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+@media screen and (max-width: 1078px){
+    .desktop{
+        display: none;
+    }
+}
+@media screen and (min-width: 1079px){
+    .mobile{
+        display: none;
+    }
+}

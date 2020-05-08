@@ -1,7 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-
-import {environment} from '../../../environments/environment';
 import {MainService} from '../../shared/services/main.service';
 import {Message} from '../../shared/models/message.model';
 import {of, Subscription} from 'rxjs';
@@ -17,11 +15,11 @@ import { EnvService } from 'src/app/env.service';
 })
 export class DetailPageComponent implements OnInit {
 
-  apiRoot
+  apiRoot: string = null;
   element = {
     additionalImages: []
   }
-  appCode
+  appCode: string = null;
   showDescription = true
   showProduct = false
   showSpinner = true
@@ -29,41 +27,31 @@ export class DetailPageComponent implements OnInit {
   additionalImages = []
   showEdit = false
   showBasket = false
-
   elCurrentId: string
   nextElementId
   prevElementId
   allGallery = []
-
-  elementImage_Base
-
+  elementImage_Base: string = null;
   message: Message
   sub: Subscription
-
   showPrevElementId = false
   showNextElementId = false
-
-  clickCount;
-  clickSum;
-  custID
   ctlg_No: string;
   ctlg_Name: string;
   sup_ID: string;
   prc_ID: string;
-
-  sumOrder;
-  kolOrder;
   price: number;
   count: number;
   articul: any;
   quantity = 1;
-  prc_Br;
-  tName;
-  kolItems;
+  prc_Br: string = null;
+  tName: string = null;
+  kolItems: string | number = null;
   ord_Id: string;
   loadingImage = "data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==";
   dataForDeleteItem: DeleteProduct = null;
-  constructor(private mainService: MainService,
+  constructor(
+    private mainService: MainService,
     private route: ActivatedRoute,
     private router: Router,
     public orderService: OrderService,
@@ -98,31 +86,48 @@ export class DetailPageComponent implements OnInit {
         prc_ID: this.prc_ID,
       }
       if(this.mainService.productsByCategoryId.length == 0){
-        this.mainService.getProducts(this.route.snapshot.params['id'], this.appCode, cid).subscribe((res) => {
-          res.forEach((element,i) => {
-            this.allGallery.push({i, prc_ID: element.prc_ID, src: this.apiRoot + '/api/Img?AppCode=' + this.appCode + '&ImgFileName=' + element.image_Base, default: this.apiRoot + '/api/Img?AppCode=' + this.appCode + '&ImgFileName=' + element.image_Base, name: element.image_Base})
-          });
+        this.loadGalery(cid);
+      }else{
+        const foundedItem = this.mainService.productsByCategoryId.filter(item => item.prc_ID == this.route.snapshot.params['idProduct']);
+        if(foundedItem.length !== 0){
+          this.allGallery = this.mainService.productsByCategoryId;
           this.setSliderImageById(this.route.snapshot.params['idProduct']);
           this.showPrevElementId = this.route.snapshot.params['idProduct'] != this.allGallery[0].prc_ID;
           this.showNextElementId = this.route.snapshot.params['idProduct'] != this.allGallery[this.allGallery.length - 1].prc_ID;
-        })
-      }else{
-        this.allGallery = this.mainService.productsByCategoryId;
+        }else{
+          this.mainService.productsByCategoryId.length = 0;
+          this.loadGalery(cid);
+        }
+      }
+      this.showSpinner = true;
+      this.getProduct(this.route.snapshot.params.idProduct);
+      }, error => alert(error.error.message))
+  }
+
+  loadGalery(cid){
+    this.mainService.getProducts(this.route.snapshot.params['id'], this.appCode, cid).subscribe((res) => {
+      if(res.length !== 0){
+        res.forEach((element,i) => {
+          this.allGallery.push({i, prc_ID: element.prc_ID, src: this.apiRoot + '/api/Img?AppCode=' + this.appCode + '&ImgFileName=' + element.image_Base, default: this.apiRoot + '/api/Img?AppCode=' + this.appCode + '&ImgFileName=' + element.image_Base, name: element.image_Base})
+        });
         this.setSliderImageById(this.route.snapshot.params['idProduct']);
         this.showPrevElementId = this.route.snapshot.params['idProduct'] != this.allGallery[0].prc_ID;
         this.showNextElementId = this.route.snapshot.params['idProduct'] != this.allGallery[this.allGallery.length - 1].prc_ID;
+      }else{
+        alert('items not found');
       }
-      
-      this.showSpinner = true;
-      this.getProduct(this.route.snapshot.params.idProduct);
-      }, error=>alert(error.error.message))
+    }, () => alert('cant load galery'));
   }
 
+  youtubeLink: string = null;
   getProduct(productId){
     this.showSpinner = true;
     this.showProduct = false;
+    this.youtubeLink = null;
     this.mainService.getProduct(productId, this.appCode, this.appCode).subscribe(
       (res: any) => {
+        if(res.youtube !== "" && res.youtube !== null)
+          this.youtubeLink = res.youtube;
         this.element = res
         this.showProduct = true
         if(this.element.additionalImages.length > 3 ){
@@ -140,9 +145,9 @@ export class DetailPageComponent implements OnInit {
   mainImageIndex: number = 0;
   setSliderImageById(id){
     this.updateUrl(id);
-    const mainImageName = this.allGallery.filter(item => item.prc_ID == id)[0].name;
-    if(mainImageName)
-      this.elementImage_Base = mainImageName;
+    const mainImageName = this.allGallery.filter(item => item.prc_ID == id);
+    if(mainImageName.length !==0)
+      this.elementImage_Base = mainImageName[0].name;
     else
       alert('main image not found in stack');
   }
@@ -177,12 +182,6 @@ export class DetailPageComponent implements OnInit {
     else{
       this.router.navigate([`/categories/${this.route.snapshot.params['id']}/products`])
     }
-  }
-
-  showDetail(){
-    let a = document.getElementById('show_description')
-    a.className = 'description show'
-    this.showDescription = false
   }
 
   editProduct(el){
@@ -291,12 +290,6 @@ export class DetailPageComponent implements OnInit {
               } else {
                 this.kolItems = 1;
               }
-
-              let registerData = {
-                Cust_ID: this.authService.getUserId(),
-                Cur_Code: 810
-              }
-
               let data = {
                 "OrdTtl_Id": this.orderService.getOrderId(),
                 "OI_No": this.orderService.countKol() + 1,
@@ -310,7 +303,6 @@ export class DetailPageComponent implements OnInit {
                 .subscribe(
                   (res: any) => {
                     this.showSpinner = false;
-
                     if (res.result == true) {
                       this.orderService.addToOrder(el, productRes.ctlg_No, productRes.ctlg_Name, productRes.sup_ID);
                       this.showMessage(`${res.message}`, 'success');

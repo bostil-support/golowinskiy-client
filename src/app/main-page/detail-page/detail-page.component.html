@@ -6,7 +6,6 @@
   </div>
 </div>
 
-
 <div id="detail-page" class="detail_product">
   <div (click)="close()" class="close">
     <i class="fa fa-times" aria-hidden="true"></i>
@@ -18,8 +17,11 @@
       (click)="routePrewProduct(element)">
         <i *ngIf="showPrevElementId" class="fa fa-chevron-left" aria-hidden="true"></i>
       </div>
-      <div *ngIf="elementImage_Base" class="image">
+      <div *ngIf="elementImage_Base && !youtubeLink" class="image">
         <img [src]="apiRoot + '/api/Img?AppCode=' + appCode + '&ImgFileName=' + elementImage_Base">
+      </div>
+      <div *ngIf="elementImage_Base && !!youtubeLink" class="image">
+        <app-youtube-player [link]="youtubeLink"></app-youtube-player>
       </div>
       <div *ngIf="elementImage_Base == null" class="image">
         <div class="loadingItem">
@@ -109,7 +111,6 @@
       >{{ element.tDescription }}
     </p>
     </div>
-      <p *ngIf="showDescription && false" (click)="showDetail(element)" class="detail">ПОДРОБНЕЕ</p>
     <div *ngIf="element.tDescription" class="description_mobile">
       <img *ngIf="!element.tDescription" [src]="loadingImage" alt="" class="description_mobile-loader">
       <div (click)="showDescrButton()" class="description_mobile-text">
