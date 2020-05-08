@@ -127,7 +127,7 @@ export class DetailPageComponent implements OnInit {
     this.mainService.getProduct(productId, this.appCode, this.appCode).subscribe(
       (res: any) => {
         if(res.youtube !== "" && res.youtube !== null)
-          this.youtubeLink = res.youtube;
+  //        this.youtubeLink = res.youtube;                   // disable youtube video player
         this.element = res
         this.showProduct = true
         if(this.element.additionalImages.length > 3 ){
